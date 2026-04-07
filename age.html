@@ -81,6 +81,21 @@ function nextStep(){
 function goBack(){
   window.location.href = "create.html";
 }
+  window.onload = function(){
+  const saved = localStorage.getItem("age");
+  if(saved){
+    document.querySelectorAll(".age-card").forEach(card=>{
+      if(card.innerText.includes(saved)){
+        card.classList.add("selected");
+        selectedAge = saved;
+
+        const btn = document.getElementById("nextBtn");
+        btn.disabled = false;
+        btn.classList.remove("btn-disabled");
+      }
+    });
+  }
+}
 </script>
 
 </body>
