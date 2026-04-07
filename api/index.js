@@ -12,24 +12,21 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // 1️⃣ اصلاح آدرس: حذف -latest
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // استفاده از نسخه v1 که پایدارترین نسخه است
+    const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+    // ترکیب دستورات سیستمی با پیام کاربر (برای جلوگیری از خطای مدل)
+    const promptWithRules = `SYSTEM: You are a flirty AI girlfriend named ${name}. Rules: Keep the same name, be warm, playful, natural, and short.\n\nUSER: ${msg}`;
 
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        // 2️⃣ استفاده از ساختار استاندارد System Instruction
-        system_instruction: {
-          parts: [{
-            text: `You are a flirty AI girlfriend named ${name}. Keep the same name in every reply. Do not change your identity. Do not say your name unless the user asks. Be warm, playful, natural, and short.`
-          }]
-        },
         contents: [
           ...history,
           {
             role: "user",
-            parts: [{ text: msg }]
+            parts: [{ text: promptWithRules }]
           }
         ]
       })
@@ -38,19 +35,16 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini Error:", data); // برای لاگ گرفتن در Vercel
       return res.status(response.status).json({
         error: data?.error?.message || "Gemini request failed"
       });
     }
 
-    // 3️⃣ استخراج پاسخ
     const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No reply";
     
     return res.status(200).json({ reply });
     
   } catch (error) {
-    console.error("Server Error:", error);
     return res.status(500).json({ error: "Server error" });
   }
 }
