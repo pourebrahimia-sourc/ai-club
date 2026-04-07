@@ -1,27 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Club</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 16px;
+      background: #111;
+      color: #fff;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    #chat {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 300px;
+      margin-bottom: 16px;
+      overflow-y: auto;
+    }
+    .msg {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+    .you {
+      color: #8ec5ff;
+    }
+    .ai {
+      color: #ff9ecb;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #fff;
+      outline: none;
+    }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #ff4fa3;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
   <h1>AI Girlfriend MVP 🚀</h1>
-  <input id="input" placeholder="Say something..." />
-  <button onclick="talk()">Talk</button>
-  <br><br>
+
   <div id="chat"></div>
 
+  <div class="row">
+    <input id="input" type="text" placeholder="Say something..." />
+    <button id="sendBtn" onclick="talk()">Talk</button>
+  </div>
+
   <script>
-    let messages = [];
-    let aiName = "Luna";
-    async function talk() {
-      const msg = document.getElementById('input').value;
-      messages.push("User: " + msg);
-      const res = await fetch('/api?msg=' + encodeURIComponent(msg) + '&name=' + aiName);
-      const data = await res.json();
-      const chat = document.getElementById('chat');
-      chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
-      chat.innerHTML += `<p><b>AI:</b> ${data.candidates[0].content.parts[0].text}</p>`;
+    let chatHistory = [];
+    const names = ["Luna", "Layla", "Mia", "Nora", "Zara", "Eva"];
+    let aiName = names[Math.floor(Math.random() * names.length)];
+
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(sender, text, className) {
+      const div = document.createElement("div");
+      div.className = "msg " + className;
+      div.innerHTML = `<b>${sender}:</b> ${text}`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
     }
+
+    async function talk() {
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      addMessage("You", msg, "you");
+      input.value = "";
+      input.focus();
+
+      sendBtn.disabled = true;
+      const typingEl = addMessage(aiName, "Typing...", "ai");
+
+      try {
+        const res = await fetch("/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            msg,
+            history: chatHistory,
+            name: aiName
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          typingEl.innerHTML = `<b>${aiName}:</b> Error`;
+          sendBtn.disabled = false;
+          return;
+        }
+
+        const aiReply = data.reply || "No reply";
+
+        typingEl.innerHTML = `<b>${aiName}:</b> ${aiReply}`;
+
+        chatHistory.push({ role: "user", parts: [{ text: msg }] });
+        chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+      } catch (e) {
+        typingEl.innerHTML = `<b>${aiName}:</b> Request failed`;
+      }
+
+      sendBtn.disabled = false;
+    }
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        talk();
+      }
+    });
   </script>
 </body>
 </html>
