@@ -22,53 +22,48 @@
     <span class="step-dot"></span>
     <span class="step-dot"></span>
   </div>
-
-  <!-- از اول غیرفعال -->
-  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
 </div>
 
 <h2 class="title">Choose Age</h2>
 
 <div class="age-grid">
 
-<div class="age-card" data-value="18-21" onclick="selectAge('18-21', this)">
-  <div class="age-image">
-    <img src="images/age1.jpg">
+  <div class="age-card" data-value="18-21" onclick="selectAge('18-21', this)">
+    <div class="age-image">
+      <img src="images/age1.jpg">
+    </div>
+    <div class="age-label">18–21</div>
   </div>
-  <div class="age-label">18–21</div>
-</div>
 
-<div class="age-card" data-value="22-25" onclick="selectAge('22-25', this)">
-  <div class="age-image">
-    <img src="images/age2.jpg">
+  <div class="age-card" data-value="22-25" onclick="selectAge('22-25', this)">
+    <div class="age-image">
+      <img src="images/age2.jpg">
+    </div>
+    <div class="age-label">22–25</div>
   </div>
-  <div class="age-label">22–25</div>
-</div>
 
-<div class="age-card" data-value="26-30" onclick="selectAge('26-30', this)">
-  <div class="age-image">
-    <img src="images/age3.jpg">
+  <div class="age-card" data-value="26-30" onclick="selectAge('26-30', this)">
+    <div class="age-image">
+      <img src="images/age3.jpg">
+    </div>
+    <div class="age-label">26–30</div>
   </div>
-  <div class="age-label">26–30</div>
-</div>
 
-<div class="age-card" data-value="30+" onclick="selectAge('30+', this)">
-  <div class="age-image">
-    <img src="images/age4.jpg">
+  <div class="age-card" data-value="30+" onclick="selectAge('30+', this)">
+    <div class="age-image">
+      <img src="images/age4.jpg">
+    </div>
+    <div class="age-label">30+</div>
   </div>
-  <div class="age-label">30+</div>
-</div>
 
 </div>
-
-<button id="nextBtn" class="btn" disabled onclick="nextStep()">Continue</button>
 
 <script>
 let selectedAge = "";
 
-// انتخاب
 function selectAge(age, el){
   selectedAge = age;
+  localStorage.setItem("age", age);
 
   document.querySelectorAll(".age-card").forEach(c=>{
     c.classList.remove("selected");
@@ -76,30 +71,13 @@ function selectAge(age, el){
 
   el.classList.add("selected");
 
-  // فعال شدن دکمه‌ها
-  document.getElementById("nextBtn").disabled = false;
-  document.getElementById("forwardBtn").disabled = false;
-}
-
-// ادامه
-function nextStep(){
-  if(!selectedAge) return;
-  localStorage.setItem("age", selectedAge);
   window.location.href = "ethnicity.html";
 }
 
-// بک
 function goBack(){
   history.back();
 }
 
-// فروارد (اپی، نه مرورگر)
-function goForward(){
-  if(!selectedAge) return;
-  window.location.href = "ethnicity.html";
-}
-
-// لود اولیه (برگشت با Back)
 document.addEventListener("DOMContentLoaded", ()=>{
   const saved = localStorage.getItem("age");
   if(!saved) return;
@@ -108,9 +86,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(card.dataset.value === saved){
       card.classList.add("selected");
       selectedAge = saved;
-
-      document.getElementById("nextBtn").disabled = false;
-      document.getElementById("forwardBtn").disabled = false;
     }
   });
 });
