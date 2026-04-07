@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your AI Girlfriend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="logo">AI Club</div>
+
+<h2 class="title">Your AI Girlfriend is Ready ✨</h2>
+<p class="subtitle">Here is your custom match</p>
+
+<div class="card summary-card">
+  <div class="summary-row"><span>Age:</span> <strong id="age"></strong></div>
+  <div class="summary-row"><span>Ethnicity:</span> <strong id="ethnicity"></strong></div>
+  <div class="summary-row"><span>Body:</span> <strong id="body"></strong></div>
+  <div class="summary-row"><span>Hair:</span> <strong id="hair"></strong></div>
+  <div class="summary-row"><span>Preferences:</span> <strong id="preferences"></strong></div>
+  <div class="summary-row"><span>Personality:</span> <strong id="personality"></strong></div>
+  <div class="summary-row"><span>Scenario:</span> <strong id="scenario"></strong></div>
+</div>
+
+<button class="btn" onclick="startChat()">Start Chat</button>
+
+<script>
+function formatText(text){
+  if(!text) return "-";
+  return text
+    .replaceAll("-", " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function startChat(){
+  window.location.href = "index.html";
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  const age = localStorage.getItem("age");
+  const ethnicity = localStorage.getItem("ethnicity");
+  const body = localStorage.getItem("body");
+  const hair = localStorage.getItem("hair");
+  const preferences = JSON.parse(localStorage.getItem("preferences") || "[]");
+  const personality = localStorage.getItem("personality");
+  const scenario = localStorage.getItem("scenario");
+
+  document.getElementById("age").textContent = formatText(age);
+  document.getElementById("ethnicity").textContent = formatText(ethnicity);
+  document.getElementById("body").textContent = formatText(body);
+  document.getElementById("hair").textContent = formatText(hair);
+  document.getElementById("preferences").textContent = preferences.length ? preferences.map(formatText).join(", ") : "-";
+  document.getElementById("personality").textContent = formatText(personality);
+  document.getElementById("scenario").textContent = formatText(scenario);
+});
+</script>
+
+</body>
+</html>
