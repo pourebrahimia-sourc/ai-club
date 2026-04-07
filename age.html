@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <div class="topbar">
+  <div class="back" onclick="goBack()">← Back</div>
+  <div class="progress">Step 1 of 7</div>
+</div>
   <title>Choose Age</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
@@ -45,3 +49,8 @@ function next(){
 
 </body>
 </html>
+<script>
+function goBack(){
+  window.location.href = "create.html";
+}
+</script>
