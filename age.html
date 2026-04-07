@@ -7,11 +7,11 @@
 </head>
 
 <body>
+
 <div class="logo">AI Club</div>
+
 <div class="top-row">
-  <button class="back-btn" onclick="goBack()">
-    <span>←</span>
-  </button>
+  <button class="back-btn" onclick="goBack()">←</button>
 
   <div class="steps">
     <span class="step-dot active"></span>
@@ -24,34 +24,34 @@
   </div>
 </div>
 
-<h2 class="title">How old would you like your AI Girlfriend to be?</h2>
-<p class="subtitle">Choose one age range</p>
+<h2 class="title">Choose Age</h2>
+<p class="subtitle">Pick one range</p>
 
 <div class="age-grid">
 
-  <div class="age-card" onclick="selectAge('18-21', this)">
+  <div class="age-card" data-value="18-21" onclick="selectAge('18-21', this)">
     <div class="age-image"></div>
     <div class="age-label">18–21</div>
   </div>
 
-  <div class="age-card" onclick="selectAge('22-25', this)">
+  <div class="age-card" data-value="22-25" onclick="selectAge('22-25', this)">
     <div class="age-image"></div>
     <div class="age-label">22–25</div>
   </div>
 
-  <div class="age-card" onclick="selectAge('26-30', this)">
+  <div class="age-card" data-value="26-30" onclick="selectAge('26-30', this)">
     <div class="age-image"></div>
     <div class="age-label">26–30</div>
   </div>
 
-  <div class="age-card" onclick="selectAge('30+', this)">
+  <div class="age-card" data-value="30+" onclick="selectAge('30+', this)">
     <div class="age-image"></div>
     <div class="age-label">30+</div>
   </div>
 
 </div>
 
-<button id="nextBtn" class="btn btn-disabled" onclick="nextStep()" disabled>
+<button id="nextBtn" class="btn btn-disabled" disabled onclick="nextStep()">
   Next
 </button>
 
@@ -61,7 +61,7 @@ let selectedAge = "";
 function selectAge(age, el){
   selectedAge = age;
 
-  document.querySelectorAll(".age-card").forEach(card => {
+  document.querySelectorAll(".age-card").forEach(card=>{
     card.classList.remove("selected");
   });
 
@@ -73,7 +73,6 @@ function selectAge(age, el){
 }
 
 function nextStep(){
-  if(!selectedAge) return;
   localStorage.setItem("age", selectedAge);
   window.location.href = "ethnicity.html";
 }
@@ -81,20 +80,21 @@ function nextStep(){
 function goBack(){
   window.location.href = "create.html";
 }
-  window.onload = function(){
-  const saved = localStorage.getItem("age");
-  if(saved){
-    document.querySelectorAll(".age-card").forEach(card=>{
-      if(card.innerText.includes(saved)){
-        card.classList.add("selected");
-        selectedAge = saved;
 
-        const btn = document.getElementById("nextBtn");
-        btn.disabled = false;
-        btn.classList.remove("btn-disabled");
-      }
-    });
-  }
+window.onload = function(){
+  const saved = localStorage.getItem("age");
+  if(!saved) return;
+
+  document.querySelectorAll(".age-card").forEach(card=>{
+    if(card.dataset.value === saved){
+      card.classList.add("selected");
+      selectedAge = saved;
+
+      const btn = document.getElementById("nextBtn");
+      btn.disabled = false;
+      btn.classList.remove("btn-disabled");
+    }
+  });
 }
 </script>
 
