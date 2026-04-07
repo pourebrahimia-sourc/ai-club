@@ -8,24 +8,32 @@
 
 <body class="create-page">
 
-  <div class="create-wrap">
-    <h2 class="create-title">Create your AI Girlfriend ✨</h2>
-    <p class="create-subtitle">Build your perfect AI companion</p>
+<div class="create-container">
 
-    <button class="btn create-btn-desktop" onclick="start()">
+  <h2 class="create-title">Create your AI Girlfriend ✨</h2>
+  <p class="create-subtitle">Build your perfect AI companion</p>
+
+  <div class="video-wrapper">
+    <video autoplay muted loop playsinline class="create-video">
+      <source src="video.mp4" type="video/mp4">
+    </video>
+
+    <!-- overlay (فقط موبایل) -->
+    <div class="overlay-top">
+      <h2>Create your AI Girlfriend ✨</h2>
+      <p>Build your perfect AI companion</p>
+    </div>
+
+    <button class="btn overlay-btn" onclick="start()">
       Create 💖
     </button>
-
-    <div class="create-video-box">
-      <video autoplay muted loop playsinline class="create-video">
-        <source src="video.mp4" type="video/mp4">
-      </video>
-
-      <button class="btn create-btn-mobile" onclick="start()">
-        Create 💖
-      </button>
-    </div>
   </div>
+
+  <button class="btn desktop-btn" onclick="start()">
+    Create 💖
+  </button>
+
+</div>
 
 <script>
 function start(){
