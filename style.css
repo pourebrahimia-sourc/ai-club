@@ -34,3 +34,8 @@ body{
   background:#1a1a1a;
   color:#fff;
 }
+.hero-video{
+  width:100%;
+  border-radius:12px;
+  border:1px solid #ff4fa3;
+}
