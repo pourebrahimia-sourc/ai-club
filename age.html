@@ -61,8 +61,8 @@ let selectedAge = "";
 function selectAge(age, el){
   selectedAge = age;
 
-  document.querySelectorAll(".age-card").forEach(card=>{
-    card.classList.remove("selected");
+  document.querySelectorAll(".age-card").forEach(c=>{
+    c.classList.remove("selected");
   });
 
   el.classList.add("selected");
