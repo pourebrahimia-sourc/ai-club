@@ -7,39 +7,43 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 40px auto;
+      max-width: 760px;
+      margin: 30px auto;
       padding: 0 16px;
       background: #111;
       color: #fff;
     }
+
     h1 {
       font-size: 28px;
       margin-bottom: 20px;
     }
+
     #chat {
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 12px;
       padding: 16px;
-      min-height: 300px;
-      margin-bottom: 16px;
+      min-height: 320px;
+      max-height: 500px;
       overflow-y: auto;
+      margin-bottom: 16px;
     }
+
     .msg {
       margin: 10px 0;
-      line-height: 1.5;
+      line-height: 1.6;
+      word-wrap: break-word;
     }
-    .you {
-      color: #8ec5ff;
-    }
-    .ai {
-      color: #ff9ecb;
-    }
+
+    .you { color: #8ec5ff; }
+    .ai { color: #ff9ecb; }
+
     .row {
       display: flex;
       gap: 10px;
     }
+
     input {
       flex: 1;
       padding: 12px;
@@ -48,7 +52,9 @@
       background: #1a1a1a;
       color: #fff;
       outline: none;
+      font-size: 16px;
     }
+
     button {
       padding: 12px 18px;
       border: none;
@@ -57,7 +63,9 @@
       color: white;
       cursor: pointer;
       font-weight: bold;
+      font-size: 15px;
     }
+
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -106,7 +114,9 @@
       try {
         const res = await fetch("/api", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             msg,
             history: chatHistory,
@@ -117,18 +127,24 @@
         const data = await res.json();
 
         if (!res.ok) {
-          typingEl.innerHTML = `<b>${aiName}:</b> Error`;
+          typingEl.innerHTML = `<b>${aiName}:</b> ${data.error || "Error"}`;
           sendBtn.disabled = false;
           return;
         }
 
         const aiReply = data.reply || "No reply";
-
         typingEl.innerHTML = `<b>${aiName}:</b> ${aiReply}`;
 
-        chatHistory.push({ role: "user", parts: [{ text: msg }] });
-        chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-      } catch (e) {
+        chatHistory.push({
+          role: "user",
+          parts: [{ text: msg }]
+        });
+
+        chatHistory.push({
+          role: "model",
+          parts: [{ text: aiReply }]
+        });
+      } catch (err) {
         typingEl.innerHTML = `<b>${aiName}:</b> Request failed`;
       }
 
@@ -136,9 +152,7 @@
     }
 
     input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        talk();
-      }
+      if (e.key === "Enter") talk();
     });
   </script>
 </body>
