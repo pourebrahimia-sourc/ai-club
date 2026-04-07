@@ -23,7 +23,7 @@
     <span class="step-dot"></span>
   </div>
 
-  <button class="forward-btn" onclick="goForward()">→</button>
+  <button id="forwardBtn" class="forward-btn" onclick="goForward()" disabled>→</button>
 </div>
 
 <h2 class="title">Choose Age</h2>
@@ -57,6 +57,7 @@
 <script>
 let selectedAge = "";
 
+// انتخاب
 function selectAge(age, el){
   selectedAge = age;
 
@@ -69,22 +70,37 @@ function selectAge(age, el){
   document.getElementById("nextBtn").disabled = false;
 }
 
+// ادامه
 function nextStep(){
   if(!selectedAge) return;
   localStorage.setItem("age", selectedAge);
   window.location.href = "ethnicity.html";
 }
 
+// بک
 function goBack(){
   history.back();
 }
 
+// فروارد
 function goForward(){
   history.forward();
 }
 
-// restore
+// 🔥 فعال/غیرفعال کردن forward
+function updateForward(){
+  const btn = document.getElementById("forwardBtn");
+  if(history.length <= 1){
+    btn.disabled = true;
+  }else{
+    btn.disabled = false;
+  }
+}
+
+// 🔥 لود اولیه
 document.addEventListener("DOMContentLoaded", ()=>{
+  updateForward();
+
   const saved = localStorage.getItem("age");
   if(!saved) return;
 
