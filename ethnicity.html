@@ -29,22 +29,22 @@
 
 <div class="age-grid">
 
-  <div class="age-card" onclick="select('european', this)">
+  <div class="age-card" data-value="european" onclick="select('european', this)">
     <div class="age-image"></div>
     <div class="age-label">European</div>
   </div>
 
-  <div class="age-card" onclick="select('asian', this)">
+  <div class="age-card" data-value="asian" onclick="select('asian', this)">
     <div class="age-image"></div>
     <div class="age-label">Asian</div>
   </div>
 
-  <div class="age-card" onclick="select('latina', this)">
+  <div class="age-card" data-value="latina" onclick="select('latina', this)">
     <div class="age-image"></div>
     <div class="age-label">Latina</div>
   </div>
 
-  <div class="age-card" onclick="select('arab', this)">
+  <div class="age-card" data-value="black" onclick="select('black', this)">
     <div class="age-image"></div>
     <div class="age-label">Black</div>
   </div>
@@ -80,20 +80,21 @@ function nextStep(){
 function goBack(){
   window.location.href = "age.html";
 }
-  window.onload = function(){
-  const saved = localStorage.getItem("ethnicity");
-  if(saved){
-    document.querySelectorAll(".age-card").forEach(card=>{
-      if(card.innerText.toLowerCase().includes(saved)){
-        card.classList.add("selected");
-        selected = saved;
 
-        const btn = document.getElementById("nextBtn");
-        btn.disabled = false;
-        btn.classList.remove("btn-disabled");
-      }
-    });
-  }
+window.onload = function(){
+  const saved = localStorage.getItem("ethnicity");
+  if(!saved) return;
+
+  document.querySelectorAll(".age-card").forEach(card=>{
+    if(card.dataset.value === saved){
+      card.classList.add("selected");
+      selected = saved;
+
+      const btn = document.getElementById("nextBtn");
+      btn.disabled = false;
+      btn.classList.remove("btn-disabled");
+    }
+  });
 }
 </script>
 
