@@ -22,10 +22,11 @@
     <span class="step-dot"></span>
     <span class="step-dot"></span>
   </div>
+
+  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
 </div>
 
 <h2 class="title">Choose Ethnicity</h2>
-<p class="subtitle">Pick what you like</p>
 
 <div class="age-grid">
 
@@ -51,8 +52,8 @@
 
 </div>
 
-<button id="nextBtn" class="btn btn-disabled" disabled onclick="nextStep()">
-  Next
+<button id="nextBtn" class="btn" disabled onclick="nextStep()">
+  Continue
 </button>
 
 <script>
@@ -67,12 +68,12 @@ function select(val, el){
 
   el.classList.add("selected");
 
-  const btn = document.getElementById("nextBtn");
-  btn.disabled = false;
-  btn.classList.remove("btn-disabled");
+  document.getElementById("nextBtn").disabled = false;
+  document.getElementById("forwardBtn").disabled = false;
 }
 
 function nextStep(){
+  if(!selected) return;
   localStorage.setItem("ethnicity", selected);
   window.location.href = "body.html";
 }
@@ -81,22 +82,25 @@ function goBack(){
   history.back();
 }
 
-// 🔥 فیکس واقعی
-const saved = localStorage.getItem("ethnicity");
-if(saved){
-  document.addEventListener("DOMContentLoaded", ()=>{
-    document.querySelectorAll(".age-card").forEach(card=>{
-      if(card.dataset.value === saved){
-        card.classList.add("selected");
-        selected = saved;
-
-        const btn = document.getElementById("nextBtn");
-        btn.disabled = false;
-        btn.classList.remove("btn-disabled");
-      }
-    });
-  });
+function goForward(){
+  if(!selected) return;
+  window.location.href = "body.html";
 }
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  const saved = localStorage.getItem("ethnicity");
+  if(!saved) return;
+
+  document.querySelectorAll(".age-card").forEach(card=>{
+    if(card.dataset.value === saved){
+      card.classList.add("selected");
+      selected = saved;
+
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("forwardBtn").disabled = false;
+    }
+  });
+});
 </script>
 
 </body>
