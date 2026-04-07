@@ -2,26 +2,70 @@
 <html>
 <head>
   <title>AI Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body>
-  <h1>AI Girlfriend MVP 🚀</h1>
-  <input id="input" placeholder="Say something..." />
-  <button onclick="talk()">Talk</button>
-  <br><br>
-  <div id="chat"></div>
 
-  <script>
-    let messages = [];
-    let aiName = "Luna";
-    async function talk() {
-      const msg = document.getElementById('input').value;
-      messages.push("User: " + msg);
-      const res = await fetch('/api?msg=' + encodeURIComponent(msg) + '&name=' + aiName);
-      const data = await res.json();
-      const chat = document.getElementById('chat');
-      chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
-      chat.innerHTML += `<p><b>AI:</b> ${data.candidates[0].content.parts[0].text}</p>`;
+<body style="background:#111;color:#fff;font-family:sans-serif;max-width:700px;margin:40px auto;">
+
+<h2>AI Girlfriend 💖</h2>
+
+<div id="chat" style="background:#1a1a1a;padding:15px;border-radius:10px;height:300px;overflow:auto;"></div>
+
+<br>
+
+<input id="input" placeholder="Say something..." style="width:70%;padding:10px;">
+<button onclick="talk()">Send</button>
+
+<script>
+let history = [];
+const names = ["Luna","Mia","Nora","Eva","Zara"];
+let aiName = names[Math.floor(Math.random()*names.length)];
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+
+function add(text){
+  chat.innerHTML += text;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function talk(){
+  const msg = input.value.trim();
+  if(!msg) return;
+
+  add(`<p><b>You:</b> ${msg}</p>`);
+  input.value = "";
+
+  try{
+    const res = await fetch("/api",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        msg,
+        history,
+        name: aiName
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      add(`<p><b>${aiName}:</b> ${data.error}</p>`);
+      return;
     }
-  </script>
+
+    const reply = data.reply;
+
+    add(`<p><b>${aiName}:</b> ${reply}</p>`);
+
+    history.push({ role:"user", parts:[{text:msg}] });
+    history.push({ role:"model", parts:[{text:reply}] });
+
+  }catch(e){
+    add(`<p><b>${aiName}:</b> Error</p>`);
+  }
+}
+</script>
+
 </body>
 </html>
