@@ -558,3 +558,28 @@ body{
     box-shadow:0 8px 20px rgba(0,0,0,0.4);
   }
 }
+
+/* FORCE ethnicity layout */
+.eth-card{
+  display:flex !important;
+  align-items:center !important;
+  gap:14px !important;
+  padding:10px !important;
+  border-radius:16px !important;
+  border:1px solid #2b2b2b !important;
+  background:#1a1a1a !important;
+}
+
+.eth-card img{
+  width:45% !important;
+  height:100px !important;
+  object-fit:cover !important;
+  border-radius:12px !important;
+}
+
+.eth-card span{
+  flex:1 !important;
+  font-size:16px !important;
+  font-weight:700 !important;
+  color:#ff4fa3 !important;
+}
