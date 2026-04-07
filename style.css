@@ -1,3 +1,6 @@
+/* =========================
+   Base / Layout
+========================= */
 body{
   background:#111;
   color:#fff;
@@ -12,20 +15,30 @@ body{
   border-radius:12px;
 }
 
+/* =========================
+   Typography
+========================= */
+.logo{
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:30px;
+  color:#fff;
+}
+
 .title{
+  text-align:center;
   margin-bottom:20px;
 }
 
-.btn{
-  padding:14px 28px;
-  border-radius:10px;
-  border:none;
-  background:#ff4fa3;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
+.subtitle{
+  text-align:center;
+  margin-top:4px;
 }
 
+/* =========================
+   Form Elements
+========================= */
 .input{
   width:100%;
   padding:12px;
@@ -34,6 +47,32 @@ body{
   background:#1a1a1a;
   color:#fff;
 }
+
+/* =========================
+   Buttons
+========================= */
+.btn{
+  width:100%;
+  padding:14px 20px;
+  border-radius:14px;
+  border:none;
+  background:#ff4fa3;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.btn:disabled,
+.btn-disabled{
+  background:#5b5b5b;
+  color:#d7d7d7;
+  opacity:1;
+  cursor:not-allowed;
+}
+
+/* =========================
+   Hero Video
+========================= */
 .hero-video{
   width:30%;
   border-radius:12px;
@@ -41,6 +80,11 @@ body{
   display:block;
   margin:0 auto;
 }
+
+/* =========================
+   Old Top Navigation
+   (اگر لازم نبود بعداً حذفش می‌کنیم)
+========================= */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -56,6 +100,10 @@ body{
   font-size:14px;
   opacity:0.6;
 }
+
+/* =========================
+   Step Header
+========================= */
 .top-row{
   display:flex;
   align-items:center;
@@ -103,10 +151,14 @@ body{
   background:#ff4fa3;
 }
 
+/* =========================
+   Age Page
+========================= */
 .age-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:14px;
+  margin-top:12px;
   margin-bottom:22px;
 }
 
@@ -132,25 +184,17 @@ body{
   border:1px solid #262626;
 }
 
-.btn{
-  width:100%;
-  padding:14px 20px;
-  border-radius:14px;
-  border:none;
-  background:#ff4fa3;
-  color:#fff;
+.age-label{
+  text-align:center;
+  margin-top:10px;
   font-size:16px;
-  cursor:pointer;
+  font-weight:700;
+  color:#ff4fa3;
 }
 
-.btn:disabled,
-.btn-disabled{
-  background:#5b5b5b;
-  color:#d7d7d7;
-  opacity:1;
-  cursor:not-allowed;
-}
-
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 640px){
   body{
     margin:20px 16px;
@@ -166,31 +210,4 @@ body{
   .age-image{
     aspect-ratio:1/0.72;
   }
-}
-.title{
-  text-align:center;
-}
-
-.subtitle{
-  text-align:center;
-  margin-top:4px;
-}
-
-.age-grid{
-  margin-top:12px;
-}
-
-.age-label{
-  text-align:center;
-  margin-top:10px;
-  font-size:16px;
-  font-weight:700;
-  color:#ff4fa3;
-}
-.logo{
-  text-align:center;
-  font-size:20px;
-  font-weight:700;
-  margin-bottom:30px;
-  color:#fff;
 }
