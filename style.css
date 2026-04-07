@@ -463,10 +463,10 @@ body{
 }
 /* PC hover */
 @media (hover: hover){
-  .age-card:hover{
-    transform:translateY(-4px);
+  .eth-card:hover{
+    transform:translateY(-3px);
     border-color:#ff4fa3;
-    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
   }
 }
 /* Ethnicity Horizontal Cards */
