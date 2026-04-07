@@ -8,15 +8,16 @@
   <input id="input" placeholder="Say something..." />
   <button onclick="talk()">Talk</button>
   <br><br>
-  <p id="result">...</p>
+  <div id="chat"></div>
 
   <script>
     async function talk() {
       const msg = document.getElementById('input').value; 
       const res = await fetch('/api?msg=' + encodeURIComponent(msg));
       const data = await res.json();
-      document.getElementById('result').innerText =
-        data.candidates[0].content.parts[0].text;
+      const chat = document.getElementById('chat');
+      chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
+      chat.innerHTML += `<p><b>AI:</b> ${data.candidates[0].content.parts[0].text}</p>`;
     }
   </script>
 </body>
