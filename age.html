@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Choose Age</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2 class="title">How old would you like your AI Girlfriend to be?</h2>
+
+<div class="card">
+
+  <input 
+    id="age"
+    type="number"
+    placeholder="Enter age..."
+    class="input"
+  >
+
+  <br><br>
+
+  <button class="btn" onclick="next()">
+    Next →
+  </button>
+
+</div>
+
+<script>
+function next(){
+  const age = document.getElementById("age").value;
+
+  if(!age){
+    alert("Please enter age");
+    return;
+  }
+
+  // فعلاً فقط ذخیره ساده
+  localStorage.setItem("age", age);
+
+  window.location.href = "ethnicity.html";
+}
+</script>
+
+</body>
+</html>
