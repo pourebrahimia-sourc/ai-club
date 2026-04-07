@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hair Color</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="logo">AI Club</div>
+
+<div class="top-row">
+  <button class="back-btn" onclick="goBack()">←</button>
+
+  <div class="steps">
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot active"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+  </div>
+
+  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
+</div>
+
+<h2 class="title">Hair Color</h2>
+
+<div class="age-grid">
+
+  <div class="age-card" data-value="blonde" onclick="select('blonde', this)">
+    <div class="age-image">
+      <img src="hair1.jpg" style="width:100%;border-radius:12px;">
+    </div>
+    <div class="age-label">Blonde</div>
+  </div>
+
+  <div class="age-card" data-value="brunette" onclick="select('brunette', this)">
+    <div class="age-image">
+      <img src="hair2.jpg" style="width:100%;border-radius:12px;">
+    </div>
+    <div class="age-label">Brunette</div>
+  </div>
+
+  <div class="age-card" data-value="black" onclick="select('black', this)">
+    <div class="age-image">
+      <img src="hair3.jpg" style="width:100%;border-radius:12px;">
+    </div>
+    <div class="age-label">Black</div>
+  </div>
+
+  <div class="age-card" data-value="red" onclick="select('red', this)">
+    <div class="age-image">
+      <img src="hair4.jpg" style="width:100%;border-radius:12px;">
+    </div>
+    <div class="age-label">Red</div>
+  </div>
+
+</div>
+
+<button id="nextBtn" class="btn" disabled onclick="nextStep()">
+  Continue
+</button>
+
+<script>
+let selected = "";
+
+function select(val, el){
+  selected = val;
+
+  document.querySelectorAll(".age-card").forEach(c=>{
+    c.classList.remove("selected");
+  });
+
+  el.classList.add("selected");
+
+  document.getElementById("nextBtn").disabled = false;
+  document.getElementById("forwardBtn").disabled = false;
+}
+
+function nextStep(){
+  if(!selected) return;
+  localStorage.setItem("hair", selected);
+  window.location.href = "preferences.html";
+}
+
+function goBack(){
+  history.back();
+}
+
+function goForward(){
+  if(!selected) return;
+  window.location.href = "preferences.html";
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  const saved = localStorage.getItem("hair");
+  if(!saved) return;
+
+  document.querySelectorAll(".age-card").forEach(card=>{
+    if(card.dataset.value === saved){
+      card.classList.add("selected");
+      selected = saved;
+
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("forwardBtn").disabled = false;
+    }
+  });
+});
+</script>
+
+</body>
+</html>
