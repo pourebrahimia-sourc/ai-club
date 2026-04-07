@@ -7,14 +7,26 @@
 
 <body style="background:#111;color:#fff;font-family:sans-serif;max-width:700px;margin:40px auto;">
 
-<h2>AI Girlfriend 💖</h2>
+<h2 style="margin-bottom:20px;">AI Girlfriend 💖</h2>
 
 <div id="chat" style="background:#1a1a1a;padding:15px;border-radius:10px;height:300px;overflow:auto;"></div>
 
 <br>
 
-<input id="input" placeholder="Say something..." style="width:70%;padding:10px;border-radius:8px;border:none;">
-<button onclick="talk()" style="padding:10px;border-radius:8px;border:none;background:#ff4fa3;color:#fff;">Send</button>
+<input
+  id="input"
+  placeholder="Say something..."
+  style="width:100%;padding:12px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;box-sizing:border-box;"
+>
+
+<br><br>
+
+<button
+  onclick="talk()"
+  style="padding:10px 18px;border-radius:8px;border:none;background:#ff4fa3;color:#fff;cursor:pointer;"
+>
+  Talk
+</button>
 
 <script>
 let history = [];
@@ -24,8 +36,8 @@ let aiName = names[Math.floor(Math.random()*names.length)];
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 
-function add(text){
-  chat.innerHTML += text;
+function addMessage(sender, text, color){
+  chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   chat.scrollTop = chat.scrollHeight;
 }
 
@@ -33,7 +45,7 @@ async function talk(){
   const msg = input.value.trim();
   if(!msg) return;
 
-  add(`<p><b>You:</b> ${msg}</p>`);
+  addMessage("You", msg, "#66b3ff");
   input.value = "";
 
   try{
@@ -50,23 +62,21 @@ async function talk(){
     const data = await res.json();
 
     if(data.error){
-      add(`<p><b>${aiName}:</b> ${data.error}</p>`);
+      addMessage(aiName, data.error, "#ff4fa3");
       return;
     }
 
-    const reply = data.reply;
-
-    add(`<p><b>${aiName}:</b> ${reply}</p>`);
+    const reply = data.reply || "Error";
+    addMessage(aiName, reply, "#ff4fa3");
 
     history.push({ role:"user", parts:[{text:msg}] });
     history.push({ role:"model", parts:[{text:reply}] });
 
   }catch(e){
-    add(`<p><b>${aiName}:</b> Error</p>`);
+    addMessage(aiName, "Error", "#ff4fa3");
   }
 }
 
-// این اضافه شد فقط برای راحتی
 input.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
     talk();
