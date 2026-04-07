@@ -167,3 +167,23 @@ body{
     aspect-ratio:1/0.72;
   }
 }
+.title{
+  text-align:center;
+}
+
+.subtitle{
+  text-align:center;
+  margin-top:4px;
+}
+
+.age-grid{
+  margin-top:12px;
+}
+
+.age-label{
+  text-align:center;
+  margin-top:10px;
+  font-size:16px;
+  font-weight:700;
+  color:#ff4fa3;
+}
