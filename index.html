@@ -12,7 +12,8 @@
 
   <script>
     async function talk() {
-      const res = await fetch('/api');
+      const msg = document.getElementById('input').value; 
+      const res = await fetch('/api?msg=' + encodeURIComponent(msg));
       const data = await res.json();
       document.getElementById('result').innerText =
         data.candidates[0].content.parts[0].text;
