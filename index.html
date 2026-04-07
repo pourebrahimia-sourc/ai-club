@@ -1,58 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Luna AI</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; background: #fff5f7; }
-        #chat { border: 1px solid #ffccd5; padding: 10px; height: 300px; overflow-y: scroll; background: white; border-radius: 10px; }
-        input { width: 70%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-        button { padding: 10px 20px; background: #ff4d6d; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    </style>
+  <title>AI Club</title>
 </head>
 <body>
-    <h1>AI Girlfriend 💖</h1>
-    <div id="chat"></div>
-    <br>
-    <input id="input" placeholder="چیزی بگو..." />
-    <button onclick="talk()">ارسال</button>
+  <h1>AI Girlfriend MVP 🚀</h1>
+  <input id="input" placeholder="Say something..." />
+  <button onclick="talk()">Talk</button>
+  <br><br>
+  <div id="chat"></div>
 
-    <script>
-        let chatHistory = [];
-        let aiName = "Luna";
-
-        async function talk() {
-            const input = document.getElementById('input');
-            const msg = input.value;
-            if (!msg) return;
-
-            const chat = document.getElementById('chat');
-            chat.innerHTML += `<p><b>شما:</b> ${msg}</p>`;
-            input.value = ""; // پاک کردن فیلد ورودی
-
-            try {
-                const res = await fetch('/api', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ msg, history: chatHistory, name: aiName })
-                });
-
-                const data = await res.json();
-                
-                if (data.reply) {
-                    const reply = data.reply;
-                    chat.innerHTML += `<p><b style="color: #ff4d6d;">${aiName}:</b> ${reply}</p>`;
-                    
-                    // ذخیره در تاریخچه برای حافظه دار شدن چت
-                    chatHistory.push({ role: "user", parts: [{ text: msg }] });
-                    chatHistory.push({ role: "model", parts: [{ text: reply }] });
-                } else {
-                    chat.innerHTML += `<p style="color:red">خطا: ${data.error}</p>`;
-                }
-            } catch (err) {
-                chat.innerHTML += `<p style="color:red">مشکل در اتصال به سرور</p>`;
-            }
-            chat.scrollTop = chat.scrollHeight; // اسکرول خودکار به پایین
-        }
-    </script>
+  <script>
+    let messages = [];
+    let aiName = "Luna";
+    async function talk() {
+      const msg = document.getElementById('input').value;
+      messages.push("User: " + msg);
+      const res = await fetch('/api?msg=' + encodeURIComponent(msg) + '&name=' + aiName);
+      const data = await res.json();
+      const chat = document.getElementById('chat');
+      chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
+      chat.innerHTML += `<p><b>AI:</b> ${data.candidates[0].content.parts[0].text}</p>`;
+    }
+  </script>
 </body>
 </html>
