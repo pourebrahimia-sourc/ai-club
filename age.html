@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <div class="topbar">
-  <div class="back" onclick="goBack()">← Back</div>
-  <div class="progress">Step 1 of 7</div>
-</div>
   <title>Choose Age</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
@@ -12,45 +8,80 @@
 
 <body>
 
-<h2 class="title">How old would you like your AI Girlfriend to be?</h2>
-
-<div class="card">
-
-  <input 
-    id="age"
-    type="number"
-    placeholder="Enter age..."
-    class="input"
-  >
-
-  <br><br>
-
-  <button class="btn" onclick="next()">
-    Next →
+<div class="top-row">
+  <button class="back-btn" onclick="goBack()">
+    <span>←</span>
   </button>
+
+  <div class="steps">
+    <span class="step-dot active"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+  </div>
+</div>
+
+<h2 class="title">How old would you like your AI Girlfriend to be?</h2>
+<p class="subtitle">Choose one age range</p>
+
+<div class="age-grid">
+
+  <div class="age-card" onclick="selectAge('18-21', this)">
+    <div class="age-image"></div>
+    <div class="age-label">18–21</div>
+  </div>
+
+  <div class="age-card" onclick="selectAge('22-25', this)">
+    <div class="age-image"></div>
+    <div class="age-label">22–25</div>
+  </div>
+
+  <div class="age-card" onclick="selectAge('26-30', this)">
+    <div class="age-image"></div>
+    <div class="age-label">26–30</div>
+  </div>
+
+  <div class="age-card" onclick="selectAge('30+', this)">
+    <div class="age-image"></div>
+    <div class="age-label">30+</div>
+  </div>
 
 </div>
 
+<button id="nextBtn" class="btn btn-disabled" onclick="nextStep()" disabled>
+  Next
+</button>
+
 <script>
-function next(){
-  const age = document.getElementById("age").value;
+let selectedAge = "";
 
-  if(!age){
-    alert("Please enter age");
-    return;
-  }
+function selectAge(age, el){
+  selectedAge = age;
 
-  // فعلاً فقط ذخیره ساده
-  localStorage.setItem("age", age);
+  document.querySelectorAll(".age-card").forEach(card => {
+    card.classList.remove("selected");
+  });
 
+  el.classList.add("selected");
+
+  const btn = document.getElementById("nextBtn");
+  btn.disabled = false;
+  btn.classList.remove("btn-disabled");
+}
+
+function nextStep(){
+  if(!selectedAge) return;
+  localStorage.setItem("age", selectedAge);
   window.location.href = "ethnicity.html";
+}
+
+function goBack(){
+  window.location.href = "create.html";
 }
 </script>
 
 </body>
 </html>
-<script>
-function goBack(){
-  window.location.href = "create.html";
-}
-</script>
