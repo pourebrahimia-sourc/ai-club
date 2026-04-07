@@ -442,16 +442,78 @@ body{
 }
 @media (max-width: 640px){
 
+  .create-page{
+    margin:0;
+    padding:0;
+    max-width:none;
+    overflow:hidden;
+  }
+
+  .create-container{
+    max-width:none;
+    width:100%;
+    height:100svh;
+    margin:0;
+    padding:0;
+    position:relative;
+  }
+
+  .create-title,
+  .create-subtitle,
+  .desktop-btn{
+    display:none;
+  }
+
+  .video-wrapper{
+    position:relative;
+    width:100%;
+    height:100svh;
+    margin:0;
+  }
+
+  .create-video{
+    width:100%;
+    height:100svh;
+    object-fit:cover;
+    display:block;
+    border-radius:0;
+    margin:0;
+  }
+
   .overlay-top{
-    display:none !important;
+    display:block;
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:92px;
+    text-align:center;
+    z-index:3;
+  }
+
+  .overlay-top h2{
+    margin:0 0 8px 0;
+    font-size:24px;
+    line-height:1.25;
+    color:#fff;
+    text-shadow:0 3px 14px rgba(0,0,0,0.45);
+  }
+
+  .overlay-top p{
+    margin:0;
+    font-size:14px;
+    line-height:1.4;
+    color:rgba(255,255,255,0.9);
+    text-shadow:0 3px 14px rgba(0,0,0,0.45);
   }
 
   .overlay-btn{
+    display:block;
     position:absolute;
     left:16px;
     right:16px;
     bottom:20px;
     width:auto;
+    z-index:3;
+    margin:0;
   }
-
 }
