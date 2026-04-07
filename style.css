@@ -1,0 +1,36 @@
+body{
+  background:#111;
+  color:#fff;
+  font-family:sans-serif;
+  max-width:700px;
+  margin:40px auto;
+}
+
+.card{
+  background:#1a1a1a;
+  padding:20px;
+  border-radius:12px;
+}
+
+.title{
+  margin-bottom:20px;
+}
+
+.btn{
+  padding:14px 28px;
+  border-radius:10px;
+  border:none;
+  background:#ff4fa3;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  background:#1a1a1a;
+  color:#fff;
+}
