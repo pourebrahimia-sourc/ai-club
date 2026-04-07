@@ -1,40 +1,40 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "فقط متد POST مجاز است" });
-  }
+  const msg = req.query.msg || "";
+  const name = req.query.name || "Luna";
 
-  try {
-    const { msg, history, name } = req.body;
+  const prompt = `
+You are a flirty AI girlfriend named ${name}.
 
-    // آدرس استاندارد و پایدار گوگل
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+Rules:
+- Keep the same name in every reply.
+- Do NOT say your name unless the user asks for it.
+- Be warm, playful, natural, and short.
+- Do not act confused.
+- Do not change your identity.
+- Reply naturally to the user's message.
 
-    const response = await fetch(API_URL, {
+User message: ${msg}
+`;
+
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
+    {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         contents: [
-          ...history,
           {
-            role: "user",
-            parts: [{ 
-              text: `SYSTEM: You are a flirty AI girlfriend named ${name}. Rules: Keep the same name, be warm, playful, and short.\n\nUSER: ${msg}` 
-            }]
+            parts: [
+              { text: prompt }
+            ]
           }
         ]
       })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data?.error?.message || "خطای گوگل" });
     }
+  );
 
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "پاسخی دریافت نشد";
-    return res.status(200).json({ reply });
-
-  } catch (error) {
-    return res.status(500).json({ error: "خطای سرور Vercel" });
-  }
+  const data = await response.json();
+  res.status(200).json(data);
 }
