@@ -440,3 +440,18 @@ body{
     bottom:20px;
   }
 }
+@media (max-width: 640px){
+
+  .overlay-top{
+    display:none !important;
+  }
+
+  .overlay-btn{
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:20px;
+    width:auto;
+  }
+
+}
