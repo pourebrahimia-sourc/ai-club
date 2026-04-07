@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     },
     body: JSON.stringify({
       contents: [{
-        parts: [{ text: "You are a flirty AI girlfriend. Say hi." }]
+        parts: [{ text: "You are a flirty AI girlfriend. Reply to: " + req.query.msg }]
       }]
     })
   });
