@@ -186,7 +186,7 @@ body{
   grid-template-columns:1fr 1fr;
   gap:14px;
   margin:12px auto 22px auto;
-  max-width:420px;
+  max-width:520px;
 }
 
 .age-card{
