@@ -78,22 +78,23 @@ function nextStep(){
 }
 
 function goBack(){
-  history.back(); // 🔥 مهم
+  history.back();
 }
 
-window.onload = function(){
-  const saved = localStorage.getItem("ethnicity");
-  if(!saved) return;
+// 🔥 فیکس واقعی
+const saved = localStorage.getItem("ethnicity");
+if(saved){
+  document.addEventListener("DOMContentLoaded", ()=>{
+    document.querySelectorAll(".age-card").forEach(card=>{
+      if(card.dataset.value === saved){
+        card.classList.add("selected");
+        selected = saved;
 
-  document.querySelectorAll(".age-card").forEach(card=>{
-    if(card.dataset.value === saved){
-      card.classList.add("selected");
-      selected = saved;
-
-      const btn = document.getElementById("nextBtn");
-      btn.disabled = false;
-      btn.classList.remove("btn-disabled");
-    }
+        const btn = document.getElementById("nextBtn");
+        btn.disabled = false;
+        btn.classList.remove("btn-disabled");
+      }
+    });
   });
 }
 </script>
