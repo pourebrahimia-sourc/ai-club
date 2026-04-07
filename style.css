@@ -130,7 +130,20 @@ body{
   justify-content:center;
   box-shadow:0 0 12px rgba(255,79,163,0.10);
 }
-
+.forward-btn{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,79,163,0.45);
+  background:rgba(255,79,163,0.08);
+  color:#ff4fa3;
+  font-size:20px;
+  cursor:pointer;
+}
 .steps{
   display:flex;
   gap:8px;
