@@ -22,10 +22,11 @@
     <span class="step-dot"></span>
     <span class="step-dot"></span>
   </div>
+
+  <button class="forward-btn" onclick="goForward()">→</button>
 </div>
 
 <h2 class="title">Choose Age</h2>
-<p class="subtitle">Pick one range</p>
 
 <div class="age-grid">
 
@@ -51,9 +52,7 @@
 
 </div>
 
-<button id="nextBtn" class="btn btn-disabled" disabled onclick="nextStep()">
-  Next
-</button>
+<button id="nextBtn" class="btn" disabled onclick="nextStep()">Continue</button>
 
 <script>
 let selectedAge = "";
@@ -67,12 +66,11 @@ function selectAge(age, el){
 
   el.classList.add("selected");
 
-  const btn = document.getElementById("nextBtn");
-  btn.disabled = false;
-  btn.classList.remove("btn-disabled");
+  document.getElementById("nextBtn").disabled = false;
 }
 
 function nextStep(){
+  if(!selectedAge) return;
   localStorage.setItem("age", selectedAge);
   window.location.href = "ethnicity.html";
 }
@@ -81,22 +79,23 @@ function goBack(){
   history.back();
 }
 
-// 🔥 این مهمه — بدون onload
-const saved = localStorage.getItem("age");
-if(saved){
-  document.addEventListener("DOMContentLoaded", ()=>{
-    document.querySelectorAll(".age-card").forEach(card=>{
-      if(card.dataset.value === saved){
-        card.classList.add("selected");
-        selectedAge = saved;
-
-        const btn = document.getElementById("nextBtn");
-        btn.disabled = false;
-        btn.classList.remove("btn-disabled");
-      }
-    });
-  });
+function goForward(){
+  history.forward();
 }
+
+// restore
+document.addEventListener("DOMContentLoaded", ()=>{
+  const saved = localStorage.getItem("age");
+  if(!saved) return;
+
+  document.querySelectorAll(".age-card").forEach(card=>{
+    if(card.dataset.value === saved){
+      card.classList.add("selected");
+      selectedAge = saved;
+      document.getElementById("nextBtn").disabled = false;
+    }
+  });
+});
 </script>
 
 </body>
