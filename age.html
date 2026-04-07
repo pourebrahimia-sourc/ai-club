@@ -78,22 +78,23 @@ function nextStep(){
 }
 
 function goBack(){
-  window.location.href = "create.html";
+  history.back();
 }
 
-window.onload = function(){
-  const saved = localStorage.getItem("age");
-  if(!saved) return;
+// 🔥 این مهمه — بدون onload
+const saved = localStorage.getItem("age");
+if(saved){
+  document.addEventListener("DOMContentLoaded", ()=>{
+    document.querySelectorAll(".age-card").forEach(card=>{
+      if(card.dataset.value === saved){
+        card.classList.add("selected");
+        selectedAge = saved;
 
-  document.querySelectorAll(".age-card").forEach(card=>{
-    if(card.dataset.value === saved){
-      card.classList.add("selected");
-      selectedAge = saved;
-
-      const btn = document.getElementById("nextBtn");
-      btn.disabled = false;
-      btn.classList.remove("btn-disabled");
-    }
+        const btn = document.getElementById("nextBtn");
+        btn.disabled = false;
+        btn.classList.remove("btn-disabled");
+      }
+    });
   });
 }
 </script>
