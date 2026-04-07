@@ -15,7 +15,7 @@
     async function talk() {
       const msg = document.getElementById('input').value;
       messages.push("User: " + msg);
-      const res = await fetch('/api?msg=' + encodeURIComponent(messages.join('\n')));
+      const res = await fetch('/api?msg=' + encodeURIComponent(msg));
       const data = await res.json();
       const chat = document.getElementById('chat');
       chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
