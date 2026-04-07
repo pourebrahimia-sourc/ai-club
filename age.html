@@ -23,7 +23,8 @@
     <span class="step-dot"></span>
   </div>
 
-  <button id="forwardBtn" class="forward-btn" onclick="goForward()" disabled>→</button>
+  <!-- از اول غیرفعال -->
+  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
 </div>
 
 <h2 class="title">Choose Age</h2>
@@ -67,7 +68,9 @@ function selectAge(age, el){
 
   el.classList.add("selected");
 
+  // فعال شدن دکمه‌ها
   document.getElementById("nextBtn").disabled = false;
+  document.getElementById("forwardBtn").disabled = false;
 }
 
 // ادامه
@@ -82,25 +85,14 @@ function goBack(){
   history.back();
 }
 
-// فروارد
+// فروارد (اپی، نه مرورگر)
 function goForward(){
-  history.forward();
+  if(!selectedAge) return;
+  window.location.href = "ethnicity.html";
 }
 
-// 🔥 فعال/غیرفعال کردن forward
-function updateForward(){
-  const btn = document.getElementById("forwardBtn");
-  if(history.length <= 1){
-    btn.disabled = true;
-  }else{
-    btn.disabled = false;
-  }
-}
-
-// 🔥 لود اولیه
+// لود اولیه (برگشت با Back)
 document.addEventListener("DOMContentLoaded", ()=>{
-  updateForward();
-
   const saved = localStorage.getItem("age");
   if(!saved) return;
 
@@ -108,7 +100,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(card.dataset.value === saved){
       card.classList.add("selected");
       selectedAge = saved;
+
       document.getElementById("nextBtn").disabled = false;
+      document.getElementById("forwardBtn").disabled = false;
     }
   });
 });
