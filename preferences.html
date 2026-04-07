@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Preferences</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="logo">AI Club</div>
+
+<div class="top-row">
+  <button class="back-btn" onclick="goBack()">←</button>
+
+  <div class="steps">
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot active"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+  </div>
+
+  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
+</div>
+
+<h2 class="title">Preferences</h2>
+<p class="subtitle">Choose all that you like</p>
+
+<div class="chip-grid">
+  <button class="chip" data-value="cute" onclick="toggleChip(this)">Cute</button>
+  <button class="chip" data-value="flirty" onclick="toggleChip(this)">Flirty</button>
+  <button class="chip" data-value="sweet" onclick="toggleChip(this)">Sweet</button>
+  <button class="chip" data-value="romantic" onclick="toggleChip(this)">Romantic</button>
+  <button class="chip" data-value="playful" onclick="toggleChip(this)">Playful</button>
+  <button class="chip" data-value="confident" onclick="toggleChip(this)">Confident</button>
+  <button class="chip" data-value="jealous" onclick="toggleChip(this)">Jealous</button>
+  <button class="chip" data-value="clingy" onclick="toggleChip(this)">Clingy</button>
+</div>
+
+<button id="nextBtn" class="btn" disabled onclick="nextStep()">Continue</button>
+
+<script>
+let selected = [];
+
+function toggleChip(el){
+  const value = el.dataset.value;
+
+  if(selected.includes(value)){
+    selected = selected.filter(item => item !== value);
+    el.classList.remove("chip-selected");
+  }else{
+    selected.push(value);
+    el.classList.add("chip-selected");
+  }
+
+  const hasSelection = selected.length > 0;
+  document.getElementById("nextBtn").disabled = !hasSelection;
+  document.getElementById("forwardBtn").disabled = !hasSelection;
+}
+
+function nextStep(){
+  if(selected.length === 0) return;
+  localStorage.setItem("preferences", JSON.stringify(selected));
+  window.location.href = "personality.html";
+}
+
+function goBack(){
+  history.back();
+}
+
+function goForward(){
+  if(selected.length === 0) return;
+  window.location.href = "personality.html";
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  const saved = JSON.parse(localStorage.getItem("preferences") || "[]");
+  if(saved.length === 0) return;
+
+  selected = saved;
+
+  document.querySelectorAll(".chip").forEach(chip=>{
+    if(selected.includes(chip.dataset.value)){
+      chip.classList.add("chip-selected");
+    }
+  });
+
+  document.getElementById("nextBtn").disabled = false;
+  document.getElementById("forwardBtn").disabled = false;
+});
+</script>
+
+</body>
+</html>
