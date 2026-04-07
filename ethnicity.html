@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Choose Ethnicity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="logo">AI Club</div>
+
+<div class="top-row">
+  <button class="back-btn" onclick="goBack()">←</button>
+
+  <div class="steps">
+    <span class="step-dot"></span>
+    <span class="step-dot active"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+    <span class="step-dot"></span>
+  </div>
+</div>
+
+<h2 class="title">Choose Ethnicity</h2>
+<p class="subtitle">Pick what you like</p>
+
+<div class="age-grid">
+
+  <div class="age-card" onclick="select('european', this)">
+    <div class="age-image"></div>
+    <div class="age-label">European</div>
+  </div>
+
+  <div class="age-card" onclick="select('asian', this)">
+    <div class="age-image"></div>
+    <div class="age-label">Asian</div>
+  </div>
+
+  <div class="age-card" onclick="select('latina', this)">
+    <div class="age-image"></div>
+    <div class="age-label">Latina</div>
+  </div>
+
+  <div class="age-card" onclick="select('arab', this)">
+    <div class="age-image"></div>
+    <div class="age-label">Arab</div>
+  </div>
+
+</div>
+
+<button id="nextBtn" class="btn btn-disabled" disabled onclick="nextStep()">
+  Next
+</button>
+
+<script>
+let selected = "";
+
+function select(val, el){
+  selected = val;
+
+  document.querySelectorAll(".age-card").forEach(c=>{
+    c.classList.remove("selected");
+  });
+
+  el.classList.add("selected");
+
+  const btn = document.getElementById("nextBtn");
+  btn.disabled = false;
+  btn.classList.remove("btn-disabled");
+}
+
+function nextStep(){
+  localStorage.setItem("ethnicity", selected);
+  window.location.href = "body.html";
+}
+
+function goBack(){
+  window.location.href = "age.html";
+}
+</script>
+
+</body>
+</html>
