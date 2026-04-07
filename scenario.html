@@ -5,100 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="logo">AI Club</div>
 
-<div class="top-row">
-  <button class="back-btn" onclick="goBack()">←</button>
-
-  <div class="steps">
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot active"></span>
-  </div>
-
-  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
-</div>
-
 <h2 class="title">Scenario</h2>
-<p class="subtitle">Choose your fantasy</p>
 
 <div class="age-grid">
 
-  <div class="age-card" data-value="girlfriend" onclick="select('girlfriend', this)">
-    <div class="age-image"></div>
-    <div class="age-label">Girlfriend</div>
+<div class="age-card" data-value="girlfriend" onclick="select('girlfriend', this)">
+  <div class="age-image">
+    <img src="images/s1.jpg">
   </div>
+  <div class="age-label">Girlfriend</div>
+</div>
 
-  <div class="age-card" data-value="best-friend" onclick="select('best-friend', this)">
-    <div class="age-image"></div>
-    <div class="age-label">Best Friend</div>
+<div class="age-card" data-value="bestfriend" onclick="select('bestfriend', this)">
+  <div class="age-image">
+    <img src="images/s2.jpg">
   </div>
+  <div class="age-label">Best Friend</div>
+</div>
 
-  <div class="age-card" data-value="stranger" onclick="select('stranger', this)">
-    <div class="age-image"></div>
-    <div class="age-label">Stranger</div>
+<div class="age-card" data-value="stranger" onclick="select('stranger', this)">
+  <div class="age-image">
+    <img src="images/s3.jpg">
   </div>
+  <div class="age-label">Stranger</div>
+</div>
 
-  <div class="age-card" data-value="wife" onclick="select('wife', this)">
-    <div class="age-image"></div>
-    <div class="age-label">Wife</div>
+<div class="age-card" data-value="wife" onclick="select('wife', this)">
+  <div class="age-image">
+    <img src="images/s4.jpg">
   </div>
+  <div class="age-label">Wife</div>
+</div>
 
 </div>
 
 <button id="nextBtn" class="btn" disabled onclick="nextStep()">Finish</button>
 
 <script>
-let selected = "";
+let selected="";
 
-function select(val, el){
-  selected = val;
-
-  document.querySelectorAll(".age-card").forEach(c=>{
-    c.classList.remove("selected");
-  });
-
+function select(val,el){
+  selected=val;
+  document.querySelectorAll(".age-card").forEach(c=>c.classList.remove("selected"));
   el.classList.add("selected");
-
-  document.getElementById("nextBtn").disabled = false;
-  document.getElementById("forwardBtn").disabled = false;
+  document.getElementById("nextBtn").disabled=false;
 }
 
 function nextStep(){
-  if(!selected) return;
-  localStorage.setItem("scenario", selected);
-  window.location.href = "result.html";
+  localStorage.setItem("scenario",selected);
+  window.location.href="result.html";
 }
-
-function goBack(){
-  history.back();
-}
-
-function goForward(){
-  if(!selected) return;
-  window.location.href = "result.html";
-}
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  const saved = localStorage.getItem("scenario");
-  if(!saved) return;
-
-  document.querySelectorAll(".age-card").forEach(card=>{
-    if(card.dataset.value === saved){
-      card.classList.add("selected");
-      selected = saved;
-      document.getElementById("nextBtn").disabled = false;
-      document.getElementById("forwardBtn").disabled = false;
-    }
-  });
-});
 </script>
 
 </body>
