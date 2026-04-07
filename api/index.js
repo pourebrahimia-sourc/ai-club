@@ -1,17 +1,39 @@
 export default async function handler(req, res) {
-  const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + process.env.GEMINI_API_KEY, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{
-          text: "You are a flirty AI girlfriend. Choose a random name at the start of the conversation and always remember it. If user asks your name, say that same name. Reply naturally to: " + req.query.msg
-        }]
-      }]
-    })
-  });
+  const msg = req.query.msg || "";
+  const name = req.query.name || "Luna";
+
+  const prompt = `
+You are a flirty AI girlfriend named ${name}.
+
+Rules:
+- Keep the same name in every reply.
+- Do NOT say your name unless the user asks for it.
+- Be warm, playful, natural, and short.
+- Do not act confused.
+- Do not change your identity.
+- Reply naturally to the user's message.
+
+User message: ${msg}
+`;
+
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: prompt }
+            ]
+          }
+        ]
+      })
+    }
+  );
 
   const data = await response.json();
   res.status(200).json(data);
