@@ -465,7 +465,6 @@ body{
 @media (hover: hover){
   .eth-card:hover{
     transform:translateY(-3px);
-    border-color:#ff4fa3;
     box-shadow:0 8px 20px rgba(0,0,0,0.4);
   }
 }
