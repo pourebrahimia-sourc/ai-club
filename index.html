@@ -5,6 +5,16 @@
 </head>
 <body>
   <h1>AI Girlfriend MVP 🚀</h1>
-  <p>Coming soon...</p>
+  <button onclick="talk()">Talk</button>
+  <p id="result">...</p>
+
+  <script>
+    async function talk() {
+      const res = await fetch('/api');
+      const data = await res.json();
+      document.getElementById('result').innerText =
+        data.candidates[0].content.parts[0].text;
+    }
+  </script>
 </body>
 </html>
