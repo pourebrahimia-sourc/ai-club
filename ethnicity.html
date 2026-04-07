@@ -80,6 +80,21 @@ function nextStep(){
 function goBack(){
   window.location.href = "age.html";
 }
+  window.onload = function(){
+  const saved = localStorage.getItem("ethnicity");
+  if(saved){
+    document.querySelectorAll(".age-card").forEach(card=>{
+      if(card.innerText.toLowerCase().includes(saved)){
+        card.classList.add("selected");
+        selected = saved;
+
+        const btn = document.getElementById("nextBtn");
+        btn.disabled = false;
+        btn.classList.remove("btn-disabled");
+      }
+    });
+  }
+}
 </script>
 
 </body>
