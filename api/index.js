@@ -1,3 +1,4 @@
+let memoryStore = {};
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
@@ -6,6 +7,14 @@ export default async function handler(req, res) {
 
   try {
     const { msg, history, name, profile } = req.body;
+    if(!memoryStore[name]){
+  memoryStore[name] = {
+    profile,
+    history: []
+  };
+}
+
+memoryStore[name].history.push(msg);
     const contents = [
       {
         role: "user",
