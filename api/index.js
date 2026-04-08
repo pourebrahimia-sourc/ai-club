@@ -5,8 +5,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { msg, history, name } = req.body;
-
+    const { msg, history, name, profile } = req.body;
     const contents = [
       {
         role: "user",
