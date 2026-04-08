@@ -43,7 +43,12 @@ async function talk(){
     const res = await fetch('/api',{
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ msg, history, name: aiName })
+      body: JSON.stringify({ 
+  msg, 
+  history, 
+  name: aiName,
+  profile: getCharacterProfile()
+})
     });
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
