@@ -1,90 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Choose Ethnicity</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css">
+<title>Ethnicity</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:20px;}
+.logo{text-align:center;margin-bottom:20px;}
+.card{display:flex;align-items:center;background:#1a1a1a;padding:10px;border-radius:14px;margin-bottom:10px;border:1px solid #2b2b2b;}
+.card img{width:40%;height:80px;object-fit:cover;border-radius:10px;}
+.card span{margin-left:10px;color:#ff4fa3;font-weight:700;}
+</style>
 </head>
-
 <body>
-
 <div class="logo">AI Club</div>
+<h2>Ethnicity</h2>
 
-<div class="top-row">
-  <button class="back-btn" onclick="goBack()">←</button>
-
-  <div class="steps">
-    <span class="step-dot"></span>
-    <span class="step-dot active"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-    <span class="step-dot"></span>
-  </div>
-</div>
-
-<h2 class="title">Choose Ethnicity</h2>
-
-<div class="eth-grid">
-
-
-  <div class="eth-card" data-value="caucasian" onclick="selectEth('caucasian', this)">
-    <img src="images/eth1.png">
-    <span>Caucasian</span>
-  </div>
-
-  <div class="eth-card" data-value="asian" onclick="selectEth('asian', this)">
-    <img src="images/eth2.png">
-    <span>Asian</span>
-  </div>
-
-  <div class="eth-card" data-value="latina" onclick="selectEth('latina', this)">
-    <img src="images/eth3.png">
-    <span>Latina</span>
-  </div>
-
-  <div class="eth-card" data-value="black" onclick="selectEth('black', this)">
-    <img src="images/eth4.png">
-    <span>Black</span>
-  </div>
-
-  <div class="eth-card" data-value="middle-eastern" onclick="selectEth('middle-eastern', this)">
-    <img src="images/eth5.png">
-    <span>Middle Eastern</span>
-  </div>
-</div>
-
-</div>
+<div class="card" onclick="go('caucasian')"><img src="images/eth1.png"><span>Caucasian</span></div>
+<div class="card" onclick="go('asian')"><img src="images/eth2.png"><span>Asian</span></div>
+<div class="card" onclick="go('latina')"><img src="images/eth3.png"><span>Latina</span></div>
+<div class="card" onclick="go('black')"><img src="images/eth4.png"><span>Black</span></div>
+<div class="card" onclick="go('middle-eastern')"><img src="images/eth5.png"><span>Middle Eastern</span></div>
 
 <script>
-function selectEth(val, el){
-  localStorage.setItem("ethnicity", val);
-
-  document.querySelectorAll(".eth-card").forEach(c=>{
-    c.classList.remove("selected");
-  });
-
-  el.classList.add("selected");
-
-  window.location.href = "body.html";
-}
-
-function goBack(){
-  history.back();
-}
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  const saved = localStorage.getItem("ethnicity");
-  if(!saved) return;
-
-  document.querySelectorAll(".eth-card").forEach(card=>{
-    if(card.dataset.value === saved){
-      card.classList.add("selected");
-    }
-  });
-});
+function go(v){localStorage.setItem("ethnicity",v);location.href="body.html";}
 </script>
-
 </body>
 </html>
