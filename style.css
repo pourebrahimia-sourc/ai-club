@@ -294,12 +294,13 @@ body{
 .summary-row strong{ text-align:right; }
 
 .chat-box{
-  background:#1a1a1a;
+  background:transparent;
   padding:15px;
   border-radius:12px;
   height:340px;
   overflow:auto;
   margin-bottom:14px;
+  backdrop-filter: blur(6px);
 }
 
 .chat-input{
