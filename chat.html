@@ -11,44 +11,26 @@
 <div id="chat" class="chat-box"></div>
 <input id="input" class="chat-input" placeholder="Say something...">
 <button class="btn" onclick="talk()">Talk</button>
-  <button id="voiceBtn" onclick="startVoice()">🎤 Speak</button>
-  <button id="voiceModeBtn" class="btn">Voice Mode: OFF</button>
+<button id="voiceBtn" class="btn" onclick="startVoice()">🎤 Speak</button>
+
 <script>
-function startVoice(){
-  const input = document.getElementById('input');
-  const voiceBtn = document.getElementById('voiceBtn');
-  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+let history = [];
+let lastInputWasVoice = false;
 
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.continuous = false;
+const names = ['Luna','Mia','Nora','Eva','Zara'];
+let aiName = localStorage.getItem('aiName');
 
-  voiceBtn.innerText = "Listening...";
-
-  recognition.onresult = function(event){
-    const text = event.results[0][0].transcript;
-    input.value = text;
-    lastInputWasVoice = true;
-    talk();
-    voiceBtn.innerText = "🎤 Speak";
-    input.value = '';
-  };
-
-  recognition.onend = function(){
-    voiceBtn.innerText = "🎤 Speak";
-  };
-
-  recognition.start();
+if(!aiName){
+  aiName = names[Math.floor(Math.random() * names.length)];
+  localStorage.setItem('aiName', aiName);
 }
 
-let voiceMode = false;
-let lastInputWasVoice = false;
-const voiceModeBtn = document.getElementById('voiceModeBtn');
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+const voiceBtn = document.getElementById('voiceBtn');
 
-voiceModeBtn.onclick = function(){
-  voiceMode = !voiceMode;
-  voiceModeBtn.innerText = voiceMode ? "Voice Mode: ON" : "Voice Mode: OFF";
-};
+speechSynthesis.getVoices();
+
 function getCharacterProfile(){
   return {
     age: localStorage.getItem('age') || '',
@@ -61,24 +43,11 @@ function getCharacterProfile(){
   };
 }
 
-console.log('CHARACTER PROFILE:', getCharacterProfile());
-let history = [];
-const names = ['Luna','Mia','Nora','Eva','Zara'];
-let aiName = localStorage.getItem('aiName');
-
-if(!aiName){
-  const names = ['Luna','Mia','Nora','Eva','Zara'];
-  aiName = names[Math.floor(Math.random()*names.length)];
-  localStorage.setItem('aiName', aiName);
-}
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
-    speechSynthesis.getVoices();
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   chat.scrollTop = chat.scrollHeight;
 
-  if(sender === aiName && voiceMode && window._lastWasVoice){
+  if(sender === aiName && lastInputWasVoice){
     const speech = new SpeechSynthesisUtterance(text);
     speech.lang = 'en-US';
     speech.pitch = 1.4;
@@ -87,38 +56,80 @@ function addMessage(sender, text, color){
     speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
     speechSynthesis.cancel();
     window.speechSynthesis.speak(speech);
+    lastInputWasVoice = false;
   }
 }
+
 async function talk(){
-  const isVoice = lastInputWasVoice;
-lastInputWasVoice = false;
-  window._lastWasVoice = isVoice;
   const msg = input.value.trim();
   if(!msg) return;
+
   addMessage('You', msg, '#66b3ff');
   input.value = '';
+
   try{
-    const res = await fetch('/api',{
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ 
-  msg, 
-  history, 
-  name: aiName,
-  profile: getCharacterProfile()
-})
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        msg,
+        history,
+        name: aiName,
+        profile: getCharacterProfile()
+      })
     });
+
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
+
     addMessage(aiName, reply, '#ff4fa3');
-    history.push({ role:'user', parts:[{text:msg}] });
-    history.push({ role:'model', parts:[{text:reply}] });
+
+    history.push({ role:'user', parts:[{ text: msg }] });
+    history.push({ role:'model', parts:[{ text: reply }] });
   }catch(e){
     addMessage(aiName, 'Error', '#ff4fa3');
   }
 }
-input.addEventListener('keydown', function(e){ if(e.key === 'Enter') talk(); });
 
+function startVoice(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+    alert('Voice recognition is not supported on this browser');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  voiceBtn.innerText = "Listening...";
+
+  recognition.onresult = function(event){
+    const text = event.results[0][0].transcript;
+    input.value = text;
+    lastInputWasVoice = true;
+    talk();
+  };
+
+  recognition.onend = function(){
+    voiceBtn.innerText = "🎤 Speak";
+  };
+
+  recognition.onerror = function(){
+    voiceBtn.innerText = "🎤 Speak";
+  };
+
+  recognition.start();
+}
+
+input.addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){
+    lastInputWasVoice = false;
+    talk();
+  }
+});
 </script>
 </body>
 </html>
