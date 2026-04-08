@@ -59,6 +59,12 @@ const input = document.getElementById('input');
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   chat.scrollTop = chat.scrollHeight;
+
+  if(sender === aiName){
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = 'en-US';
+    window.speechSynthesis.speak(speech);
+  }
 }
 async function talk(){
   const msg = input.value.trim();
