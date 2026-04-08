@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Club Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="logo">AI Club</div>
+<h2 class="title">Your AI Girlfriend 💖</h2>
+<div id="chat" class="chat-box"></div>
+<input id="input" class="chat-input" placeholder="Say something...">
+<button class="btn" onclick="talk()">Talk</button>
+<script>
+let history = [];
+const names = ['Luna','Mia','Nora','Eva','Zara'];
+let aiName = names[Math.floor(Math.random()*names.length)];
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+function addMessage(sender, text, color){
+  chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+async function talk(){
+  const msg = input.value.trim();
+  if(!msg) return;
+  addMessage('You', msg, '#66b3ff');
+  input.value = '';
+  try{
+    const res = await fetch('/api',{
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ msg, history, name: aiName })
+    });
+    const data = await res.json();
+    const reply = data.reply || data.error || 'Error';
+    addMessage(aiName, reply, '#ff4fa3');
+    history.push({ role:'user', parts:[{text:msg}] });
+    history.push({ role:'model', parts:[{text:reply}] });
+  }catch(e){
+    addMessage(aiName, 'Error', '#ff4fa3');
+  }
+}
+input.addEventListener('keydown', function(e){ if(e.key === 'Enter') talk(); });
+</script>
+</body>
+</html>
