@@ -56,6 +56,7 @@ if(!aiName){
 }
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
+    speechSynthesis.getVoices();
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   chat.scrollTop = chat.scrollHeight;
