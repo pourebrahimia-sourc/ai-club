@@ -27,7 +27,13 @@
 console.log('CHARACTER PROFILE:', getCharacterProfile());
 let history = [];
 const names = ['Luna','Mia','Nora','Eva','Zara'];
-let aiName = names[Math.floor(Math.random()*names.length)];
+let aiName = localStorage.getItem('aiName');
+
+if(!aiName){
+  const names = ['Luna','Mia','Nora','Eva','Zara'];
+  aiName = names[Math.floor(Math.random()*names.length)];
+  localStorage.setItem('aiName', aiName);
+}
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
 function addMessage(sender, text, color){
