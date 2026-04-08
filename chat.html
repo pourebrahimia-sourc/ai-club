@@ -16,20 +16,16 @@
 function startVoice(){
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.continuous = false;
 
   recognition.onresult = function(event){
     const text = event.results[0][0].transcript;
     input.value = text;
-  };
-
-  recognition.onend = function(){
     talk();
   };
 
   recognition.start();
-  recognition.onend = function(){
-  talk();
-};
 }
   function getCharacterProfile(){
   return {
