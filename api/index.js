@@ -78,6 +78,7 @@ Do not change your name.`
 replyText = reply;
 
 memoryStore[name].history.push(replyText);
+    fs.writeFileSync(filePath, JSON.stringify(memoryStore, null, 2));
 return res.status(200).json({ reply });
 
   } catch (e) {
