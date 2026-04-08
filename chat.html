@@ -68,6 +68,7 @@ if(sender === aiName){
   speech.rate = 0.95;
   speech.volume = 1;
   speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
+  speechSynthesis.cancel();
   window.speechSynthesis.speak(speech);
 }
 }
