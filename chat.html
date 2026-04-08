@@ -11,7 +11,19 @@
 <div id="chat" class="chat-box"></div>
 <input id="input" class="chat-input" placeholder="Say something...">
 <button class="btn" onclick="talk()">Talk</button>
+  <button onclick="startVoice()">🎤 Speak</button>
 <script>
+  function startVoice(){
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
+
+  recognition.onresult = function(event){
+    const text = event.results[0][0].transcript;
+    document.getElementById("input").value = text;
+  };
+
+  recognition.start();
+}
   function getCharacterProfile(){
   return {
     age: localStorage.getItem('age') || '',
