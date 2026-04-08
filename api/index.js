@@ -15,6 +15,7 @@ export default async function handler(req, res) {
 }
 
 memoryStore[name].history.push(msg);
+    let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const contents = [
       {
@@ -66,8 +67,10 @@ Do not change your name.`
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+replyText = reply;
 
-    return res.status(200).json({ reply });
+memoryStore[name].history.push(replyText);
+return res.status(200).json({ reply });
 
   } catch (e) {
     return res.status(500).json({ error: "Server error" });
