@@ -14,6 +14,7 @@
   <button id="voiceBtn" onclick="startVoice()">🎤 Speak</button>
 <script>
 function startVoice(){
+  const input = document.getElementById('input');
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
