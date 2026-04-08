@@ -12,6 +12,19 @@
 <input id="input" class="chat-input" placeholder="Say something...">
 <button class="btn" onclick="talk()">Talk</button>
 <script>
+  function getCharacterProfile(){
+  return {
+    age: localStorage.getItem('age') || '',
+    ethnicity: localStorage.getItem('ethnicity') || '',
+    body: localStorage.getItem('body') || '',
+    bodyDetails: localStorage.getItem('bodyDetails') || '',
+    hair: localStorage.getItem('hair') || '',
+    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
+    personality: localStorage.getItem('personality') || ''
+  };
+}
+
+console.log('CHARACTER PROFILE:', getCharacterProfile());
 let history = [];
 const names = ['Luna','Mia','Nora','Eva','Zara'];
 let aiName = names[Math.floor(Math.random()*names.length)];
