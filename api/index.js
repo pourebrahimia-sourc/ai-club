@@ -70,9 +70,10 @@ Do not change your name.`
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(500).json({ error: data.error?.message || "API error" });
-    }
+if (!response.ok) {
+  console.log(data);
+  return res.status(500).json({ error: JSON.stringify(data) });
+}
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 replyText = reply;
