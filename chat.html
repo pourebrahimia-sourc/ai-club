@@ -24,10 +24,7 @@ function startVoice(){
   recognition.onresult = function(event){
     const text = event.results[0][0].transcript;
     input.value = text;
-
-    setTimeout(() => {
-      talk();
-    }, 300);
+    talk();
   };
 
   recognition.start();
