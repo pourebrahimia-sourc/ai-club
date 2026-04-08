@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scenario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="logo">AI Club</div>
+<div class="top-row">
+  <button class="back-btn" onclick="goBack()">←</button>
+  <div class="steps">
+    <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot active"></span>
+  </div>
+</div>
+<h2 class="title">Scenario</h2>
+<div class="square-grid">
+  <div class="square-card" data-value="girlfriend" onclick="selectScenario('girlfriend', this)"><div class="square-image"><img src="images/scenario1.png" alt="Girlfriend"></div><div class="square-label">Girlfriend</div></div>
+  <div class="square-card" data-value="best-friend" onclick="selectScenario('best-friend', this)"><div class="square-image"><img src="images/scenario2.png" alt="Best Friend"></div><div class="square-label">Best Friend</div></div>
+  <div class="square-card" data-value="stranger" onclick="selectScenario('stranger', this)"><div class="square-image"><img src="images/scenario3.png" alt="Stranger"></div><div class="square-label">Stranger</div></div>
+  <div class="square-card" data-value="wife" onclick="selectScenario('wife', this)"><div class="square-image"><img src="images/scenario4.png" alt="Wife"></div><div class="square-label">Wife</div></div>
+</div>
+<script>
+function selectScenario(value, el){
+  localStorage.setItem('scenario', value);
+  document.querySelectorAll('.square-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  window.location.href = 'result.html';
+}
+function goBack(){ history.back(); }
+document.addEventListener('DOMContentLoaded', ()=>{
+  const saved = localStorage.getItem('scenario');
+  if(!saved) return;
+  document.querySelectorAll('.square-card').forEach(card => {
+    if(card.dataset.value === saved) card.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>
