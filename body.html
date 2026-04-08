@@ -22,53 +22,45 @@
     <span class="step-dot"></span>
     <span class="step-dot"></span>
   </div>
-
-  <button id="forwardBtn" class="forward-btn" disabled onclick="goForward()">→</button>
 </div>
 
 <h2 class="title">Body Type</h2>
 
 <div class="age-grid">
 
-<div class="age-card" data-value="slim" onclick="select('slim', this)">
-  <div class="age-image">
-    <img src="images/body1.jpg">
+  <div class="age-card" data-value="slim" onclick="selectBody('slim', this)">
+    <div class="age-image">
+      <img src="images/body1.jpg">
+    </div>
+    <div class="age-label">Slim</div>
   </div>
-  <div class="age-label">Slim</div>
-</div>
 
-<div class="age-card" data-value="fit" onclick="select('fit', this)">
-  <div class="age-image">
-    <img src="images/body2.jpg">
+  <div class="age-card" data-value="fit" onclick="selectBody('fit', this)">
+    <div class="age-image">
+      <img src="images/body2.jpg">
+    </div>
+    <div class="age-label">Fit</div>
   </div>
-  <div class="age-label">Fit</div>
-</div>
 
-<div class="age-card" data-value="curvy" onclick="select('curvy', this)">
-  <div class="age-image">
-    <img src="images/body3.jpg">
+  <div class="age-card" data-value="curvy" onclick="selectBody('curvy', this)">
+    <div class="age-image">
+      <img src="images/body3.jpg">
+    </div>
+    <div class="age-label">Curvy</div>
   </div>
-  <div class="age-label">Curvy</div>
-</div>
 
-<div class="age-card" data-value="thick" onclick="select('thick', this)">
-  <div class="age-image">
-    <img src="images/body4.jpg">
+  <div class="age-card" data-value="thick" onclick="selectBody('thick', this)">
+    <div class="age-image">
+      <img src="images/body4.jpg">
+    </div>
+    <div class="age-label">Thick</div>
   </div>
-  <div class="age-label">Thick</div>
-</div>
 
 </div>
-
-<button id="nextBtn" class="btn" disabled onclick="nextStep()">
-  Continue
-</button>
 
 <script>
-let selected = "";
-
-function select(val, el){
-  selected = val;
+function selectBody(val, el){
+  localStorage.setItem("body", val);
 
   document.querySelectorAll(".age-card").forEach(c=>{
     c.classList.remove("selected");
@@ -76,23 +68,11 @@ function select(val, el){
 
   el.classList.add("selected");
 
-  document.getElementById("nextBtn").disabled = false;
-  document.getElementById("forwardBtn").disabled = false;
-}
-
-function nextStep(){
-  if(!selected) return;
-  localStorage.setItem("body", selected);
   window.location.href = "hair.html";
 }
 
 function goBack(){
   history.back();
-}
-
-function goForward(){
-  if(!selected) return;
-  window.location.href = "hair.html";
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -102,10 +82,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
   document.querySelectorAll(".age-card").forEach(card=>{
     if(card.dataset.value === saved){
       card.classList.add("selected");
-      selected = saved;
-
-      document.getElementById("nextBtn").disabled = false;
-      document.getElementById("forwardBtn").disabled = false;
     }
   });
 });
