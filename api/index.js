@@ -1,4 +1,12 @@
+import fs from "fs";
+import path from "path";
 let memoryStore = {};
+const filePath = path.join(process.cwd(), "memory.json");
+
+if(fs.existsSync(filePath)){
+  const data = fs.readFileSync(filePath, "utf-8");
+  memoryStore = JSON.parse(data || "{}");
+}
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
