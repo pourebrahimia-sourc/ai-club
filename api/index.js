@@ -15,6 +15,7 @@ export default async function handler(req, res) {
 }
 
 memoryStore[name].history.push(msg);
+    const savedHistory = memoryStore[name]?.history || [];
     const contents = [
       {
         role: "user",
@@ -39,7 +40,10 @@ Do not change your name.`
         role: "model",
         parts: [{ text: "OK" }]
       },
-      ...(history || []),
+      ...savedHistory.map(h => ({
+  role: "user",
+  parts: [{ text: h }]
+})),
       {
         role: "user",
         parts: [{ text: msg }]
