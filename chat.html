@@ -12,6 +12,7 @@
 <input id="input" class="chat-input" placeholder="Say something...">
 <button class="btn" onclick="talk()">Talk</button>
   <button id="voiceBtn" onclick="startVoice()">🎤 Speak</button>
+  <button id="voiceModeBtn" class="btn">Voice Mode: OFF</button>
 <script>
 function startVoice(){
   const input = document.getElementById('input');
@@ -22,17 +23,33 @@ function startVoice(){
   recognition.interimResults = false;
   recognition.continuous = false;
 
+  voiceBtn.innerText = "Listening...";
+
   recognition.onresult = function(event){
     const text = event.results[0][0].transcript;
     input.value = text;
+    lastInputWasVoice = true;
     talk();
     voiceBtn.innerText = "🎤 Speak";
     input.value = '';
   };
-voiceBtn.innerText = "Listening...";
+
+  recognition.onend = function(){
+    voiceBtn.innerText = "🎤 Speak";
+  };
+
   recognition.start();
 }
-  function getCharacterProfile(){
+
+let voiceMode = false;
+let lastInputWasVoice = false;
+const voiceModeBtn = document.getElementById('voiceModeBtn');
+
+voiceModeBtn.onclick = function(){
+  voiceMode = !voiceMode;
+  voiceModeBtn.innerText = voiceMode ? "Voice Mode: ON" : "Voice Mode: OFF";
+};
+function getCharacterProfile(){
   return {
     age: localStorage.getItem('age') || '',
     ethnicity: localStorage.getItem('ethnicity') || '',
@@ -61,18 +78,21 @@ function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   chat.scrollTop = chat.scrollHeight;
 
-if(sender === aiName){
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = 'en-US';
-  speech.pitch = 1.4;
-  speech.rate = 0.95;
-  speech.volume = 1;
-  speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
-  speechSynthesis.cancel();
-  window.speechSynthesis.speak(speech);
-}
+  if(sender === aiName && voiceMode && window._lastWasVoice){
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = 'en-US';
+    speech.pitch = 1.4;
+    speech.rate = 0.95;
+    speech.volume = 1;
+    speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
+    speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+  }
 }
 async function talk(){
+  const isVoice = lastInputWasVoice;
+lastInputWasVoice = false;
+  window._lastWasVoice = isVoice;
   const msg = input.value.trim();
   if(!msg) return;
   addMessage('You', msg, '#66b3ff');
