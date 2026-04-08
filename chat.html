@@ -2,83 +2,117 @@
 <html>
 <head>
   <title>AI Club Chat</title>
- <style>
+<style>
 body{
   margin:0;
-  height:100vh;
+  min-height:100vh;
+  padding:18px 14px 16px;
+  box-sizing:border-box;
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
-  padding:20px;
-  box-sizing:border-box;
   color:#fff;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#111;
+  position:relative;
+  overflow:hidden;
 }
 
-/* background */
 .bg{
   position:fixed;
   inset:0;
-  z-index:-1;
+  z-index:0;
   overflow:hidden;
+  background:#111;
 }
 
 .bg video{
   position:absolute;
-  top:0;
-  left:0;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  filter: blur(40px);
-  transform: scale(1.2);
+  filter:blur(65px) brightness(0.45);
+  transform:scale(1.22);
 }
 
-/* desktop */
-@media (min-width:768px){
-  body{
-    background:#111;
-    align-items:center;
-  }
-
-  .bg video{
-    width:420px;
-    height:720px;
-    border-radius:24px;
-  }
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(
+    to top,
+    rgba(17,17,17,0.96) 0%,
+    rgba(17,17,17,0.78) 30%,
+    rgba(17,17,17,0.38) 58%,
+    rgba(17,17,17,0.18) 100%
+  );
+  pointer-events:none;
 }
 
-/* top */
+.logo,
+.title,
+#chat,
+#input,
+.action-row{
+  position:relative;
+  z-index:2;
+}
+
 .logo{
   text-align:center;
-  margin-bottom:6px;
+  font-size:20px;
+  font-weight:700;
+  margin:0 0 8px 0;
 }
 
 .title{
   text-align:center;
-  margin-bottom:10px;
+  font-size:26px;
+  line-height:1.25;
+  margin:0 0 12px 0;
 }
 
-/* chat */
 #chat{
-  height:50vh;
+  flex:1;
+  min-height:280px;
+  max-height:52vh;
   overflow:auto;
-  padding:12px;
-  border-radius:12px;
-  backdrop-filter: blur(6px);
+  padding:14px 12px;
+  margin-bottom:10px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.10);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
 }
 
-/* input */
+#chat p{
+  margin:0 0 10px 0;
+  line-height:1.45;
+  word-break:break-word;
+}
+
 #input{
   width:100%;
-  padding:12px;
-  border-radius:12px;
+  box-sizing:border-box;
+  padding:14px 14px;
   border:none;
-  background:rgba(0,0,0,0.4);
+  outline:none;
+  border-radius:16px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
   color:#fff;
-  margin-top:10px;
+  font-size:16px;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
 }
 
-/* buttons */
+#input::placeholder{
+  color:rgba(255,255,255,0.65);
+}
+
 .action-row{
   display:flex;
   gap:10px;
@@ -86,13 +120,18 @@ body{
 }
 
 .btn{
-  padding:14px;
-  border-radius:12px;
+  height:52px;
   border:none;
-  background:rgba(255,79,163,0.6);
+  border-radius:16px;
   color:#fff;
+  font-size:16px;
+  font-weight:700;
   cursor:pointer;
-  backdrop-filter: blur(10px);
+  background:rgba(255,79,163,0.72);
+  border:1px solid rgba(255,79,163,0.45);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 24px rgba(255,79,163,0.18);
 }
 
 .talk-btn{
@@ -100,13 +139,32 @@ body{
 }
 
 .voice-btn{
-  width:60px;
+  width:64px;
+  flex:0 0 64px;
 }
 
-/* z-index fix */
-#chat, #input, .btn, .logo, .title{
-  position:relative;
-  z-index:2;
+@media (min-width:768px){
+  body{
+    width:420px;
+    margin:0 auto;
+    padding:24px 16px 20px;
+  }
+
+  .bg video{
+    width:420px;
+    height:760px;
+    top:50%;
+    left:50%;
+    inset:auto;
+    transform:translate(-50%,-50%) scale(1.16);
+    border-radius:28px;
+    border:1px solid rgba(255,79,163,0.45);
+    box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
+  }
+
+  #chat{
+    max-height:500px;
+  }
 }
 </style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
