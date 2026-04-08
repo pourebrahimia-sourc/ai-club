@@ -27,6 +27,9 @@ function startVoice(){
   };
 
   recognition.start();
+  recognition.onend = function(){
+  talk();
+};
 }
   function getCharacterProfile(){
   return {
