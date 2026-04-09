@@ -8,9 +8,6 @@ body{
   min-height:100vh;
   padding:18px 14px 16px;
   box-sizing:border-box;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
   color:#fff;
   font-family:Arial, Helvetica, sans-serif;
   background:#111;
@@ -35,7 +32,7 @@ body{
   width:100%;
   height:100%;
   object-fit:cover;
-  filter:blur(20px);
+  filter:blur(10px);
   transform:scale(1.1);
 }
 
@@ -78,9 +75,8 @@ body::after{
 }
 
 #chat{
-  flex:1;
-  min-height:280px;
-  max-height:52vh;
+  height:30vh;
+  margin-top:auto;
   overflow:auto;
   padding:14px 12px;
   margin-bottom:10px;
@@ -153,20 +149,41 @@ body::after{
     padding:24px 16px 20px;
   }
 
-  .bg video{
-    width:420px;
-    height:760px;
-    top:50%;
-    left:50%;
-    inset:auto;
-    transform:translate(-50%,-50%) scale(1.16);
-    border-radius:28px;
-    border:1px solid rgba(255,79,163,0.45);
-    box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
-  }
+.bg video{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:420px;
+  height:760px;
+  transform: translate(-50%, -50%) scale(1.05);
+  object-fit:cover;
+  border-radius:28px;
+  border:1px solid rgba(255,79,163,0.45);
+  box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
+}
 
   #chat{
     max-height:500px;
+  }
+}
+	.top-area{
+  position:relative;
+  z-index:2;
+}
+
+.bottom-area{
+  position:fixed;
+  left:14px;
+  right:14px;
+  bottom:16px;
+  z-index:2;
+}
+	@media (min-width:768px){
+  .bottom-area{
+    width:420px;
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
   }
 }
 </style>
@@ -179,13 +196,18 @@ body::after{
     <source src="images/character.mp4" type="video/mp4">
   </video>
 </div>
-<div class="logo">AI Club</div>
-<h2 class="title">Your AI Girlfriend 💖</h2>
-<div id="chat" class="chat-box"></div>
-<input id="input" class="chat-input" placeholder="Say something...">
-<div class="action-row">
-  <button class="btn talk-btn" onclick="talk()">Talk</button>
-  <button id="voiceBtn" class="btn voice-btn" onclick="startVoice()">🎤</button>
+<div class="top-area">
+  <div class="logo">AI Club</div>
+  <h2 class="title">Your AI Girlfriend 💖</h2>
+</div>
+
+<div class="bottom-area">
+  <div id="chat" class="chat-box"></div>
+  <input id="input" class="chat-input" placeholder="Say something...">
+  <div class="action-row">
+    <button class="btn talk-btn" onclick="talk()">Talk</button>
+    <button id="voiceBtn" class="btn voice-btn" onclick="startVoice()">🎤</button>
+  </div>
 </div>
 
 <script>
@@ -289,11 +311,11 @@ function startVoice(){
   };
 
   recognition.onend = function(){
-    voiceBtn.innerText = "🎤 Speak";
+    voiceBtn.innerText = "ðŸŽ¤ Speak";
   };
 
   recognition.onerror = function(){
-    voiceBtn.innerText = "🎤 Speak";
+    voiceBtn.innerText = "ðŸŽ¤ Speak";
   };
 
   recognition.start();
