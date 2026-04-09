@@ -93,51 +93,10 @@ if (!response.ok) {
 }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    // SEND TO D-ID
-const didRes = await fetch("https://api.d-id.com/talks", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Basic YOUR_API_KEY"
-  },
-  body: JSON.stringify({
-    source_url: "https://create-images-results.d-id.com/DefaultPresenters/Noelle_f/image.png",
-    script: {
-      type: "text",
-      input: reply,
-      provider: {
-        type: "microsoft",
-        voice_id: "en-US-JennyNeural"
-      }
-    }
-  })
-});
-
-const didData = await didRes.json();
-const talkId = didData.id;
-
-// CHECK STATUS
-let videoUrl = null;
-
-while (!videoUrl) {
-  await new Promise(r => setTimeout(r, 3000));
-
-  const check = await fetch(`https://api.d-id.com/talks/${talkId}`, {
-    headers: {
-      "Authorization": "Basic cG91cmVicmFoaW1pLmFAZ21haWwuY29t:BLAYLT74LVewKDFn3iSYU"
-    }
-  });
-
-  const checkData = await check.json();
-
-  if (checkData.status === "done") {
-    videoUrl = checkData.result_url;
-  }
-}
-const replyText = reply;
+replyText = reply;
 
 memoryStore[name].history.push(replyText);
-    return res.status(200).json({ reply, videoUrl });
+    return res.status(200).json({ reply });
 
   } catch (e) {
     return res.status(500).json({ error: "Server error" });
