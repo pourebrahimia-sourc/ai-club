@@ -19,20 +19,27 @@
   <div class="summary-row"><span>Personality:</span><strong id="personality"></strong></div>
 </div>
 <button class="btn" onclick="startChat()">Start Chat</button>
+<script src="storage.js"></script>
 <script>
 function formatText(text){
   if(!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
-function startChat(){ window.location.href = 'chat.html'; }
+
+function startChat(){
+  window.location.href = 'chat.html';
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
-  document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
-  document.getElementById('body').textContent = formatText(localStorage.getItem('body'));
-  document.getElementById('bodyDetails').textContent = formatText(localStorage.getItem('bodyDetails'));
-  document.getElementById('hair').textContent = formatText(localStorage.getItem('hair'));
-  document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
-  document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
+  const profile = getProfile();
+
+  document.getElementById('age').textContent = formatText(profile.age);
+  document.getElementById('ethnicity').textContent = formatText(profile.ethnicity);
+  document.getElementById('body').textContent = formatText(profile.body);
+  document.getElementById('bodyDetails').textContent = formatText(profile.bodyDetails);
+  document.getElementById('hair').textContent = formatText(profile.hair);
+  document.getElementById('appearanceDetails').textContent = formatText(profile.appearanceDetails);
+  document.getElementById('personality').textContent = formatText(profile.personality);
 });
 </script>
 </body>
