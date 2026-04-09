@@ -239,13 +239,14 @@ body::after{
   font-size:12px;
   color:rgba(255,255,255,0.6);
 }
+
 </style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
 </head>
 <body>
 <div class="bg">
-  <video autoplay muted loop playsinline preload="auto">
+  <video id="bgVideo" autoplay muted playsinline preload="auto">
     <source src="images/character.mp4" type="video/mp4">
   </video>
 </div>
@@ -253,15 +254,6 @@ body::after{
 <div class="top-area">
   <div class="logo">AI Club</div>
   <h2 class="title">Your AI Girlfriend 💖</h2>
-	<div id="avatar-stage" style="margin-bottom:10px;">
-<video
-  id="bgVideo"
-  autoplay
-  muted
-  playsinline
-  style="position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;"
-></video>
-</div>
 </div>
 	<div class="character-header">
   <div class="avatar"></div>
@@ -352,13 +344,10 @@ async function talk(){
     const reply = data.reply || data.error || 'Error';
 	  addMessage(aiName, reply, '#ff4fa3');
 if (data.videoUrl) {
-  const video = document.createElement('video');
-  video.src = data.videoUrl;
-  video.autoplay = true;
-  video.controls = true;
-  video.style.width = "100%";
-  video.style.marginTop = "10px";
-  document.getElementById('bgVideo').src = data.videoUrl;
+  const bgVideo = document.getElementById('bgVideo');
+  bgVideo.src = data.videoUrl;
+  bgVideo.load();
+  bgVideo.play().catch(() => {});
 }
 	  document.getElementById('charStatus').innerText = "Online";   
 
