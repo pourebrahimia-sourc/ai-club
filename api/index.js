@@ -30,7 +30,6 @@ if(!memoryStore[name]){
 }
 
     let replyText = "";
-    const savedHistory = memoryStore[name]?.history || [];
     const contents = [
       {
         role: "user",
