@@ -341,9 +341,11 @@ async function talk(){
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
-	  document.getElementById('charStatus').innerText = "Online";
-
-    addMessage(aiName, reply, '#ff4fa3');
+	  addMessage(aiName, reply, '#ff4fa3');
+	  if (data.videoUrl) {
+  chat.innerHTML += `<video src="${data.videoUrl}" controls autoplay style="width:100%;border-radius:12px;margin-top:10px;"></video>`;
+}
+	  document.getElementById('charStatus').innerText = "Online";   
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
