@@ -86,7 +86,22 @@ body::after{
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
 }
+#chat::-webkit-scrollbar{
+  width:6px;
+}
 
+#chat::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+#chat::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,0.28);
+  border-radius:999px;
+}
+
+#chat::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,255,255,0.42);
+}
 #chat p{
   margin:0 0 10px 0;
   line-height:1.45;
@@ -301,7 +316,7 @@ function startVoice(){
   recognition.interimResults = false;
   recognition.continuous = false;
 
-  voiceBtn.innerText = "Listening...";
+  voiceBtn.innerHTML = "🎙️";
 
   recognition.onresult = function(event){
     const text = event.results[0][0].transcript;
@@ -311,11 +326,11 @@ function startVoice(){
   };
 
   recognition.onend = function(){
-    voiceBtn.innerText = "ðŸŽ¤ Speak";
+    voiceBtn.innerHTML = "🎤";
   };
 
   recognition.onerror = function(){
-    voiceBtn.innerText = "ðŸŽ¤ Speak";
+    voiceBtn.innerHTML = "🎤";
   };
 
   recognition.start();
