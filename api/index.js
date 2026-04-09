@@ -79,6 +79,7 @@ Do not change your name.`
 
 if (!response.ok) {
   console.log(data);
+  console.log("ERROR DEBUG:", JSON.stringify(data, null, 2));
   return res.status(500).json({ error: JSON.stringify(data) });
 }
 
