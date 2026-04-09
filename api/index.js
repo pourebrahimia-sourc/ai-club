@@ -25,6 +25,7 @@ memoryStore[name].profile = profile;
 //memoryStore[name].history.push(msg);
     let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
+    const limitedHistory = savedHistory.slice(-6);
     const savedProfile = memoryStore[name]?.profile || profile || {};
     const contents = [
       {
@@ -60,8 +61,8 @@ Character:
         role: "model",
         parts: [{ text: "OK" }]
       },
-      ...savedHistory.map(h => ({
-  role: "user",
+...limitedHistory.map((h, index) => ({
+  role: index % 2 === 0 ? "user" : "model",
   parts: [{ text: h }]
 })),
       {
