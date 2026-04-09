@@ -2,7 +2,9 @@ import fs from "fs";
 import path from "path";
 let memoryStore = {};
 const filePath = path.join(process.cwd(), "memory.json");
-
+function saveMemory(){
+  fs.writeFileSync(filePath, JSON.stringify(memoryStore, null, 2));
+}
 if(fs.existsSync(filePath)){
   const data = fs.readFileSync(filePath, "utf-8");
   memoryStore = JSON.parse(data || "{}");
@@ -14,15 +16,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { msg, history, name, profile } = req.body;
-    if(!memoryStore[name]){
+    const { msg, name, profile } = req.body;
+    if (!name) {
+  return res.status(400).json({ error: "Missing name" });
+}
+if(!memoryStore[name]){
   memoryStore[name] = {
     profile,
     history: []
   };
+} else {
+  memoryStore[name].profile = profile;
 }
 
-//memoryStore[name].history.push(msg);
     let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const contents = [
@@ -52,9 +58,9 @@ Do not change your name.`
         parts: [{ text: "OK" }]
       },
       ...savedHistory.map(h => ({
-  role: "user",
-  parts: [{ text: h }]
-})),
+        role: h.role,
+        parts: [{ text: h.text }]
+      })),
       {
         role: "user",
         parts: [{ text: msg }]
@@ -78,9 +84,17 @@ if (!response.ok) {
 }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!reply) {
+  return res.status(500).json({ error: "No reply from AI" });
+}
 replyText = reply;
 
-memoryStore[name].history.push(replyText);
+memoryStore[name].history.push(
+  { role: "user", text: msg },
+  { role: "model", text: replyText }
+);
+    saveMemory();
+    memoryStore[name].lastUpdated = Date.now();
     return res.status(200).json({ reply });
 
   } catch (e) {
