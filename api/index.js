@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   };
 }
 
-memoryStore[name].history.push(msg);
+//memoryStore[name].history.push(msg);
     let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const contents = [
@@ -60,7 +60,7 @@ Do not change your name.`
     ];
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,8 +79,7 @@ if (!response.ok) {
 replyText = reply;
 
 memoryStore[name].history.push(replyText);
-    fs.writeFileSync(filePath, JSON.stringify(memoryStore, null, 2));
-return res.status(200).json({ reply });
+    return res.status(200).json({ reply });
 
   } catch (e) {
     return res.status(500).json({ error: "Server error" });
