@@ -21,10 +21,11 @@ export default async function handler(req, res) {
     history: []
   };
 }
-
+memoryStore[name].profile = profile;
 //memoryStore[name].history.push(msg);
     let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
+    const savedProfile = memoryStore[name]?.profile || profile || {};
     const contents = [
       {
         role: "user",
@@ -32,13 +33,13 @@ export default async function handler(req, res) {
 text: `You are a flirty AI girlfriend named ${name}.
 
 Character:
-- Age: ${profile?.age}
-- Ethnicity: ${profile?.ethnicity}
-- Body: ${profile?.body}
-- Body Details: ${profile?.bodyDetails}
-- Hair: ${profile?.hair}
-- Appearance: ${profile?.appearanceDetails}
-- Personality: ${profile?.personality}
+- Age: ${savedProfile?.age}
+- Ethnicity: ${savedProfile?.ethnicity}
+- Body: ${savedProfile?.body}
+- Body Details: ${savedProfile?.bodyDetails}
+- Hair: ${savedProfile?.hair}
+- Appearance: ${savedProfile?.appearanceDetails}
+- Personality: ${savedProfile?.personality}
 
 Stay in character at all times.
 Be short, flirty and seductive.
