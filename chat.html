@@ -342,8 +342,14 @@ async function talk(){
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
 	  addMessage(aiName, reply, '#ff4fa3');
-	  if (data.videoUrl) {
-  chat.innerHTML += `<video src="${data.videoUrl}" controls autoplay style="width:100%;border-radius:12px;margin-top:10px;"></video>`;
+if (data.videoUrl) {
+  const video = document.createElement('video');
+  video.src = data.videoUrl;
+  video.autoplay = true;
+  video.controls = true;
+  video.style.width = "100%";
+  video.style.marginTop = "10px";
+  chat.appendChild(video);
 }
 	  document.getElementById('charStatus').innerText = "Online";   
 
