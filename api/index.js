@@ -144,7 +144,10 @@ if (msg === "generate image") {
     }
   );
 
-  const imgData = await imgRes.json();
+  const text = await imgRes.text();
+console.log("IMG RAW:", text);
+
+const imgData = JSON.parse(text);
   const imageBase64 = imgData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
   return res.status(200).json({ imageBase64 });
