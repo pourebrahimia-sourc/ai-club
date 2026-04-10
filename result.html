@@ -66,32 +66,41 @@ document.addEventListener('DOMContentLoaded', ()=>{
   personality: localStorage.getItem('personality')
 };
 
-fetch('/api', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    msg: "generate image",
-    name: "Luna",
-    profile
-  })
-})
-.then(async res => {
-  const data = await res.json();
-  console.log("RESULT API:", res.status, data);
-  return data;
-})
-.then(data => {
-if (data.imageBase64) {
-  const img = document.getElementById('aiImage');
-  img.src = "data:image/png;base64," + data.imageBase64;
-  localStorage.setItem('aiImage', img.src);
+const savedImage = localStorage.getItem('aiImage');
+const img = document.getElementById('aiImage');
+const loading = document.getElementById('imageLoading');
+
+if (savedImage) {
+  img.src = savedImage;
   img.style.display = "block";
-  document.getElementById('imageLoading').style.display = 'none';
+  loading.style.display = "none";
+} else {
+  fetch('/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      msg: "generate image",
+      name: "Luna",
+      profile
+    })
+  })
+  .then(async res => {
+    const data = await res.json();
+    console.log("RESULT API:", res.status, data);
+    return data;
+  })
+  .then(data => {
+    if (data.imageBase64) {
+      img.src = "data:image/png;base64," + data.imageBase64;
+      localStorage.setItem('aiImage', img.src);
+      img.style.display = "block";
+      loading.style.display = "none";
+    }
+  })
+  .catch(err => {
+    console.log("RESULT ERROR:", err);
+  });
 }
-})
-.catch(err => {
-  console.log("RESULT ERROR:", err);
-});
 </script>
 </body>
 </html>
