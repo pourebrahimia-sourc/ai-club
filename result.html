@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
   document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
 });
-  const profile = {
+ const profile = {
   age: localStorage.getItem('age'),
   ethnicity: localStorage.getItem('ethnicity'),
   body: localStorage.getItem('body'),
@@ -74,10 +74,13 @@ const img = document.getElementById('aiImage');
 const loading = document.getElementById('imageLoading');
 
 if (lastProfileKey === currentProfileKey && savedImage) {
+
   img.src = savedImage;
   img.style.display = "block";
   loading.style.display = "none";
+
 } else {
+
   localStorage.setItem('lastProfileKey', currentProfileKey);
 
   fetch('/api', {
@@ -91,44 +94,19 @@ if (lastProfileKey === currentProfileKey && savedImage) {
   })
   .then(res => res.json())
   .then(data => {
-    if (data.imageBase64) {
-      img.src = "data:image/png;base64," + data.imageBase64;
-      localStorage.setItem('aiImage', img.src);
-      img.style.display = "block";
-      loading.style.display = "none";
-    }
-  });
-}
 
-if (lastProfileKey !== currentProfileKey) {
-  localStorage.removeItem('aiImage');
-  localStorage.setItem('lastProfileKey', currentProfileKey);
-}
-  fetch('/api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      msg: "generate image",
-      name: "Luna",
-      profile
-    })
-  })
-  .then(async res => {
-    const data = await res.json();
-    console.log("RESULT API:", res.status, data);
-    return data;
-  })
-  .then(data => {
     if (data.imageBase64) {
       img.src = "data:image/png;base64," + data.imageBase64;
       localStorage.setItem('aiImage', img.src);
       img.style.display = "block";
       loading.style.display = "none";
     }
+
   })
   .catch(err => {
-    console.log("RESULT ERROR:", err);
+    console.log(err);
   });
+
 }
 </script>
 </body>
