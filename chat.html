@@ -217,12 +217,8 @@ body::after{
   width:44px;
   height:44px;
   border-radius:50%;
-  background-image:url('images/character.png');
   background-size:cover;
   background-position:center;
-  border:1px solid rgba(255,255,255,0.18);
-  box-shadow:0 4px 14px rgba(0,0,0,0.28);
-  flex-shrink:0;
 }
 
 .char-info{
@@ -245,9 +241,7 @@ body::after{
 </head>
 <body>
 <div class="bg">
-  <video autoplay muted loop playsinline preload="auto">
-    <source src="images/character.mp4" type="video/mp4">
-  </video>
+  <img id="bgImage" style="width:100%;height:100%;object-fit:cover;filter:blur(12px);transform:scale(1.1);">
 </div>
 
 <div class="top-area">
@@ -272,6 +266,14 @@ body::after{
 </div>
 
 <script>
+	const savedImage = localStorage.getItem('aiImage');
+
+if(savedImage){
+  document.getElementById('bgImage').src = savedImage;
+
+  const avatar = document.querySelector('.avatar');
+  avatar.style.backgroundImage = `url(${savedImage})`;
+}
 let history = [];
 let lastInputWasVoice = false;
 
