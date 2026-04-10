@@ -66,17 +66,39 @@ document.addEventListener('DOMContentLoaded', ()=>{
   personality: localStorage.getItem('personality')
 };
 
+const currentProfileKey = JSON.stringify(profile);
+const lastProfileKey = localStorage.getItem('lastProfileKey');
 const savedImage = localStorage.getItem('aiImage');
+
 const img = document.getElementById('aiImage');
 const loading = document.getElementById('imageLoading');
 
-if (savedImage) {
+if (lastProfileKey === currentProfileKey && savedImage) {
   img.src = savedImage;
   img.style.display = "block";
   loading.style.display = "none";
 } else {
-  const currentProfileKey = JSON.stringify(profile);
-const lastProfileKey = localStorage.getItem('lastProfileKey');
+  localStorage.setItem('lastProfileKey', currentProfileKey);
+
+  fetch('/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      msg: "generate image",
+      name: "Luna",
+      profile
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.imageBase64) {
+      img.src = "data:image/png;base64," + data.imageBase64;
+      localStorage.setItem('aiImage', img.src);
+      img.style.display = "block";
+      loading.style.display = "none";
+    }
+  });
+}
 
 if (lastProfileKey !== currentProfileKey) {
   localStorage.removeItem('aiImage');
