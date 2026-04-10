@@ -56,14 +56,21 @@ fetch('/api', {
     profile
   })
 })
-.then(res => res.json())
+.then(async res => {
+  const data = await res.json();
+  console.log("RESULT API:", res.status, data);
+  return data;
+})
 .then(data => {
-  if(data.imageBase64){
+  if (data.imageBase64) {
     const img = document.getElementById('aiImage');
     img.src = "data:image/png;base64," + data.imageBase64;
     localStorage.setItem('aiImage', img.src);
     img.style.display = "block";
   }
+})
+.catch(err => {
+  console.log("RESULT ERROR:", err);
 });
 </script>
 </body>
