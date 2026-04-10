@@ -75,6 +75,13 @@ if (savedImage) {
   img.style.display = "block";
   loading.style.display = "none";
 } else {
+  const currentProfileKey = JSON.stringify(profile);
+const lastProfileKey = localStorage.getItem('lastProfileKey');
+
+if (lastProfileKey !== currentProfileKey) {
+  localStorage.removeItem('aiImage');
+  localStorage.setItem('lastProfileKey', currentProfileKey);
+}
   fetch('/api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
