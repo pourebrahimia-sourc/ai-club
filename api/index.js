@@ -120,11 +120,11 @@ if (!response.ok) {
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 replyText = reply;
-let imageUrl = "https://picsum.photos/800/1200";
+let imageUrl = "";
 
 try {
   const imgRes = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=" + process.env.GEMINI_API_KEY,
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=" + process.env.GEMINI_API_KEY,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -134,17 +134,23 @@ try {
             role: "user",
             parts: [{ text: imagePrompt }]
           }
-        ]
+        ],
+        generationConfig: {
+          responseModalities: ["TEXT", "IMAGE"]
+        }
       })
     }
   );
 
   const imgData = await imgRes.json();
 
-  imageUrl = imgData?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
-    ? `data:image/png;base64,${imgData.candidates[0].content.parts[0].inlineData.data}`
-    : "";
+  const imagePart = imgData?.candidates?.[0]?.content?.parts?.find(
+    part => part.inlineData && part.inlineData.data
+  );
 
+  if (imagePart) {
+    imageUrl = `data:${imagePart.inlineData.mimeType || "image/png"};base64,${imagePart.inlineData.data}`;
+  }
 } catch (e) {
   console.log("Image error", e);
 }
