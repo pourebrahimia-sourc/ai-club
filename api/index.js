@@ -153,5 +153,6 @@ if (msg === "generate image") {
 return res.status(200).json({ reply });
 
 } catch (e) {
-  return res.status(500).json({ error: "Server error" });
+  console.log("ERROR:", e);
+  return res.status(200).json({ error: "Server error" });
 }
