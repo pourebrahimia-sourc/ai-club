@@ -344,26 +344,14 @@ async function talk(){
 addMessage(aiName, reply, '#ff4fa3');
 
 if (imageUrl) {
+  const bg = document.querySelector('.bg');
   const bgVideo = document.getElementById('bgVideo');
-  bgVideo.style.opacity = "0";
 
-  let bgImage = document.getElementById('bgImage');
-
-  if (!bgImage) {
-    bgImage = document.createElement('img');
-    bgImage.id = "bgImage";
-    bgImage.style.position = "absolute";
-    bgImage.style.inset = "0";
-    bgImage.style.width = "100%";
-    bgImage.style.height = "100%";
-    bgImage.style.objectFit = "cover";
-    bgImage.style.filter = "blur(10px)";
-    bgImage.style.transform = "scale(1.1)";
-    bgImage.style.zIndex = "0";
-    document.querySelector('.bg').prepend(bgImage);
-  }
-
-  bgImage.src = imageUrl;
+  bgVideo.style.display = "none";
+  bg.style.backgroundImage = `url('${imageUrl}')`;
+  bg.style.backgroundSize = "cover";
+  bg.style.backgroundPosition = "center";
+  bg.style.backgroundRepeat = "no-repeat";
 }
 
 if (data.videoUrl) {
