@@ -341,9 +341,11 @@ async function talk(){
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
+	  addMessage(aiName, reply, '#ff4fa3');
+	  if (data.imageBase64) {
+  chat.innerHTML += `<img src="data:image/png;base64,${data.imageBase64}" style="width:100%;border-radius:12px;margin-top:10px;">`;
+}
 	  document.getElementById('charStatus').innerText = "Online";
-
-    addMessage(aiName, reply, '#ff4fa3');
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
