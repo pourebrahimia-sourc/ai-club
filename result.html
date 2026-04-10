@@ -9,6 +9,9 @@
 <div class="logo">AI Club</div>
 <h2 class="title">Your AI Girlfriend is Ready ✨</h2>
 <p class="subtitle">Here is your custom match</p>
+  <div id="aiImageBox" style="margin-bottom:20px;text-align:center;">
+  <img id="aiImage" style="width:100%;border-radius:16px;display:none;">
+</div>
 <div class="summary-card">
   <div class="summary-row"><span>Age:</span><strong id="age"></strong></div>
   <div class="summary-row"><span>Ethnicity:</span><strong id="ethnicity"></strong></div>
@@ -33,6 +36,33 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('hair').textContent = formatText(localStorage.getItem('hair'));
   document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
   document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
+});
+  const profile = {
+  age: localStorage.getItem('age'),
+  ethnicity: localStorage.getItem('ethnicity'),
+  body: localStorage.getItem('body'),
+  bodyDetails: localStorage.getItem('bodyDetails'),
+  hair: localStorage.getItem('hair'),
+  appearanceDetails: localStorage.getItem('appearanceDetails'),
+  personality: localStorage.getItem('personality')
+};
+
+fetch('/api', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    msg: "generate image",
+    name: "Luna",
+    profile
+  })
+})
+.then(res => res.json())
+.then(data => {
+  if(data.imageBase64){
+    const img = document.getElementById('aiImage');
+    img.src = "data:image/png;base64," + data.imageBase64;
+    img.style.display = "block";
+  }
 });
 </script>
 </body>
