@@ -21,13 +21,14 @@ export default async function handler(req, res) {
     if (msg === "generate image") {
       const savedProfile = profile || {};
 
-      const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
 ${savedProfile?.ethnicity || ""} woman,
 ${savedProfile?.age || ""} years old,
 ${savedProfile?.body || ""} body,
 ${savedProfile?.hair || ""} hair,
 ${savedProfile?.appearanceDetails || ""},
 ${savedProfile?.personality || ""} personality,
+wearing a stylish outfit, slightly revealing, low-cut top, soft sensual look, classy, not explicit,
 attractive, flirty, soft lighting, cinematic, 4k`;
 
       const imgRes = await fetch(
