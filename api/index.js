@@ -120,7 +120,7 @@ if (!response.ok) {
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 replyText = reply;
-let imageUrl = "";
+let imageUrl = "https://picsum.photos/800/1200";
 
 try {
   const imgRes = await fetch(
@@ -149,6 +149,7 @@ try {
   console.log("Image error", e);
 }
 memoryStore[name].history.push(replyText);
+    console.log("IMAGE URL:", imageUrl);
     return res.status(200).json({ reply, imageUrl });
 
   } catch (e) {
