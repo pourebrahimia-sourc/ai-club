@@ -61,6 +61,7 @@ fetch('/api', {
   if(data.imageBase64){
     const img = document.getElementById('aiImage');
     img.src = "data:image/png;base64," + data.imageBase64;
+    localStorage.setItem('aiImage', img.src);
     img.style.display = "block";
   }
 });
