@@ -15,6 +15,37 @@ export default async function handler(req, res) {
 
   try {
     const { msg, history, name, profile } = req.body;
+    if (msg === "generate image") {
+  const savedProfile = profile || {};
+
+  const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+  ${savedProfile?.ethnicity} woman,
+  ${savedProfile?.age} years old,
+  ${savedProfile?.body} body,
+  ${savedProfile?.hair} hair,
+  ${savedProfile?.appearanceDetails},
+  ${savedProfile?.personality} personality,
+  attractive, flirty, soft lighting, cinematic, 4k`;
+
+  const imgRes = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          role: "user",
+          parts: [{ text: imagePrompt }]
+        }]
+      })
+    }
+  );
+
+  const imgData = await imgRes.json();
+  const imageBase64 = imgData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+
+  return res.status(200).json({ imageBase64 });
+}
     if(!memoryStore[name]){
   memoryStore[name] = {
     profile,
@@ -94,39 +125,7 @@ if (!response.ok) {
 
 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 replyText = reply;
-
 memoryStore[name].history.push(replyText);
-
-if (msg === "generate image") {
-  const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
-  ${savedProfile?.ethnicity} woman,
-  ${savedProfile?.age} years old,
-  ${savedProfile?.body} body,
-  ${savedProfile?.hair} hair,
-  ${savedProfile?.appearanceDetails},
-  ${savedProfile?.personality} personality,
-  attractive, flirty, soft lighting, cinematic, 4k`;
-
-  const imgRes = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          role: "user",
-          parts: [{ text: imagePrompt }]
-        }]
-      })
-    }
-  );
-
-  const imgData = await imgRes.json();
-  const imageBase64 = imgData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-
-  return res.status(200).json({ reply, imageBase64 });
-}
-
 return res.status(200).json({ reply });
 
 } catch (e) {
