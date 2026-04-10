@@ -105,7 +105,8 @@ memoryStore[name].history.push(replyText);
 //${savedProfile?.appearanceDetails},
 //${savedProfile?.personality} personality,
 //attractive, flirty, soft lighting, cinematic, 4k`;
-
+    
+console.log("PROFILE:", savedProfile);
 const imgRes = await fetch(
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
   {
@@ -119,7 +120,7 @@ const imgRes = await fetch(
     })
   }
 );
-
+console.log("MSG:", msg);
 if (msg === "generate image") {
   const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
   ${savedProfile?.ethnicity} woman,
