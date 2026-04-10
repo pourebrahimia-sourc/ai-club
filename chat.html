@@ -345,7 +345,7 @@ addMessage(aiName, reply, '#ff4fa3');
 
 if (imageUrl) {
   const bgVideo = document.getElementById('bgVideo');
-  bgVideo.style.display = "none";
+  bgVideo.style.opacity = "0";
 
   let bgImage = document.getElementById('bgImage');
 
@@ -359,7 +359,8 @@ if (imageUrl) {
     bgImage.style.objectFit = "cover";
     bgImage.style.filter = "blur(10px)";
     bgImage.style.transform = "scale(1.1)";
-    document.querySelector('.bg').appendChild(bgImage);
+    bgImage.style.zIndex = "0";
+    document.querySelector('.bg').prepend(bgImage);
   }
 
   bgImage.src = imageUrl;
