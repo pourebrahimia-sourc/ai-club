@@ -27,32 +27,6 @@ memoryStore[name].profile = profile;
     const savedHistory = memoryStore[name]?.history || [];
     const limitedHistory = savedHistory.slice(-6);
     const savedProfile = memoryStore[name]?.profile || profile || {};
-    const imagePrompt = `Create a highly attractive AI girlfriend portrait.
-
-Character profile:
-- Age: ${savedProfile?.age || "young adult"}
-- Ethnicity: ${savedProfile?.ethnicity || "mixed"}
-- Body type: ${savedProfile?.body || "fit"}
-- Body details: ${savedProfile?.bodyDetails || "balanced proportions"}
-- Hair: ${savedProfile?.hair || "dark hair"}
-- Appearance details: ${savedProfile?.appearanceDetails || "natural beauty"}
-- Personality vibe: ${savedProfile?.personality || "flirty and confident"}
-
-Style requirements:
-- ultra realistic
-- beautiful female portrait
-- cinematic lighting
-- high detail skin
-- attractive eyes
-- polished face
-- natural pose
-- clean background
-- premium mobile app character art
-- sensual but classy
-- no text
-- no watermark
-- single woman only
-- centered composition`;
     const contents = [
       {
         role: "user",
@@ -120,43 +94,9 @@ if (!response.ok) {
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 replyText = reply;
-let imageUrl = "";
 
-try {
-  const imgRes = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=" + process.env.GEMINI_API_KEY,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: imagePrompt }]
-          }
-        ],
-        generationConfig: {
-          responseModalities: ["TEXT", "IMAGE"]
-        }
-      })
-    }
-  );
-
-  const imgData = await imgRes.json();
-
-  const imagePart = imgData?.candidates?.[0]?.content?.parts?.find(
-    part => part.inlineData && part.inlineData.data
-  );
-
-  if (imagePart) {
-    imageUrl = `data:${imagePart.inlineData.mimeType || "image/png"};base64,${imagePart.inlineData.data}`;
-  }
-} catch (e) {
-  console.log("Image error", e);
-}
 memoryStore[name].history.push(replyText);
-    console.log("IMAGE URL:", imageUrl);
-    return res.status(200).json({ reply, imageUrl });
+    return res.status(200).json({ reply });
 
   } catch (e) {
     return res.status(500).json({ error: "Server error" });
