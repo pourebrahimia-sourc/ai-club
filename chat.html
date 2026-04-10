@@ -75,7 +75,7 @@ body::after{
 }
 
 #chat{
-  height:24vh;
+  height:10vh;
   margin-top:auto;
   overflow:auto;
   padding:14px 12px;
@@ -242,6 +242,24 @@ body::after{
 <body>
 <div class="bg">
   <img id="bgImage" style="position:absolute;top:50%;left:50%;width:420px;height:760px;transform:translate(-50%,-50%) scale(1.05);object-fit:cover;filter:blur(12px);border-radius:28px;border:1px solid rgba(255,79,163,0.45);box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);">
+<div id="lockOverlay" style="
+position:absolute;
+top:50%;
+left:50%;
+width:420px;
+height:760px;
+transform:translate(-50%,-50%);
+border-radius:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,0.4);
+z-index:2;
+font-size:40px;
+color:#fff;
+">
+🔒
+</div>
 </div>
 
 <div class="top-area">
