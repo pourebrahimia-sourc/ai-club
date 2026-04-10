@@ -9,6 +9,13 @@
 <div class="logo">AI Club</div>
 <h2 class="title">Your AI Girlfriend is Ready ✨</h2>
 <p class="subtitle">Here is your custom match</p>
+  <div id="imageLoading" style="margin-bottom:20px;">
+  <div class="image-loader">
+    <div class="loader-ring"></div>
+    <div class="loader-glow"></div>
+    <div class="loader-text">Creating your AI girlfriend...</div>
+  </div>
+</div>
   <div id="aiImageBox" style="margin-bottom:20px;text-align:center;">
   <img id="aiImage" style="width:100%;border-radius:16px;display:none;">
 </div>
@@ -62,12 +69,13 @@ fetch('/api', {
   return data;
 })
 .then(data => {
-  if (data.imageBase64) {
-    const img = document.getElementById('aiImage');
-    img.src = "data:image/png;base64," + data.imageBase64;
-    localStorage.setItem('aiImage', img.src);
-    img.style.display = "block";
-  }
+if (data.imageBase64) {
+  const img = document.getElementById('aiImage');
+  img.src = "data:image/png;base64," + data.imageBase64;
+  localStorage.setItem('aiImage', img.src);
+  img.style.display = "block";
+  document.getElementById('imageLoading').style.display = 'none';
+}
 })
 .catch(err => {
   console.log("RESULT ERROR:", err);
