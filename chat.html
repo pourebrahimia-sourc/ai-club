@@ -246,7 +246,7 @@ body::after{
 </head>
 <body>
 <div class="bg">
-  <video id="bgVideo" autoplay playsinline preload="auto" src="images/character.mp4"></video>
+  
 </div>
 
 <div class="top-area">
@@ -351,18 +351,16 @@ if (imageUrl) {
   const bgVideo = document.getElementById('bgVideo');
 
   bgVideo.style.display = "none";
+
   bg.style.backgroundImage = `url('${imageUrl}')`;
   bg.style.backgroundSize = "cover";
   bg.style.backgroundPosition = "center";
   bg.style.backgroundRepeat = "no-repeat";
+  bg.style.filter = "blur(12px)";
+  bg.style.transform = "scale(1.1)";
+  bg.style.transition = "background-image 0.3s ease";
 }
 
-if (data.videoUrl) {
-  const bgVideo = document.getElementById('bgVideo');
-  bgVideo.src = data.videoUrl;
-  bgVideo.load();
-  bgVideo.play().catch(() => {});
-}
 	  document.getElementById('charStatus').innerText = "Online";   
 
     history.push({ role:'user', parts:[{ text: msg }] });
