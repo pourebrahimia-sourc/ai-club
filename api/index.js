@@ -93,6 +93,9 @@ if (!response.ok) {
 }
 
 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (msg === "generate image") {
+  return res.status(200).json({ reply: "ok" });
+}
 replyText = reply;
 
 memoryStore[name].history.push(replyText);
