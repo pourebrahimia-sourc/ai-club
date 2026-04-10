@@ -340,7 +340,31 @@ async function talk(){
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
-	  addMessage(aiName, reply, '#ff4fa3');
+	  const imageUrl = data.imageUrl || '';
+addMessage(aiName, reply, '#ff4fa3');
+
+if (imageUrl) {
+  const bgVideo = document.getElementById('bgVideo');
+  bgVideo.style.display = "none";
+
+  let bgImage = document.getElementById('bgImage');
+
+  if (!bgImage) {
+    bgImage = document.createElement('img');
+    bgImage.id = "bgImage";
+    bgImage.style.position = "absolute";
+    bgImage.style.inset = "0";
+    bgImage.style.width = "100%";
+    bgImage.style.height = "100%";
+    bgImage.style.objectFit = "cover";
+    bgImage.style.filter = "blur(10px)";
+    bgImage.style.transform = "scale(1.1)";
+    document.querySelector('.bg').appendChild(bgImage);
+  }
+
+  bgImage.src = imageUrl;
+}
+
 if (data.videoUrl) {
   const bgVideo = document.getElementById('bgVideo');
   bgVideo.src = data.videoUrl;
