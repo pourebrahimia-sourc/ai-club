@@ -106,24 +106,8 @@ ${savedProfile?.appearanceDetails},
 ${savedProfile?.personality} personality,
 attractive, flirty, soft lighting, cinematic, 4k`;
 
-const imgRes = await fetch(
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{
-        role: "user",
-        parts: [{ text: imagePrompt }]
-      }]
-    })
-  }
-);
 
-const imgData = await imgRes.json();
-const imageBase64 = imgData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-
-return res.status(200).json({ reply, imageBase64 });
+return res.status(200).json({ reply });
 
   } catch (e) {
     return res.status(500).json({ error: "Server error" });
