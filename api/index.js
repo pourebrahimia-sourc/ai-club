@@ -1,68 +1,82 @@
 import fs from "fs";
 import path from "path";
+
 let memoryStore = {};
 const filePath = path.join(process.cwd(), "memory.json");
 
-if(fs.existsSync(filePath)){
+if (fs.existsSync(filePath)) {
   const data = fs.readFileSync(filePath, "utf-8");
   memoryStore = JSON.parse(data || "{}");
 }
-export default async function handler(req, res) {
 
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { msg, history, name, profile } = req.body;
+    const { msg, name, profile } = req.body;
+
+    // فقط برای result
     if (msg === "generate image") {
-  const savedProfile = profile || {};
+      const savedProfile = profile || {};
 
-  const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
-  ${savedProfile?.ethnicity} woman,
-  ${savedProfile?.age} years old,
-  ${savedProfile?.body} body,
-  ${savedProfile?.hair} hair,
-  ${savedProfile?.appearanceDetails},
-  ${savedProfile?.personality} personality,
-  attractive, flirty, soft lighting, cinematic, 4k`;
+      const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+${savedProfile?.ethnicity || ""} woman,
+${savedProfile?.age || ""} years old,
+${savedProfile?.body || ""} body,
+${savedProfile?.hair || ""} hair,
+${savedProfile?.appearanceDetails || ""},
+${savedProfile?.personality || ""} personality,
+attractive, flirty, soft lighting, cinematic, 4k`;
 
-  const imgRes = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          role: "user",
-          parts: [{ text: imagePrompt }]
-        }]
-      })
+      const imgRes = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: imagePrompt }]
+              }
+            ]
+          })
+        }
+      );
+
+      const imgData = await imgRes.json();
+
+      if (!imgRes.ok) {
+        return res.status(500).json({ error: JSON.stringify(imgData) });
+      }
+
+      const imageBase64 =
+        imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+
+      return res.status(200).json({ imageBase64 });
     }
-  );
 
-  const imgData = await imgRes.json();
-  const imageBase64 = imgData.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!memoryStore[name]) {
+      memoryStore[name] = {
+        profile,
+        history: []
+      };
+    }
 
-  return res.status(200).json({ imageBase64 });
-}
-    if(!memoryStore[name]){
-  memoryStore[name] = {
-    profile,
-    history: []
-  };
-}
-memoryStore[name].profile = profile;
-//memoryStore[name].history.push(msg);
+    memoryStore[name].profile = profile;
+
     let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const limitedHistory = savedHistory.slice(-6);
     const savedProfile = memoryStore[name]?.profile || profile || {};
+
     const contents = [
       {
         role: "user",
-parts: [{
-text: `You are an AI girlfriend named ${name}.
+        parts: [{
+          text: `You are an AI girlfriend named ${name}.
 
 Personality rules:
 - You are flirty, seductive, and confident
@@ -86,21 +100,22 @@ Character:
 - Hair: ${savedProfile?.hair}
 - Appearance: ${savedProfile?.appearanceDetails}
 - Personality: ${savedProfile?.personality}
-  Interaction style:
+
+Interaction style:
 - You sometimes ask teasing questions
 - You react to the user emotionally
 - You guide the conversation, not just respond
 - You make the user feel wanted and special`
-}]
+        }]
       },
       {
         role: "model",
         parts: [{ text: "OK" }]
       },
-...limitedHistory.map((h, index) => ({
-  role: index % 2 === 0 ? "user" : "model",
-  parts: [{ text: h }]
-})),
+      ...limitedHistory.map((h, index) => ({
+        role: index % 2 === 0 ? "user" : "model",
+        parts: [{ text: h }]
+      })),
       {
         role: "user",
         parts: [{ text: msg }]
@@ -118,16 +133,18 @@ Character:
 
     const data = await response.json();
 
-if (!response.ok) {
-  console.log(data);
-  return res.status(500).json({ error: JSON.stringify(data) });
-}
+    if (!response.ok) {
+      return res.status(500).json({ error: JSON.stringify(data) });
+    }
 
-const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-replyText = reply;
-memoryStore[name].history.push(replyText);
-return res.status(200).json({ reply });
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
+    replyText = reply;
 
-} catch (e) {
-  return res.status(500).json({ error: "Server error" });
+    memoryStore[name].history.push(replyText);
+
+    return res.status(200).json({ reply });
+
+  } catch (e) {
+    return res.status(500).json({ error: String(e) });
+  }
 }
