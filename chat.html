@@ -304,8 +304,11 @@ const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
 
 // همیشه بک‌گراند پریویو باشه
-bgImage.src = "images/locked-preview.png";
-
+if (imageUnlocked && savedImage) {
+  bgImage.src = savedImage;
+} else {
+  bgImage.src = "images/locked-preview.png";
+}
 if (imageUnlocked && savedImage) {
   avatar.style.display = "block";
   avatar.style.backgroundImage = `url(${savedImage})`;
