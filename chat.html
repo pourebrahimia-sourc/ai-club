@@ -306,13 +306,16 @@ const avatar = document.querySelector('.avatar');
 // همیشه بک‌گراند پریویو باشه
 bgImage.src = "images/locked-preview.png";
 
-if (savedImage) {
+if (imageUnlocked && savedImage) {
+  avatar.style.display = "block";
   avatar.style.backgroundImage = `url(${savedImage})`;
-  avatar.style.background = "none";
+  avatar.style.backgroundColor = "transparent";
+  lockOverlay.style.display = "none";
 } else {
-  // آواتار خالی (یا ساده)
+  avatar.style.display = "block";
   avatar.style.backgroundImage = "none";
-  avatar.style.background = "#2a2a2a";
+  avatar.style.backgroundColor = "#2a2a2a";
+  lockOverlay.style.display = "flex";
 }
 let history = [];
 let lastInputWasVoice = false;
