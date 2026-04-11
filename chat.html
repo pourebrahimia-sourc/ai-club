@@ -306,8 +306,10 @@ const avatar = document.querySelector('.avatar');
 // همیشه بک‌گراند پریویو باشه
 if (imageUnlocked && savedImage) {
   bgImage.src = savedImage;
+  bgImage.style.filter = "blur(0px)";
 } else {
   bgImage.src = "images/locked-preview.png";
+  bgImage.style.filter = "blur(12px)";
 }
 if (imageUnlocked && savedImage) {
   avatar.style.display = "block";
