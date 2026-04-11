@@ -156,6 +156,10 @@ Interaction style:
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
+    await supabase
+  .from('wallets')
+  .update({ balance: Number(wallet.balance) - 1 })
+  .eq('user_id', USER_ID);
 const insertResult = await supabase.from('chat_history').insert([
   {
     user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
