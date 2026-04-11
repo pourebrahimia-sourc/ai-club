@@ -29,7 +29,7 @@ if (msg === "unlock_image") {
     .eq('user_id', USER_ID)
     .single();
 
-  if (walletError || !wallet || Number(wallet.balance) < 3) {
+  if (walletError || !wallet || Number(wallet.balance) < 5) {
     return res.status(200).json({ error: "Not enough tokens" });
   }
 
@@ -74,12 +74,15 @@ attractive, flirty, soft lighting, cinematic, 4k`;
     return res.status(500).json({ error: "Image generation failed" });
   }
 
+  const newBalance = Number(wallet.balance) - 5;
+
   await supabase
     .from('wallets')
-    .update({ balance: Number(wallet.balance) - 3 })
+    .update({ balance: newBalance })
     .eq('user_id', USER_ID);
 
-  return res.status(200).json({ imageBase64, balance: Number(wallet.balance) - 3 });
+  return res.status(200).json({ imageBase64, balance: newBalance });
+}
 }
 // فقط برای result
 if (msg === "generate image") {
