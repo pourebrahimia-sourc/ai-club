@@ -64,13 +64,6 @@ font-size:12px;
 <p class="subtitle" style="font-size:13px;margin-bottom:12px;">
   Your custom match
 </p>
-  <div id="imageLoading" style="display:none; margin-bottom:20px;">
-  <div class="image-loader">
-    <div class="loader-ring"></div>
-    <div class="loader-glow"></div>
-    <div class="loader-text">Creating your AI girlfriend...</div>
-  </div>
-</div>
   <div id="aiImageBox" style="
 margin-bottom:20px;
 text-align:center;
@@ -78,28 +71,28 @@ display:flex;
 justify-content:center;
 position:relative;
 ">
-  <div id="imageLoading" style="
-  display:none;
-  position:absolute;
-  inset:0;
-  z-index:7;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,0.35);
-  border-radius:18px;
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
-  ">
-    <div style="
-    width:74px;
-    height:74px;
-    border-radius:50%;
-    border:3px solid rgba(255,255,255,0.18);
-    border-top:3px solid #ff4fa3;
-    animation:spin 0.9s linear infinite;
-    box-shadow:0 0 24px rgba(255,79,163,0.35);
-    "></div>
-  </div>
+<div id="imageLoading" style="
+display:none;
+position:absolute;
+inset:0;
+z-index:7;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,0.28);
+border-radius:18px;
+backdrop-filter:blur(3px);
+-webkit-backdrop-filter:blur(3px);
+">
+  <div style="
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,0.18);
+  border-top:3px solid #ff4fa3;
+  animation:spin 0.9s linear infinite;
+  box-shadow:0 0 24px rgba(255,79,163,0.35);
+  "></div>
+</div>
 
   <div id="imageLock" style="
   position:absolute;
@@ -206,57 +199,34 @@ if (imageUnlocked && savedImage) {
 }
 
 imageLock.addEventListener('click', async () => {
-  imageLock.style.pointerEvents = "none";
+
   loading.style.display = "flex";
 
-  try {
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        msg: "unlock_image",
-        name: "Luna",
-        profile
-      })
-    });
+  const res = await fetch('/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      msg: "unlock_image",
+      name: "Luna",
+      profile
+    })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (data.error) {
+  if (data.imageBase64) {
+    img.onload = () => {
       loading.style.display = "none";
-      imageLock.style.pointerEvents = "auto";
-      alert(data.error);
-      return;
-    }
+      img.style.filter = "blur(0px)";
+      imageLock.style.display = "none";
+    };
 
-    if (data.imageBase64) {
-      img.style.opacity = "0";
-
-      img.onload = () => {
-        loading.style.display = "none";
-        img.style.filter = "blur(0px)";
-        imageLock.style.display = "none";
-        img.style.opacity = "1";
-      };
-
-      img.src = "data:image/png;base64," + data.imageBase64;
-
-      localStorage.setItem('aiImage', img.src);
-      localStorage.setItem('imageUnlocked', "true");
-
-      if (data.balance !== undefined) {
-        tokenEl.innerText = "💰 " + data.balance;
-      }
-    } else {
-      loading.style.display = "none";
-      imageLock.style.pointerEvents = "auto";
-      alert("Image generation failed");
-    }
-  } catch (e) {
+    img.src = "data:image/png;base64," + data.imageBase64;
+  } else {
     loading.style.display = "none";
-    imageLock.style.pointerEvents = "auto";
-    alert("Something went wrong");
+    alert("error");
   }
+
 });
 </script>
 </body>
