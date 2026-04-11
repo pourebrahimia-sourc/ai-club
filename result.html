@@ -156,7 +156,30 @@ fetch('/api/wallet')
       tokenEl.innerText = "💰 " + data.balance;
     }
   });
+document.getElementById('imageLock').addEventListener('click', async () => {
 
+  const res = await fetch('/api/wallet');
+  const data = await res.json();
+
+  if (data.balance <= 0) {
+    alert("Not enough tokens");
+    return;
+  }
+
+  // کم کردن توکن
+  await fetch('/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      msg: "spend_token"
+    })
+  });
+
+  // برداشتن بلار و لاک
+  document.getElementById('aiImage').style.filter = "blur(0px)";
+  document.getElementById('imageLock').style.display = "none";
+
+});
 </script>
 </body>
 </html>
