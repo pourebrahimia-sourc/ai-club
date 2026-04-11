@@ -1,11 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-)
 let memoryStore = {};
 const filePath = path.join(process.cwd(), "memory.json");
 
@@ -144,18 +139,7 @@ Interaction style:
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
-    await supabase.from('chat_history').insert([
-  {
-    user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
-    message: msg,
-    role: "user"
-  },
-  {
-    user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
-    message: reply,
-    role: "ai"
-  }
-]);
+
     replyText = reply;
 
     memoryStore[name].history.push(replyText);
