@@ -362,6 +362,10 @@ async function talk(){
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
+	  if (reply.includes("No tokens left")) {
+  document.getElementById('lockOverlay').style.display = "flex";
+  return;
+}
 	  addMessage(aiName, reply, '#ff4fa3');
 	  document.getElementById('charStatus').innerText = "Online";
 
