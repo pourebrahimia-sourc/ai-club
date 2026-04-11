@@ -144,7 +144,11 @@ Interaction style:
 if (!response.ok) {
   return res.status(500).json({ error: JSON.stringify(data) });
 }
-
+const { data: wallet, error: walletError } = await supabase
+  .from('wallets')
+  .select('balance')
+  .eq('user_id', USER_ID)
+  .single();
 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
 
 if (!wallet || Number(wallet.balance) <= 0) {
