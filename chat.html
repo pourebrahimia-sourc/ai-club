@@ -246,20 +246,26 @@ body::after{
 position:absolute;
 top:50%;
 left:50%;
-width:70px;
-height:70px;
-transform:translate(-50%,-50%);
-border-radius:28px;
+transform:translate(-50%, -50%);
+z-index:6;
+width:110px;
+height:110px;
+border-radius:50%;
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-background:rgba(0,0,0,0.4);
-z-index:2;
-font-size:40px;
+gap:6px;
+background:rgba(0,0,0,0.52);
+border:1.5px solid rgba(255,255,255,0.7);
+backdrop-filter:blur(4px);
+-webkit-backdrop-filter:blur(4px);
 color:#fff;
-	border:1.5px solid rgba(255,255,255,0.8);
+cursor:pointer;
 ">
-🔒
+  <div style="font-size:34px;line-height:1;">🔒</div>
+  <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
+  <div style="font-size:11px;opacity:0.9;line-height:1;">10 tokens</div>
 </div>
 </div>
 
@@ -286,6 +292,14 @@ color:#fff;
 
 <script>
 const savedImage = localStorage.getItem('aiImage');
+	const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+const lockOverlay = document.getElementById('lockOverlay');
+
+if (imageUnlocked) {
+  lockOverlay.style.display = "none";
+} else {
+  lockOverlay.style.display = "flex";
+}
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
 
