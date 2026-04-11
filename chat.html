@@ -242,7 +242,29 @@ body::after{
 <body>
 <div class="bg">
   <img id="bgImage" style="position:absolute;top:50%;left:50%;width:420px;height:760px;transform:translate(-50%,-50%) scale(1.05);object-fit:cover;filter:blur(12px);border-radius:28px;border:1px solid rgba(255,79,163,0.45);box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);">
-<div id="lockOverlay" style="
+<div id="imageLoading" style="
+display:none;
+position:absolute;
+inset:0;
+z-index:7;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,0.28);
+border-radius:18px;
+backdrop-filter:blur(3px);
+-webkit-backdrop-filter:blur(3px);
+">
+  <div style="
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,0.18);
+  border-top:3px solid #ff4fa3;
+  animation:spin 0.9s linear infinite;
+  box-shadow:0 0 24px rgba(255,79,163,0.35);
+  "></div>
+</div>
+	<div id="lockOverlay" style="
 position:absolute;
 top:50%;
 left:50%;
@@ -309,7 +331,10 @@ document.addEventListener('click', (e) => {
   if (e.target && e.target.id === 'tokenModal') closeModal();
 });
 	lockOverlay.addEventListener('click', async () => {
-  if (imageUnlocked) return;
+		if (imageUnlocked) return;
+		const loading = document.getElementById('imageLoading');
+loading.style.display = "flex";
+ 
 
   try {
     const res = await fetch('/api', {
@@ -326,10 +351,12 @@ document.addEventListener('click', (e) => {
 
     if (data.error === "Not enough tokens") {
       openTokenModal();
+		loading.style.display = "none";
       return;
     }
 
     if (data.imageBase64) {
+		loading.style.display = "none";
       const image = "data:image/png;base64," + data.imageBase64;
       localStorage.setItem('aiImage', image);
       localStorage.setItem('imageUnlocked', "true");
