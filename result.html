@@ -91,7 +91,7 @@ border:1.5px solid rgba(255,255,255,0.7);
 backdrop-filter:blur(4px);
 -webkit-backdrop-filter:blur(4px);
 ">🔒</div>
-  <img id="aiImage" style="
+  <img id="aiImage" src="images/locked-preview.png" style="
 width:50%;
 max-width:240px;
 height:auto;
@@ -155,45 +155,8 @@ const img = document.getElementById('aiImage');
   const resultAvatar = document.getElementById('resultAvatar');
 const loading = document.getElementById('imageLoading');
 
-if (lastProfileKey === currentProfileKey && savedImage) {
-
-  img.src = savedImage;
-  if (resultAvatar) {
-  resultAvatar.style.backgroundImage = `url(${savedImage})`;
-}
-  img.style.display = "block";
-  loading.style.display = "none";
-
-} else {
-
-  localStorage.setItem('lastProfileKey', currentProfileKey);
-
-  fetch('/api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      msg: "generate image",
-      name: "Luna",
-      profile
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-
-    if (data.imageBase64) {
-      img.src = "data:image/png;base64," + data.imageBase64;
-      if (resultAvatar) {
-  resultAvatar.style.backgroundImage = `url(${img.src})`;
-}
-      localStorage.setItem('aiImage', img.src);
-      img.style.display = "block";
-      loading.style.display = "none";
-    }
-
-  })
-  .catch(err => {
-    console.log(err);
-  });
+img.style.display = "block";
+loading.style.display = "none";
 
 }
   const tokenEl = document.getElementById('tokenBalance');
