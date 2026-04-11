@@ -21,21 +21,11 @@ export default async function handler(req, res) {
 
   try {
     const { msg, name, profile } = req.body;
+const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
 
-    const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
-
-const { data: wallet, error: walletError } = await supabase
-  .from('wallets')
-  .select('balance')
-  .eq('user_id', USER_ID)
-  .single();
-
-console.log('WALLET_CHECK:', wallet, walletError);
-if (!wallet || Number(wallet.balance) <= 0) {
-  return res.status(200).json({ reply: "No tokens left 🔒" });
-}
-    // فقط برای result
-    if (msg === "generate image") {
+// فقط برای result
+if (msg === "generate image") {
+  
       const savedProfile = profile || {};
 
 const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
@@ -151,15 +141,21 @@ Interaction style:
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(500).json({ error: JSON.stringify(data) });
-    }
+if (!response.ok) {
+  return res.status(500).json({ error: JSON.stringify(data) });
+}
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
-    await supabase
+const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
+
+if (!wallet || Number(wallet.balance) <= 0) {
+  return res.status(200).json({ reply: "No tokens left 🔒" });
+}
+
+await supabase
   .from('wallets')
   .update({ balance: Number(wallet.balance) - 1 })
   .eq('user_id', USER_ID);
+
 const insertResult = await supabase.from('chat_history').insert([
   {
     user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
