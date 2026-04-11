@@ -31,7 +31,7 @@ const { data: wallet, error: walletError } = await supabase
   .single();
 
 console.log('WALLET_CHECK:', wallet, walletError);
-return res.status(200).json({ reply: "TEST LOCK 🔒" });
+
     // فقط برای result
     if (msg === "generate image") {
       const savedProfile = profile || {};
