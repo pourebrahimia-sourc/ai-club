@@ -22,7 +22,65 @@ export default async function handler(req, res) {
   try {
     const { msg, name, profile } = req.body;
 const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
+if (msg === "unlock_image") {
+  const { data: wallet, error: walletError } = await supabase
+    .from('wallets')
+    .select('balance')
+    .eq('user_id', USER_ID)
+    .single();
 
+  if (walletError || !wallet || Number(wallet.balance) < 3) {
+    return res.status(200).json({ error: "Not enough tokens" });
+  }
+
+  const savedProfile = profile || {};
+
+  const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+${savedProfile?.ethnicity || ""} woman,
+${savedProfile?.age || ""} years old,
+${savedProfile?.body || ""} body,
+${savedProfile?.hair || ""} hair,
+${savedProfile?.appearanceDetails || ""},
+${savedProfile?.personality || ""} personality,
+wearing a stylish outfit, slightly revealing, low-cut top, soft sensual look, classy, not explicit,
+attractive, flirty, soft lighting, cinematic, 4k`;
+
+  const imgRes = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: imagePrompt }]
+          }
+        ]
+      })
+    }
+  );
+
+  const imgData = await imgRes.json();
+
+  if (!imgRes.ok) {
+    return res.status(500).json({ error: JSON.stringify(imgData) });
+  }
+
+  const imageBase64 =
+    imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+
+  if (!imageBase64) {
+    return res.status(500).json({ error: "Image generation failed" });
+  }
+
+  await supabase
+    .from('wallets')
+    .update({ balance: Number(wallet.balance) - 3 })
+    .eq('user_id', USER_ID);
+
+  return res.status(200).json({ imageBase64, balance: Number(wallet.balance) - 3 });
+}
 // فقط برای result
 if (msg === "generate image") {
   
