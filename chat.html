@@ -285,13 +285,20 @@ color:#fff;
 </div>
 
 <script>
-	const savedImage = localStorage.getItem('aiImage');
+const savedImage = localStorage.getItem('aiImage');
+const bgImage = document.getElementById('bgImage');
+const avatar = document.querySelector('.avatar');
 
-if(savedImage){
-  document.getElementById('bgImage').src = savedImage;
+// همیشه بک‌گراند پریویو باشه
+bgImage.src = "images/locked-preview.png";
 
-  const avatar = document.querySelector('.avatar');
+if (savedImage) {
   avatar.style.backgroundImage = `url(${savedImage})`;
+  avatar.style.background = "none";
+} else {
+  // آواتار خالی (یا ساده)
+  avatar.style.backgroundImage = "none";
+  avatar.style.background = "#2a2a2a";
 }
 let history = [];
 let lastInputWasVoice = false;
