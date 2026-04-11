@@ -144,7 +144,7 @@ Interaction style:
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
-    await supabase.from('chat_history').insert([
+const insertResult = await supabase.from('chat_history').insert([
   {
     user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
     message: msg,
@@ -156,6 +156,8 @@ Interaction style:
     role: "ai"
   }
 ]);
+
+console.log('CHAT_HISTORY_INSERT:', insertResult);
 
     replyText = reply;
 
