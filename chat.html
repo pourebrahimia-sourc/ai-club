@@ -294,18 +294,20 @@ cursor:pointer;
 const savedImage = localStorage.getItem('aiImage');
 	const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 const lockOverlay = document.getElementById('lockOverlay');
-const tokenModal = document.getElementById('tokenModal');
-const closeTokenModal = document.getElementById('closeTokenModal');
-const getTokensBtn = document.getElementById('getTokensBtn');
-const subscribeBtn = document.getElementById('subscribeBtn');
-
 function openTokenModal() {
-  tokenModal.style.display = "flex";
+  const tokenModal = document.getElementById('tokenModal');
+  if (tokenModal) tokenModal.style.display = "flex";
 }
 
 function closeModal() {
-  tokenModal.style.display = "none";
+  const tokenModal = document.getElementById('tokenModal');
+  if (tokenModal) tokenModal.style.display = "none";
 }
+
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'closeTokenModal') closeModal();
+  if (e.target && e.target.id === 'tokenModal') closeModal();
+});
 	lockOverlay.addEventListener('click', async () => {
   if (imageUnlocked) return;
 
