@@ -118,7 +118,7 @@ position:relative;
   ">
     <div style="font-size:34px;line-height:1;">🔒</div>
     <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
-    <div style="font-size:11px;opacity:0.9;line-height:1;">Generate image</div>
+    <div style="font-size:11px;opacity:0.9;line-height:1;">10 tokens</div>
   </div>
 
   <img id="aiImage" src="images/locked-preview.png" style="
@@ -146,6 +146,55 @@ position:relative;
 
 <button class="btn" onclick="startChat()">Start Chat</button>
 
+<div id="tokenModal" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:20;
+background:rgba(0,0,0,0.6);
+align-items:center;
+justify-content:center;
+padding:20px;
+">
+  <div style="
+  width:100%;
+  max-width:320px;
+  background:#1a1a1a;
+  border:1px solid #2b2b2b;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  ">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
+      Not enough tokens
+    </div>
+    <div style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
+      You need 10 tokens to unlock this image.
+    </div>
+
+    <button id="getTokensBtn" class="btn" style="margin-bottom:10px;">
+      Get Tokens
+    </button>
+
+    <button id="subscribeBtn" class="btn" style="
+    background:#2a2a2a;
+    border:1px solid #3a3a3a;
+    ">
+      Subscribe
+    </button>
+
+    <div id="closeTokenModal" style="
+    margin-top:14px;
+    font-size:12px;
+    opacity:0.7;
+    cursor:pointer;
+    ">
+      Close
+    </div>
+  </div>
+</div>
+
 <script>
 function formatText(text) {
   if (!text) return '-';
@@ -170,8 +219,34 @@ const img = document.getElementById('aiImage');
 const loading = document.getElementById('imageLoading');
 const imageLock = document.getElementById('imageLock');
 const tokenEl = document.getElementById('tokenBalance');
+const tokenModal = document.getElementById('tokenModal');
+const closeTokenModal = document.getElementById('closeTokenModal');
+const getTokensBtn = document.getElementById('getTokensBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
 
-document.addEventListener('DOMContentLoaded', () => {
+function openTokenModal() {
+  tokenModal.style.display = "flex";
+}
+
+function closeModal() {
+  tokenModal.style.display = "none";
+}
+
+async function refreshBalance() {
+  try {
+    const res = await fetch('/api/wallet');
+    const data = await res.json();
+    if (data.balance !== undefined) {
+      tokenEl.innerText = "💰 " + data.balance;
+    } else {
+      tokenEl.innerText = "💰 0";
+    }
+  } catch (e) {
+    tokenEl.innerText = "💰 0";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
   document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
   document.getElementById('body').textContent = formatText(localStorage.getItem('body'));
@@ -180,16 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
   document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
 
-  fetch('/api/wallet')
-    .then(res => res.json())
-    .then(data => {
-      if (data.balance !== undefined) {
-        tokenEl.innerText = "💰 " + data.balance;
-      }
-    })
-    .catch(() => {
-      tokenEl.innerText = "💰 0";
-    });
+  await refreshBalance();
 
   const savedImage = localStorage.getItem('aiImage');
   const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
@@ -220,6 +286,13 @@ imageLock.addEventListener('click', async () => {
 
     const data = await res.json();
 
+    if (data.error === "Not enough tokens") {
+      loading.style.display = "none";
+      imageLock.style.pointerEvents = "auto";
+      openTokenModal();
+      return;
+    }
+
     if (data.imageBase64) {
       img.style.opacity = "0";
 
@@ -233,16 +306,37 @@ imageLock.addEventListener('click', async () => {
       img.src = "data:image/png;base64," + data.imageBase64;
       localStorage.setItem('aiImage', img.src);
       localStorage.setItem('imageUnlocked', "true");
-    } else {
-      loading.style.display = "none";
-      imageLock.style.pointerEvents = "auto";
-      alert("Error generating image");
+
+      if (data.balance !== undefined) {
+        tokenEl.innerText = "💰 " + data.balance;
+      } else {
+        await refreshBalance();
+      }
+
+      return;
     }
+
+    loading.style.display = "none";
+    imageLock.style.pointerEvents = "auto";
+    alert("Error generating image");
   } catch (err) {
     loading.style.display = "none";
     imageLock.style.pointerEvents = "auto";
     alert("Error generating image");
   }
+});
+
+closeTokenModal.addEventListener('click', closeModal);
+tokenModal.addEventListener('click', (e) => {
+  if (e.target === tokenModal) closeModal();
+});
+
+getTokensBtn.addEventListener('click', () => {
+  closeModal();
+});
+
+subscribeBtn.addEventListener('click', () => {
+  closeModal();
 });
 </script>
 </body>
