@@ -31,9 +31,7 @@ const { data: wallet, error: walletError } = await supabase
   .single();
 
 console.log('WALLET_CHECK:', wallet, walletError);
-    if (!wallet || wallet.balance <= 0) {
-  return res.status(200).json({ reply: "No tokens left 🔒" });
-}
+return res.status(200).json({ reply: "TEST LOCK 🔒" });
     // فقط برای result
     if (msg === "generate image") {
       const savedProfile = profile || {};
