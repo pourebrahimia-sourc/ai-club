@@ -96,22 +96,12 @@ width:50%;
 max-width:240px;
 height:auto;
 border-radius:18px;
-display:none;
+display:block;
 box-shadow:0 10px 40px rgba(0,0,0,0.5);
 filter: blur(20px);
 ">
 </div>
-  <div style="display:flex;justify-content:center;margin:14px 0;">
-  <div id="resultAvatar" style="
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background-size:120%;
-    background-position:center 30%;
-    border:2px solid #ff4fa3;
-    box-shadow:0 8px 24px rgba(255,79,163,0.25);
-  "></div>
-</div>
+
 <div class="summary-card">
   <div class="summary-row"><span>Age:</span><strong id="age"></strong></div>
   <div class="summary-row"><span>Ethnicity:</span><strong id="ethnicity"></strong></div>
@@ -152,7 +142,7 @@ const lastProfileKey = localStorage.getItem('lastProfileKey');
 const savedImage = localStorage.getItem('aiImage');
 
 const img = document.getElementById('aiImage');
-  const resultAvatar = document.getElementById('resultAvatar');
+  
 const loading = document.getElementById('imageLoading');
 loading.style.display = "none";
 img.style.display = "block";
