@@ -158,6 +158,9 @@ const loading = document.getElementById('imageLoading');
 if (lastProfileKey === currentProfileKey && savedImage) {
 
   img.src = savedImage;
+  if (resultAvatar) {
+  resultAvatar.style.backgroundImage = `url(${savedImage})`;
+}
   img.style.display = "block";
   loading.style.display = "none";
 
