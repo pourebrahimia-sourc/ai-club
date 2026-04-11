@@ -245,7 +245,9 @@ async function refreshBalance() {
     tokenEl.innerText = "💰 0";
   }
 }
-
+const currentProfileKey = JSON.stringify(profile);
+const lastProfileKey = localStorage.getItem('lastProfileKey');
+const sameProfile = currentProfileKey === lastProfileKey;
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
   document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
@@ -257,14 +259,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await refreshBalance();
 
-  const savedImage = localStorage.getItem('aiImage');
-  const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+const savedImage = localStorage.getItem('aiImage');
+const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 
-  if (imageUnlocked && savedImage) {
-    img.src = savedImage;
-    img.style.filter = "blur(0px)";
-    imageLock.style.display = "none";
-  }
+if (sameProfile && imageUnlocked && savedImage) {
+  img.src = savedImage;
+  img.style.filter = "blur(0px)";
+  imageLock.style.display = "none";
+} else {
+  localStorage.removeItem('aiImage');
+  localStorage.removeItem('imageUnlocked');
+  img.src = "images/locked-preview.png";
+  img.style.filter = "blur(20px)";
+  imageLock.style.display = "flex";
+}
+  localStorage.setItem('lastProfileKey', currentProfileKey);
 });
 
 imageLock.addEventListener('click', async () => {
