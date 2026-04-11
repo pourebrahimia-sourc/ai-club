@@ -22,6 +22,15 @@ export default async function handler(req, res) {
   try {
     const { msg, name, profile } = req.body;
 
+    const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
+
+const { data: wallet, error: walletError } = await supabase
+  .from('wallets')
+  .select('balance')
+  .eq('user_id', USER_ID)
+  .single();
+
+console.log('WALLET_CHECK:', wallet, walletError);
     // فقط برای result
     if (msg === "generate image") {
       const savedProfile = profile || {};
