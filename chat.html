@@ -294,7 +294,49 @@ cursor:pointer;
 const savedImage = localStorage.getItem('aiImage');
 	const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 const lockOverlay = document.getElementById('lockOverlay');
+const tokenModal = document.getElementById('tokenModal');
+const closeTokenModal = document.getElementById('closeTokenModal');
+const getTokensBtn = document.getElementById('getTokensBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
 
+function openTokenModal() {
+  tokenModal.style.display = "flex";
+}
+
+function closeModal() {
+  tokenModal.style.display = "none";
+}
+	lockOverlay.addEventListener('click', async () => {
+  if (imageUnlocked) return;
+
+  try {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        msg: "generate image",
+        name: aiName,
+        profile: getCharacterProfile()
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error === "Not enough tokens") {
+      openTokenModal();
+      return;
+    }
+
+    if (data.imageBase64) {
+      const image = "data:image/png;base64," + data.imageBase64;
+      localStorage.setItem('aiImage', image);
+      localStorage.setItem('imageUnlocked', "true");
+      location.reload();
+    }
+  } catch (e) {
+    alert("Error generating image");
+  }
+});
 if (imageUnlocked) {
   lockOverlay.style.display = "none";
 } else {
@@ -449,5 +491,53 @@ input.addEventListener('keydown', function(e){
   }
 });
 </script>
+	<div id="tokenModal" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:20;
+background:rgba(0,0,0,0.6);
+align-items:center;
+justify-content:center;
+padding:20px;
+">
+  <div style="
+  width:100%;
+  max-width:320px;
+  background:#1a1a1a;
+  border:1px solid #2b2b2b;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  ">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
+      Not enough tokens
+    </div>
+    <div style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
+      You need 10 tokens to unlock this image.
+    </div>
+
+    <button id="getTokensBtn" class="btn" style="margin-bottom:10px;">
+      Get Tokens
+    </button>
+
+    <button id="subscribeBtn" class="btn" style="
+    background:#2a2a2a;
+    border:1px solid #3a3a3a;
+    ">
+      Subscribe
+    </button>
+
+    <div id="closeTokenModal" style="
+    margin-top:14px;
+    font-size:12px;
+    opacity:0.7;
+    cursor:pointer;
+    ">
+      Close
+    </div>
+  </div>
+</div>
 </body>
 </html>
