@@ -25,6 +25,16 @@ export default async function handler(req, res) {
     const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
 
     if (msg === "generate image") {
+      const { data: wallet, error: walletError } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', USER_ID)
+        .single();
+
+      if (walletError || !wallet || Number(wallet.balance) < 10) {
+        return res.status(200).json({ error: "Not enough tokens" });
+      }
+
       const savedProfile = profile || {};
 
       const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
@@ -62,7 +72,18 @@ attractive, flirty, soft lighting, cinematic, 4k`;
       const imageBase64 =
         imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
 
-      return res.status(200).json({ imageBase64 });
+      if (!imageBase64) {
+        return res.status(500).json({ error: "Image generation failed" });
+      }
+
+      const newBalance = Number(wallet.balance) - 10;
+
+      await supabase
+        .from('wallets')
+        .update({ balance: newBalance })
+        .eq('user_id', USER_ID);
+
+      return res.status(200).json({ imageBase64, balance: newBalance });
     }
 
     if (!memoryStore[name]) {
@@ -74,6 +95,7 @@ attractive, flirty, soft lighting, cinematic, 4k`;
 
     memoryStore[name].profile = profile;
 
+    let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const limitedHistory = savedHistory.slice(-6);
     const savedProfile = memoryStore[name]?.profile || profile || {};
@@ -118,7 +140,10 @@ Interaction style:
         role: "model",
         parts: [{ text: "OK" }]
       },
-      ...limitedHistory,
+      ...limitedHistory.map((h, index) => ({
+        role: index % 2 === 0 ? "user" : "model",
+        parts: [{ text: h }]
+      })),
       {
         role: "user",
         parts: [{ text: msg }]
@@ -172,10 +197,8 @@ Interaction style:
 
     console.log('CHAT_HISTORY_INSERT:', insertResult);
 
-    memoryStore[name].history.push(
-      { role: "user", parts: [{ text: msg }] },
-      { role: "model", parts: [{ text: reply }] }
-    );
+    replyText = reply;
+    memoryStore[name].history.push(replyText);
 
     return res.status(200).json({ reply });
 
