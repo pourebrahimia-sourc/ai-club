@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
   <style>
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-</style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 <div class="header" style="
@@ -19,12 +19,10 @@ align-items:center;
 margin-bottom:20px;
 ">
 
-  <!-- LEFT -->
   <div style="font-weight:700;font-size:18px;">
     AI Club
   </div>
 
-  <!-- RIGHT -->
   <div style="display:flex;align-items:center;gap:10px;">
 
     <button style="
@@ -38,14 +36,14 @@ margin-bottom:20px;
       Subscribe
     </button>
 
-<div id="tokenBalance" style="
-background:#1a1a1a;
-padding:6px 10px;
-border-radius:10px;
-font-size:12px;
-">
-  💰 ...
-</div>
+    <div id="tokenBalance" style="
+    background:#1a1a1a;
+    padding:6px 10px;
+    border-radius:10px;
+    font-size:12px;
+    ">
+      💰 ...
+    </div>
 
     <div style="
     font-size:18px;
@@ -57,6 +55,7 @@ font-size:12px;
   </div>
 
 </div>
+
 <h2 class="title" style="font-size:18px;margin-bottom:6px;">
   Your AI Girlfriend ✨
 </h2>
@@ -64,37 +63,37 @@ font-size:12px;
 <p class="subtitle" style="font-size:13px;margin-bottom:12px;">
   Your custom match
 </p>
-  <div id="aiImageBox" style="
+
+<div id="aiImageBox" style="
 margin-bottom:20px;
 text-align:center;
 display:flex;
 justify-content:center;
 position:relative;
 ">
-<div id="imageLoading" style="
-display:none;
-position:absolute;
-inset:0;
-z-index:7;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,0.28);
-border-radius:18px;
-backdrop-filter:blur(3px);
+  <div id="imageLoading" style="
+  display:none;
+  position:absolute;
+  inset:0;
+  z-index:7;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.28);
+  border-radius:18px;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
   pointer-events:none;
--webkit-backdrop-filter:blur(3px);
-  
-">
-  <div style="
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  border:3px solid rgba(255,255,255,0.18);
-  border-top:3px solid #ff4fa3;
-  animation:spin 0.9s linear infinite;
-  box-shadow:0 0 24px rgba(255,79,163,0.35);
-  "></div>
-</div>
+  ">
+    <div style="
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,0.18);
+    border-top:3px solid #ff4fa3;
+    animation:spin 0.9s linear infinite;
+    box-shadow:0 0 24px rgba(255,79,163,0.35);
+    "></div>
+  </div>
 
   <div id="imageLock" style="
   position:absolute;
@@ -119,7 +118,7 @@ backdrop-filter:blur(3px);
   ">
     <div style="font-size:34px;line-height:1;">🔒</div>
     <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
-    <div style="font-size:11px;opacity:0.9;line-height:1;">5 tokens</div>
+    <div style="font-size:11px;opacity:0.9;line-height:1;">Generate image</div>
   </div>
 
   <img id="aiImage" src="images/locked-preview.png" style="
@@ -144,26 +143,18 @@ backdrop-filter:blur(3px);
   <div class="summary-row"><span>Appearance:</span><strong id="appearanceDetails"></strong></div>
   <div class="summary-row"><span>Personality:</span><strong id="personality"></strong></div>
 </div>
+
 <button class="btn" onclick="startChat()">Start Chat</button>
+
 <script>
-function formatText(text){
-  if(!text) return '-';
+function formatText(text) {
+  if (!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function startChat(){
+function startChat() {
   window.location.href = 'chat.html';
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
-  document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
-  document.getElementById('body').textContent = formatText(localStorage.getItem('body'));
-  document.getElementById('bodyDetails').textContent = formatText(localStorage.getItem('bodyDetails'));
-  document.getElementById('hair').textContent = formatText(localStorage.getItem('hair'));
-  document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
-  document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
-});
 
 const profile = {
   age: localStorage.getItem('age'),
@@ -180,55 +171,78 @@ const loading = document.getElementById('imageLoading');
 const imageLock = document.getElementById('imageLock');
 const tokenEl = document.getElementById('tokenBalance');
 
-const savedImage = localStorage.getItem('aiImage');
-const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
+  document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
+  document.getElementById('body').textContent = formatText(localStorage.getItem('body'));
+  document.getElementById('bodyDetails').textContent = formatText(localStorage.getItem('bodyDetails'));
+  document.getElementById('hair').textContent = formatText(localStorage.getItem('hair'));
+  document.getElementById('appearanceDetails').textContent = formatText(localStorage.getItem('appearanceDetails'));
+  document.getElementById('personality').textContent = formatText(localStorage.getItem('personality'));
 
-loading.style.display = "none";
-img.style.display = "block";
+  fetch('/api/wallet')
+    .then(res => res.json())
+    .then(data => {
+      if (data.balance !== undefined) {
+        tokenEl.innerText = "💰 " + data.balance;
+      }
+    })
+    .catch(() => {
+      tokenEl.innerText = "💰 0";
+    });
 
-fetch('/api/wallet')
-  .then(res => res.json())
-  .then(data => {
-    if (data.balance !== undefined) {
-      tokenEl.innerText = "💰 " + data.balance;
-    }
-  });
+  const savedImage = localStorage.getItem('aiImage');
+  const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 
-if (imageUnlocked && savedImage) {
-  img.src = savedImage;
-  img.style.filter = "blur(0px)";
-  imageLock.style.display = "none";
-}
+  if (imageUnlocked && savedImage) {
+    img.src = savedImage;
+    img.style.filter = "blur(0px)";
+    imageLock.style.display = "none";
+  }
+});
 
 imageLock.addEventListener('click', async () => {
+  if (loading.style.display === "flex") return;
 
   loading.style.display = "flex";
+  imageLock.style.pointerEvents = "none";
 
-  const res = await fetch('/api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      msg: "generate image"
-      name: "Luna",
-      profile
-    })
-  });
+  try {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        msg: "generate image",
+        name: "Luna",
+        profile
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (data.imageBase64) {
-    img.onload = () => {
+    if (data.imageBase64) {
+      img.style.opacity = "0";
+
+      img.onload = () => {
+        loading.style.display = "none";
+        img.style.filter = "blur(0px)";
+        imageLock.style.display = "none";
+        img.style.opacity = "1";
+      };
+
+      img.src = "data:image/png;base64," + data.imageBase64;
+      localStorage.setItem('aiImage', img.src);
+      localStorage.setItem('imageUnlocked', "true");
+    } else {
       loading.style.display = "none";
-      img.style.filter = "blur(0px)";
-      imageLock.style.display = "none";
-    };
-
-    img.src = "data:image/png;base64," + data.imageBase64;
-  } else {
+      imageLock.style.pointerEvents = "auto";
+      alert("Error generating image");
+    }
+  } catch (err) {
     loading.style.display = "none";
-    alert("error");
+    imageLock.style.pointerEvents = "auto";
+    alert("Error generating image");
   }
-
 });
 </script>
 </body>
