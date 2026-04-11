@@ -6,6 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
+
 let memoryStore = {};
 const filePath = path.join(process.cwd(), "memory.json");
 
@@ -21,75 +22,12 @@ export default async function handler(req, res) {
 
   try {
     const { msg, name, profile } = req.body;
-const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
-if (msg === "unlock_image") {
-  const { data: wallet, error: walletError } = await supabase
-    .from('wallets')
-    .select('balance')
-    .eq('user_id', USER_ID)
-    .single();
+    const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
 
-  if (walletError || !wallet || Number(wallet.balance) < 5) {
-    return res.status(200).json({ error: "Not enough tokens" });
-  }
-
-  const savedProfile = profile || {};
-
-  const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
-${savedProfile?.ethnicity || ""} woman,
-${savedProfile?.age || ""} years old,
-${savedProfile?.body || ""} body,
-${savedProfile?.hair || ""} hair,
-${savedProfile?.appearanceDetails || ""},
-${savedProfile?.personality || ""} personality,
-wearing a stylish outfit, slightly revealing, low-cut top, soft sensual look, classy, not explicit,
-attractive, flirty, soft lighting, cinematic, 4k`;
-
-  const imgRes = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: imagePrompt }]
-          }
-        ]
-      })
-    }
-  );
-
-  const imgData = await imgRes.json();
-
-  if (!imgRes.ok) {
-    return res.status(500).json({ error: JSON.stringify(imgData) });
-  }
-
-  const imageBase64 =
-    imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
-
-  if (!imageBase64) {
-    return res.status(500).json({ error: "Image generation failed" });
-  }
-
-  const newBalance = Number(wallet.balance) - 5;
-
-  await supabase
-    .from('wallets')
-    .update({ balance: newBalance })
-    .eq('user_id', USER_ID);
-
-  return res.status(200).json({ imageBase64, balance: newBalance });
-}
-}
-// فقط برای result
-if (msg === "generate image") {
-  
+    if (msg === "generate image") {
       const savedProfile = profile || {};
 
-const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+      const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
 ${savedProfile?.ethnicity || ""} woman,
 ${savedProfile?.age || ""} years old,
 ${savedProfile?.body || ""} body,
@@ -136,7 +74,6 @@ attractive, flirty, soft lighting, cinematic, 4k`;
 
     memoryStore[name].profile = profile;
 
-    let replyText = "";
     const savedHistory = memoryStore[name]?.history || [];
     const limitedHistory = savedHistory.slice(-6);
     const savedProfile = memoryStore[name]?.profile || profile || {};
@@ -181,10 +118,7 @@ Interaction style:
         role: "model",
         parts: [{ text: "OK" }]
       },
-      ...limitedHistory.map((h, index) => ({
-        role: index % 2 === 0 ? "user" : "model",
-        parts: [{ text: h }]
-      })),
+      ...limitedHistory,
       {
         role: "user",
         parts: [{ text: msg }]
@@ -202,43 +136,46 @@ Interaction style:
 
     const data = await response.json();
 
-if (!response.ok) {
-  return res.status(500).json({ error: JSON.stringify(data) });
-}
-const { data: wallet, error: walletError } = await supabase
-  .from('wallets')
-  .select('balance')
-  .eq('user_id', USER_ID)
-  .single();
-const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
+    if (!response.ok) {
+      return res.status(500).json({ error: JSON.stringify(data) });
+    }
 
-if (!wallet || Number(wallet.balance) <= 0) {
-  return res.status(200).json({ reply: "No tokens left 🔒" });
-}
+    const { data: wallet, error: walletError } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', USER_ID)
+      .single();
 
-await supabase
-  .from('wallets')
-  .update({ balance: Number(wallet.balance) - 1 })
-  .eq('user_id', USER_ID);
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
 
-const insertResult = await supabase.from('chat_history').insert([
-  {
-    user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
-    message: msg,
-    role: "user"
-  },
-  {
-    user_id: "f5af3bfe-ef28-4f69-811b-747cc7e47fb5",
-    message: reply,
-    role: "ai"
-  }
-]);
+    if (walletError || !wallet || Number(wallet.balance) <= 0) {
+      return res.status(200).json({ reply: "No tokens left 🔒" });
+    }
 
-console.log('CHAT_HISTORY_INSERT:', insertResult);
+    await supabase
+      .from('wallets')
+      .update({ balance: Number(wallet.balance) - 1 })
+      .eq('user_id', USER_ID);
 
-    replyText = reply;
+    const insertResult = await supabase.from('chat_history').insert([
+      {
+        user_id: USER_ID,
+        message: msg,
+        role: "user"
+      },
+      {
+        user_id: USER_ID,
+        message: reply,
+        role: "ai"
+      }
+    ]);
 
-    memoryStore[name].history.push(replyText);
+    console.log('CHAT_HISTORY_INSERT:', insertResult);
+
+    memoryStore[name].history.push(
+      { role: "user", parts: [{ text: msg }] },
+      { role: "model", parts: [{ text: reply }] }
+    );
 
     return res.status(200).json({ reply });
 
