@@ -370,6 +370,7 @@ imageLock.addEventListener('click', async () => {
     }
 
 if (data.imageUrl) {
+  editBtn.style.display = "none";
   img.style.opacity = "0";
 
   img.onload = () => {
