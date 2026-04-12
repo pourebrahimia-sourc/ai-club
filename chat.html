@@ -355,11 +355,10 @@ loading.style.display = "flex";
       return;
     }
 
-    if (data.imageBase64) {
-		loading.style.display = "none";
-      const image = "data:image/png;base64," + data.imageBase64;
-      localStorage.setItem('aiImage', image);
+    if (data.imageUrl) {
+      localStorage.setItem('aiImage', data.imageUrl);
       localStorage.setItem('imageUnlocked', "true");
+      loading.style.display = "none";
       location.reload();
     }
   } catch (e) {
