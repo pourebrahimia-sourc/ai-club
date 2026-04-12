@@ -302,28 +302,29 @@ imageLock.addEventListener('click', async () => {
       return;
     }
 
-    if (data.imageBase64) {
-      img.style.opacity = "0";
+if (data.imageUrl) {
+  img.style.opacity = "0";
 
-      img.onload = () => {
-        loading.style.display = "none";
-        img.style.filter = "blur(0px)";
-        imageLock.style.display = "none";
-        img.style.opacity = "1";
-      };
+  img.onload = () => {
+    loading.style.display = "none";
+    img.style.filter = "blur(0px)";
+    imageLock.style.display = "none";
+    img.style.opacity = "1";
+  };
 
-      img.src = "data:image/png;base64," + data.imageBase64;
-      localStorage.setItem('aiImage', img.src);
-      localStorage.setItem('imageUnlocked', "true");
+  img.src = data.imageUrl;
 
-      if (data.balance !== undefined) {
-        tokenEl.innerText = "💰 " + data.balance;
-      } else {
-        await refreshBalance();
-      }
+  localStorage.setItem('aiImage', data.imageUrl);
+  localStorage.setItem('imageUnlocked', "true");
 
-      return;
-    }
+  if (data.balance !== undefined) {
+    tokenEl.innerText = "💰 " + data.balance;
+  } else {
+    await refreshBalance();
+  }
+
+  return;
+}
 
     loading.style.display = "none";
     imageLock.style.pointerEvents = "auto";
