@@ -69,12 +69,31 @@ attractive, flirty, soft lighting, cinematic, 4k`;
         return res.status(500).json({ error: JSON.stringify(imgData) });
       }
 
-      const imageBase64 =
-        imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+const imageBase64 =
+  imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
 
-      if (!imageBase64) {
-        return res.status(500).json({ error: "Image generation failed" });
-      }
+if (!imageBase64) {
+  return res.status(500).json({ error: "Image generation failed" });
+}
+
+const fileName = `ai-${Date.now()}.png`;
+const buffer = Buffer.from(imageBase64, "base64");
+
+const { error: uploadError } = await supabase.storage
+  .from('ai-images')
+  .upload(fileName, buffer, {
+    contentType: 'image/png'
+  });
+
+if (uploadError) {
+  return res.status(500).json({ error: uploadError.message });
+}
+
+const { data: publicUrlData } = supabase.storage
+  .from('ai-images')
+  .getPublicUrl(fileName);
+
+const imageUrl = publicUrlData.publicUrl;
 
       const newBalance = Number(wallet.balance) - 10;
 
@@ -83,7 +102,7 @@ attractive, flirty, soft lighting, cinematic, 4k`;
         .update({ balance: newBalance })
         .eq('user_id', USER_ID);
 
-      return res.status(200).json({ imageBase64, balance: newBalance });
+  return res.status(200).json({ imageUrl, balance: newBalance });
     }
 
     if (!memoryStore[name]) {
