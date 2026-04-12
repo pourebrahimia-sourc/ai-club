@@ -70,8 +70,9 @@ attractive, flirty, soft lighting, cinematic, 4k`;
       }
 
       const imageBase64 =
-        console.log("IMAGE_BASE64_READY");
+        
         imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+      console.log("IMAGE_BASE64_READY");
 
       if (!imageBase64) {
         return res.status(500).json({ error: "Image generation failed" });
