@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
 const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
 ${savedProfile?.ethnicity || ""} woman,
-${savedProfile?.age || ""} years old,
+${savedProfile?.age || ""} years old, young adult, fresh face, youthful skin, soft facial features,
 ${savedProfile?.body || ""} body,
 ${savedProfile?.hair || ""} hair,
 ${savedProfile?.appearanceDetails || ""},
