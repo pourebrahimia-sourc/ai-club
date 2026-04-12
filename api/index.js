@@ -37,15 +37,20 @@ export default async function handler(req, res) {
 
       const savedProfile = profile || {};
 
-      const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
 ${savedProfile?.ethnicity || ""} woman,
 ${savedProfile?.age || ""} years old,
 ${savedProfile?.body || ""} body,
 ${savedProfile?.hair || ""} hair,
 ${savedProfile?.appearanceDetails || ""},
 ${savedProfile?.personality || ""} personality,
-wearing a stylish outfit, slightly revealing, low-cut top, soft sensual look, classy, not explicit,
-attractive, flirty, soft lighting, cinematic, 4k`;
+
+wearing a feminine sexy outfit, off-shoulder top, crop top, soft cleavage, no jacket, no coat,
+
+warm lighting, natural skin tones, no green tint, realistic colors, soft warm cinematic light,
+
+attractive, flirty, soft smile,
+high detail skin, ultra realistic, sharp focus, professional photography, 85mm lens, 4k`;
 
       const imgRes = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=" + process.env.GEMINI_API_KEY,
