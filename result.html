@@ -65,7 +65,7 @@ margin-bottom:20px;
 </p>
 
 <div id="aiImageBox" style="
-margin-bottom:20px;
+margin-bottom:10px;
 text-align:center;
 display:flex;
 justify-content:center;
@@ -122,19 +122,61 @@ position:relative;
   </div>
 
   <img id="aiImage" src="images/locked-preview.png" style="
-  width:50%;
-  max-width:240px;
+  width:42%;
+  max-width:210px;
   height:auto;
-  border-radius:18px;
+  border-radius:14px;
   display:block;
   box-shadow:0 10px 40px rgba(0,0,0,0.5);
   filter: blur(20px);
   opacity:1;
   transition:opacity 0.45s ease, filter 0.45s ease;
   ">
-</div>
+<div style="
+position:absolute;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:space-between;
+padding:0 20px;
+z-index:10;
+">
 
-<div class="summary-card">
+  <button onclick="startChat()" style="
+  flex:1;
+  margin-right:8px;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  background:#ff4fa3;
+  color:#fff;
+  font-weight:700;
+    height:48px;
+    font-size:14px;
+  ">
+    Start Chat
+  </button>
+
+  <button onclick="editCharacter()" style="
+  flex:1;
+  margin-left:8px;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+  font-weight:700;
+  backdrop-filter:blur(10px);
+    height:48px;
+    font-size:14px;
+  ">
+    Edit
+  </button>
+
+</div>  
+</div>
+<div class="summary-card" style="font-size:14px; padding:14px;">
   <div class="summary-row"><span>Age:</span><strong id="age"></strong></div>
   <div class="summary-row"><span>Ethnicity:</span><strong id="ethnicity"></strong></div>
   <div class="summary-row"><span>Body:</span><strong id="body"></strong></div>
@@ -142,9 +184,13 @@ position:relative;
   <div class="summary-row"><span>Hair:</span><strong id="hair"></strong></div>
   <div class="summary-row"><span>Appearance:</span><strong id="appearanceDetails"></strong></div>
   <div class="summary-row"><span>Personality:</span><strong id="personality"></strong></div>
+<button class="btn" style="margin-top:10px;height:44px;font-size:14px;">Generate Voice</button>
+
+<button class="btn" style="margin-top:10px;height:44px;font-size:14px;background:#2a2a2a;border:1px solid #3a3a3a;">
+Video Chat (Coming Soon)
+</button>
 </div>
 
-<button class="btn" onclick="startChat()">Start Chat</button>
 
 <div id="tokenModal" style="
 display:none;
@@ -348,6 +394,9 @@ getTokensBtn.addEventListener('click', () => {
 subscribeBtn.addEventListener('click', () => {
   closeModal();
 });
+  function editCharacter() {
+  window.location.href = "age.html";
+}
 </script>
 </body>
 </html>
