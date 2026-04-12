@@ -1,7 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { createCanvas, loadImage } from "canvas";
-import { v4 as uuidv4 } from "uuid";
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -74,24 +72,7 @@ attractive, flirty, soft lighting, cinematic, 4k`;
 const imageBase64 =
   imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
 
-// تبدیل base64 به buffer
-const imageBuffer = Buffer.from(imageBase64, "base64");
 
-// تبدیل buffer به image
-const img = await loadImage(imageBuffer);
-
-// ساخت canvas
-const canvas = createCanvas(img.width, img.height);
-const ctx = canvas.getContext("2d");
-
-// رسم تصویر
-ctx.drawImage(img, 0, 0);
-
-// واترمارک
-ctx.font = "30px Arial";
-ctx.fillStyle = "rgba(255,255,255,0.6)";
-ctx.textAlign = "right";
-ctx.fillText("AI Club", canvas.width - 20, canvas.height - 20);
 
 // تبدیل به PNG
 const finalBuffer = canvas.toBuffer("image/png");
@@ -109,10 +90,7 @@ console.log("IMAGE_READY_WITH_WATERMARK");
         .update({ balance: newBalance })
         .eq('user_id', USER_ID);
 console.log("SENDING_IMAGE_TO_FRONT");
-      return res.status(200).json({
-  imageBase64: finalBuffer.toString("base64"),
-  balance: newBalance
-});
+return res.status(200).json({ imageBase64, balance: newBalance });
     }
 
     if (!memoryStore[name]) {
