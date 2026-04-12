@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { createCanvas, loadImage } from "canvas";
+import { v4 as uuidv4 } from "uuid";
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
