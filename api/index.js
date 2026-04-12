@@ -70,6 +70,7 @@ attractive, flirty, soft lighting, cinematic, 4k`;
       }
 
       const imageBase64 =
+        console.log("IMAGE_BASE64_READY");
         imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
 
       if (!imageBase64) {
@@ -82,7 +83,7 @@ attractive, flirty, soft lighting, cinematic, 4k`;
         .from('wallets')
         .update({ balance: newBalance })
         .eq('user_id', USER_ID);
-
+console.log("SENDING_IMAGE_TO_FRONT");
       return res.status(200).json({ imageBase64, balance: newBalance });
     }
 
