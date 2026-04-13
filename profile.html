@@ -103,7 +103,8 @@ document.getElementById('email').innerText = localStorage.getItem('userEmail') |
 
 async function loadTokens(){
   try{
-    const res = await fetch('/api/wallet');
+    const userId = localStorage.getItem('userId');
+const res = await fetch('/api/wallet?userId=' + userId);
     const data = await res.json();
     document.getElementById('tokens').innerText = data.balance || 0;
   }catch(e){
