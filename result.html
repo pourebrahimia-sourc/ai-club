@@ -425,6 +425,12 @@ if (sameProfile && imageUnlocked && savedImage) {
 });
 
 imageLock.addEventListener('click', async () => {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    window.location.href = 'login.html';
+    return;
+  }
+
   if (loading.style.display === "flex") return;
 
   loading.style.display = "flex";
