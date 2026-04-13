@@ -302,8 +302,7 @@ async function startChat() {
   const balance = await getUserBalance();
 
 if (balance < 5) {
-  document.querySelector('#tokenModal div[style*="font-size:13px"]').innerText = 'You need 5 tokens to enter chat.';
-  openTokenModal();
+    openTokenModalWithAmount(5);
   return;
 }
 
@@ -408,7 +407,7 @@ body: JSON.stringify({
     if (data.error === "Not enough tokens") {
       loading.style.display = "none";
       imageLock.style.pointerEvents = "auto";
-      openTokenModal();
+      openTokenModalWithAmount(10);
       return;
     }
 
