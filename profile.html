@@ -115,8 +115,7 @@ document.getElementById('name').innerText = localStorage.getItem('userName') || 
 document.getElementById('email').innerText = localStorage.getItem('userEmail') || '-';
 
 async function loadTokens(){
-  console.log('USER ID:', localStorage.getItem('userId'));
-  
+   
   try{
     const userId = localStorage.getItem('userId');
 const res = await fetch('/api/wallet?userId=' + userId);
@@ -139,33 +138,11 @@ function goGift(){
 }
 
 loadTokens();
-async function editName(){
+function editName(){
   const current = localStorage.getItem('userName') || '';
   const newName = prompt('Enter your name', current);
 
   if(newName && newName.trim()){
-
-    const token = localStorage.getItem('accessToken');
-
-    const res = await fetch('/api/auth', {
-      method:'POST',
-      headers:{ 
-        'Content-Type':'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({
-        type:'update-name',
-        name: newName.trim()
-      })
-    });
-
-    const data = await res.json();
-
-    if(data.error){
-      alert(data.error);
-      return;
-    }
-
     localStorage.setItem('userName', newName.trim());
     document.getElementById('name').innerText = newName.trim();
   }
