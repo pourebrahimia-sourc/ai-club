@@ -99,5 +99,22 @@ if (type === 'forgot') {
 
   return res.json({ url: data.url });
 }
+  if (type === 'update-name') {
+  const { userId, name } = req.body;
+
+  if (!userId || !name) {
+    return res.status(400).json({ error: 'Missing data' });
+  }
+
+const { error } = await supabase.auth.updateUser({
+  data: { name }
+});
+
+  if (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  return res.json({ success: true });
+}
   return res.status(400).json({ error: 'Invalid type' });
 }
