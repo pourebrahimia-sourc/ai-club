@@ -342,9 +342,10 @@ body: JSON.stringify({
           return;
         }
 
-        localStorage.setItem('userId', data.user.id);
-        localStorage.setItem('userEmail', data.user.email || '');
-        localStorage.setItem('userName', data.user.user_metadata?.name || 'User');
+localStorage.setItem('userId', data.user.id);
+localStorage.setItem('userEmail', data.user.email || '');
+localStorage.setItem('accessToken', data.session?.access_token || '');
+localStorage.setItem('userName', data.user.user_metadata?.name || 'User');
         
         localStorage.removeItem('aiImage');
         localStorage.removeItem('imageUnlocked');
