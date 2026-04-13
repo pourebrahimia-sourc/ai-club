@@ -279,10 +279,30 @@ function formatText(text) {
   if (!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
+async function getUserBalance() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return null;
 
-function startChat() {
-  if (!localStorage.getItem('userId')) {
+  try {
+    const res = await fetch('/api/wallet?userId=' + userId);
+    const data = await res.json();
+    return Number(data.balance || 0);
+  } catch (e) {
+    return 0;
+  }
+}
+async function startChat() {
+  const userId = localStorage.getItem('userId');
+
+  if (!userId) {
     window.location.href = 'login.html';
+    return;
+  }
+
+  const balance = await getUserBalance();
+
+  if (balance < 5) {
+    openTokenModal(); // فعلاً همون مودال قبلی
     return;
   }
 
