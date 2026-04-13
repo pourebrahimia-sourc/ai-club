@@ -274,14 +274,6 @@ async function startChat() {
   }
 
   try {
-    const res = await fetch('/api/wallet');
-    const data = await res.json();
-
-    if (!data.balance || Number(data.balance) < 5) {
-      alert('Not enough tokens');
-      return;
-    }
-
     const deductRes = await fetch('/api/deduct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -294,14 +286,20 @@ async function startChat() {
     const deductData = await deductRes.json();
 
     if (deductData.error) {
-      alert(deductData.error);
+      document.querySelector('#tokenModal div div').innerText = 'Not enough tokens';
+      document.querySelector('#tokenModal div div + div').innerText = 'You need 5 tokens to start chat.';
+      openTokenModal();
       return;
+    }
+
+    if (deductData.balance !== undefined) {
+      tokenEl.innerText = "💰 " + deductData.balance;
     }
 
     window.location.href = 'chat.html';
 
   } catch (e) {
-    alert('Error');
+    openTokenModal();
   }
 }
 
