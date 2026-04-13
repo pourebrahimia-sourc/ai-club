@@ -296,7 +296,7 @@ async function startChat() {
       tokenEl.innerText = "💰 " + deductData.balance;
     }
 
-    window.location.href = 'chat.html';
+    alert('new balance: ' + deductData.balance);
 
   } catch (e) {
     openTokenModal();
