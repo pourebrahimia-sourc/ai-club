@@ -6,12 +6,16 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId' });
+  }
 
   const { data: wallet, error } = await supabase
     .from('wallets')
     .select('balance')
-    .eq('user_id', USER_ID)
+    .eq('user_id', userId)
     .single();
 
   if (error) {
