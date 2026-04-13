@@ -281,6 +281,11 @@ function formatText(text) {
 }
 
 function startChat() {
+  if (!localStorage.getItem('userId')) {
+    window.location.href = 'login.html';
+    return;
+  }
+
   window.location.href = 'chat.html';
 }
 
