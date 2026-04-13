@@ -21,9 +21,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { msg, name, profile } = req.body;
-    const USER_ID = req.body.userId;
-
+const { msg, name, profile, userId } = req.body;
+const USER_ID = userId;
+if (!USER_ID) {
+  return res.status(400).json({ error: "No user" });
+}
     if (msg === "generate image") {
       const { data: wallet, error: walletError } = await supabase
         .from('wallets')
