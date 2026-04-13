@@ -369,11 +369,12 @@ imageLock.addEventListener('click', async () => {
     const res = await fetch('/api', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        msg: "generate image",
-        name: "Luna",
-        profile
-      })
+body: JSON.stringify({
+  msg: "generate image",
+  name: "Luna",
+  profile,
+  userId: localStorage.getItem('userId')
+})
     });
 
     const data = await res.json();
