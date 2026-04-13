@@ -217,9 +217,8 @@ Edit
   <div class="summary-row"><span>Hair:</span><strong id="hair"></strong></div>
   <div class="summary-row"><span>Appearance:</span><strong id="appearanceDetails"></strong></div>
   <div class="summary-row"><span>Personality:</span><strong id="personality"></strong></div>
-<button class="btn" style="margin-top:10px;height:44px;font-size:14px;">Generate Voice</button>
-
-<button class="btn" style="margin-top:10px;height:44px;font-size:14px;background:#2a2a2a;border:1px solid #3a3a3a;">
+<button class="btn" style="margin-top:10px;height:44px;font-size:14px;" onclick="generateVoice()">Generate Voice</button>
+<button class="btn" style="margin-top:10px;height:44px;font-size:14px;background:#2a2a2a;border:1px solid #3a3a3a;" onclick="startVideoChat()">
 Video Chat (Coming Soon)
 </button>
 </div>
@@ -308,7 +307,41 @@ if (balance < 5) {
 
   window.location.href = 'chat.html';
 }
+function generateVoice() {
+  const userId = localStorage.getItem('userId');
 
+  if (!userId) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  getUserBalance().then(balance => {
+    if (balance < 5) {
+      openTokenModalWithAmount(5);
+      return;
+    }
+
+    alert('Voice coming soon');
+  });
+}
+
+function startVideoChat() {
+  const userId = localStorage.getItem('userId');
+
+  if (!userId) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  getUserBalance().then(balance => {
+    if (balance < 20) {
+      openTokenModalWithAmount(20);
+      return;
+    }
+
+    alert('Video chat coming soon');
+  });
+}
 const profile = {
   age: localStorage.getItem('age'),
   ethnicity: localStorage.getItem('ethnicity'),
