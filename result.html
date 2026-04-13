@@ -265,8 +265,35 @@ function formatText(text) {
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function startChat() {
-  window.location.href = 'chat.html';
+async function startChat() {
+  const userId = localStorage.getItem('userId');
+
+  if (!userId) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/wallet');
+    const data = await res.json();
+
+    if (!data.balance || data.balance < 5) {
+      alert('Not enough tokens');
+      return;
+    }
+
+    // کم کردن 5 توکن
+    await fetch('/api/deduct', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: 5 })
+    });
+
+    window.location.href = 'chat.html';
+
+  } catch (e) {
+    alert('Error');
+  }
 }
 
 const profile = {
