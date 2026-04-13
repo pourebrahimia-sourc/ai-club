@@ -213,19 +213,24 @@
       <h2 id="pageTitle" class="login-title">Login</h2>
       <p id="pageSubtitle" class="login-subtitle">Sign in to continue to your AI girlfriend</p>
 
-      <div class="field">
-        <input id="email" type="email" placeholder="Email" />
-      </div>
+<div class="field">
+  <input id="email" type="email" placeholder="Email" />
+</div>
 
-      <div class="field">
-        <input id="password" type="password" placeholder="Password" />
-        <button class="toggle-pass" type="button" onclick="togglePassword('password', this)">Show</button>
-      </div>
+<!-- ADD THIS -->
+<div class="field" id="nameWrap" style="display:none;">
+  <input id="name" type="text" placeholder="Name" />
+</div>
 
-      <div class="field" id="confirmWrap" style="display:none;">
-        <input id="confirmPassword" type="password" placeholder="Repeat Password" />
-        <button class="toggle-pass" type="button" onclick="togglePassword('confirmPassword', this)">Show</button>
-      </div>
+<div class="field">
+  <input id="password" type="password" placeholder="Password" />
+  <button class="toggle-pass" type="button" onclick="togglePassword('password', this)">Show</button>
+</div>
+
+<div class="field" id="confirmWrap" style="display:none;">
+  <input id="confirmPassword" type="password" placeholder="Repeat Password" />
+  <button class="toggle-pass" type="button" onclick="togglePassword('confirmPassword', this)">Show</button>
+</div>
 
       <button id="mainBtn" class="btn btn-primary" onclick="submitAuth()">Login</button>
 
@@ -270,6 +275,7 @@
       mode = newMode;
 
       if(mode === 'login'){
+        document.getElementById('nameWrap').style.display = 'none';
         confirmWrap.style.display = 'none';
         pageTitle.innerText = 'Login';
         pageSubtitle.innerText = 'Sign in to continue to your AI girlfriend';
@@ -278,6 +284,7 @@
         loginModeBtn.classList.add('active');
         signupModeBtn.classList.remove('active');
       } else {
+        document.getElementById('nameWrap').style.display = 'block';
         confirmWrap.style.display = 'block';
         pageTitle.innerText = 'Sign Up';
         pageSubtitle.innerText = 'Create your account';
@@ -302,6 +309,7 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const name = document.getElementById('name').value.trim();
 
       if(!email || !password || !confirmPassword){
         setStatus('Fill all fields');
@@ -319,11 +327,12 @@
         const res = await fetch('/api/auth', {
           method:'POST',
           headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({
-            type:'signup',
-            email,
-            password
-          })
+body: JSON.stringify({
+  type:'signup',
+  email,
+  password,
+  name
+})
         });
 
         const data = await res.json();
@@ -335,6 +344,8 @@
 
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('userEmail', data.user.email || '');
+        localStorage.setItem('userName', name);
+        
         localStorage.removeItem('aiImage');
         localStorage.removeItem('imageUnlocked');
         localStorage.removeItem('lastProfileKey');
