@@ -277,17 +277,26 @@ async function startChat() {
     const res = await fetch('/api/wallet');
     const data = await res.json();
 
-    if (!data.balance || data.balance < 5) {
+    if (!data.balance || Number(data.balance) < 5) {
       alert('Not enough tokens');
       return;
     }
 
-    // کم کردن 5 توکن
-    await fetch('/api/deduct', {
+    const deductRes = await fetch('/api/deduct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: 5 })
+      body: JSON.stringify({
+        amount: 5,
+        userId
+      })
     });
+
+    const deductData = await deductRes.json();
+
+    if (deductData.error) {
+      alert(deductData.error);
+      return;
+    }
 
     window.location.href = 'chat.html';
 
