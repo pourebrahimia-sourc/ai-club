@@ -332,7 +332,14 @@ const subscribeBtn = document.getElementById('subscribeBtn');
 function openTokenModal() {
   tokenModal.style.display = "flex";
 }
-
+  
+function openTokenModalWithAmount(amount) {
+  const text = document.querySelector('#tokenModal div[style*="font-size:13px"]');
+  if (text) {
+    text.innerText = `You need ${amount} tokens.`;
+  }
+  tokenModal.style.display = "flex";
+}
 function closeModal() {
   tokenModal.style.display = "none";
 }
