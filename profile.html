@@ -84,8 +84,11 @@ cursor:pointer;
   <div class="title">Your Profile</div>
 
   <div class="row">
-    <span>Name:</span>
-    <strong id="name">-</strong>
+<span>Name:</span>
+<div style="display:flex;align-items:center;gap:6px;">
+  <strong id="name">-</strong>
+  <button onclick="editName()" style="background:none;border:none;cursor:pointer;font-size:14px;">✏️</button>
+</div>
   </div>
 
   <div class="row">
@@ -136,6 +139,15 @@ function goGift(){
 }
 
 loadTokens();
+  function editName(){
+  const current = localStorage.getItem('userName') || '';
+  const newName = prompt('Enter your name', current);
+
+  if(newName && newName.trim()){
+    localStorage.setItem('userName', newName.trim());
+    document.getElementById('name').innerText = newName.trim();
+  }
+}
 </script>
 
 </body>
