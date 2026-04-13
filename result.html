@@ -301,10 +301,11 @@ async function startChat() {
 
   const balance = await getUserBalance();
 
-  if (balance < 5) {
-    openTokenModal(); // فعلاً همون مودال قبلی
-    return;
-  }
+if (balance < 5) {
+  document.querySelector('#tokenModal div[style*="font-size:13px"]').innerText = 'You need 5 tokens to enter chat.';
+  openTokenModal();
+  return;
+}
 
   window.location.href = 'chat.html';
 }
