@@ -58,5 +58,34 @@ if (type === 'forgot') {
 
   return res.json({ success: true });
 }
+  if (type === 'update-password') {
+  const { access_token, refresh_token, password } = req.body;
+
+  if (!access_token || !refresh_token || !password) {
+    return res.status(400).json({ error: 'Missing token or password' });
+  }
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await supabase.auth.setSession({
+    access_token,
+    refresh_token
+  });
+
+  if (sessionError || !session) {
+    return res.status(400).json({ error: sessionError?.message || 'Invalid session' });
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password
+  });
+
+  if (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  return res.json({ success: true });
+}
   return res.status(400).json({ error: 'Invalid type' });
 }
