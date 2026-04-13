@@ -105,6 +105,24 @@ cursor:pointer;
 </div>
 
 <script>
+  const accessToken = window.location.hash.split('access_token=')[1]?.split('&')[0];
+
+if (accessToken) {
+  const res = await fetch('/api/session', {
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
+
+  const json = await res.json();
+
+  if (json.data?.session?.user) {
+    const user = json.data.session.user;
+    localStorage.setItem('userId', user.id);
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.user_metadata?.name || 'User');
+  }
+}
   if (!localStorage.getItem('userId')) {
   window.location.href = 'login.html';
 }
