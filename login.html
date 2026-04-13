@@ -401,9 +401,39 @@ body: JSON.stringify({
       setStatus('Google login later');
     }
 
-    function forgotPassword(){
-      setStatus('Forgot password later');
+     async function forgotPassword(){
+  const email = document.getElementById('email').value.trim();
+
+  if(!email){
+    setStatus('Enter your email');
+    return;
+  }
+
+  setStatus('Sending reset email...');
+
+  try{
+    const res = await fetch('/api/auth', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        type:'forgot',
+        email
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      setStatus(data.error);
+      return;
     }
+
+    setStatus('Reset email sent ✔️');
+  } catch(e){
+    setStatus('Error sending email');
+  }
+}
+
 
     setMode('login');
   </script>
