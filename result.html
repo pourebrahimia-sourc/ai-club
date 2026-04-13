@@ -285,12 +285,10 @@ async function startChat() {
 
     const deductData = await deductRes.json();
 
-    if (deductData.error) {
-      document.querySelector('#tokenModal div div').innerText = 'Not enough tokens';
-      document.querySelector('#tokenModal div div + div').innerText = 'You need 5 tokens to start chat.';
-      openTokenModal();
-      return;
-    }
+if (deductData.error) {
+  alert(deductData.error);
+  return;
+}
 
     if (deductData.balance !== undefined) {
       tokenEl.innerText = "💰 " + deductData.balance;
