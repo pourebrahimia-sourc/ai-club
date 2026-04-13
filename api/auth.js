@@ -49,6 +49,14 @@ export default async function handler(req, res) {
 
     return res.json({ user: data.user });
   }
+if (type === 'forgot') {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://ai-club-one-iota.vercel.app/login.html'
+  });
 
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.json({ success: true });
+}
   return res.status(400).json({ error: 'Invalid type' });
 }
