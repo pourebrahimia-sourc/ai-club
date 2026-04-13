@@ -8,7 +8,7 @@ const supabase = createClient(
 export default async function handler(req, res) {
   const { type, email, password, name } = req.body;
 
-  if (!email || !password) {
+  if ((type === 'signup' || type === 'login') && (!email || !password)) {
     return res.status(400).json({ error: 'Missing email or password' });
   }
 
