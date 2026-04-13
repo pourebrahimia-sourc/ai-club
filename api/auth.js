@@ -87,5 +87,17 @@ if (type === 'forgot') {
 
   return res.json({ success: true });
 }
+  if (type === 'google') {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: 'https://ai-club-one-iota.vercel.app/result.html'
+    }
+  });
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.json({ url: data.url });
+}
   return res.status(400).json({ error: 'Invalid type' });
 }
