@@ -144,16 +144,6 @@ loadTokens();
   const newName = prompt('Enter your name', current);
 
   if(newName && newName.trim()){
-        fetch('/api/auth', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        type:'update-name',
-        userId: localStorage.getItem('userId'),
-        name: newName.trim()
-      })
-    });
-
     localStorage.setItem('userName', newName.trim());
     document.getElementById('name').innerText = newName.trim();
   }
