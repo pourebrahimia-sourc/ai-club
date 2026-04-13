@@ -314,7 +314,8 @@ function closeModal() {
 
 async function refreshBalance() {
   try {
-    const res = await fetch('/api/wallet');
+    const userId = localStorage.getItem('userId');
+const res = await fetch('/api/wallet?userId=' + userId);
     const data = await res.json();
     if (data.balance !== undefined) {
       tokenEl.innerText = "💰 " + data.balance;
