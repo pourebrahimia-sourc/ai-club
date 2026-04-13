@@ -122,7 +122,9 @@ const res = await fetch('/api/wallet?userId=' + userId);
 }
 
 function logout(){
-  localStorage.clear();
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userName');
   window.location.href = 'login.html';
 }
 
