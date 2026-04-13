@@ -395,6 +395,24 @@ const currentProfileKey = JSON.stringify(profile);
 const lastProfileKey = localStorage.getItem('lastProfileKey');
 const sameProfile = currentProfileKey === lastProfileKey;
 document.addEventListener('DOMContentLoaded', async () => {
+  const accessToken = window.location.hash.split('access_token=')[1]?.split('&')[0];
+
+if (accessToken) {
+  const res = await fetch('/api/session', {
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
+
+  const json = await res.json();
+
+  if (json.data?.session?.user) {
+    const user = json.data.session.user;
+    localStorage.setItem('userId', user.id);
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.user_metadata?.name || 'User');
+  }
+}
   document.getElementById('age').textContent = formatText(localStorage.getItem('age'));
   document.getElementById('ethnicity').textContent = formatText(localStorage.getItem('ethnicity'));
   document.getElementById('body').textContent = formatText(localStorage.getItem('body'));
