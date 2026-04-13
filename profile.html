@@ -102,6 +102,8 @@ document.getElementById('name').innerText = localStorage.getItem('userName') || 
 document.getElementById('email').innerText = localStorage.getItem('userEmail') || '-';
 
 async function loadTokens(){
+  console.log('USER ID:', localStorage.getItem('userId'));
+  
   try{
     const userId = localStorage.getItem('userId');
 const res = await fetch('/api/wallet?userId=' + userId);
