@@ -20,10 +20,27 @@ export default async function handler(req, res) {
     return res.json({ data: { session: null } });
   }
 
+  const user = data.user;
+
+  const { data: wallet } = await supabase
+    .from('wallets')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (!wallet) {
+    await supabase.from('wallets').insert([
+      {
+        user_id: user.id,
+        balance: 10
+      }
+    ]);
+  }
+
   return res.json({
     data: {
       session: {
-        user: data.user
+        user
       }
     }
   });
