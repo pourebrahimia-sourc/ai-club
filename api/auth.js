@@ -6,22 +6,29 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  const { type, email, password } = req.body;
+  const { type, email, password, name } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Missing email or password' });
   }
 
-  // SIGN UP
   if (type === 'signup') {
+    if (!name) {
+      return res.status(400).json({ error: 'Missing name' });
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+        data: {
+          name
+        }
+      }
     });
 
     if (error) return res.status(400).json({ error: error.message });
 
-    // ساخت ولت
     await supabase.from('wallets').insert([
       {
         user_id: data.user.id,
@@ -32,7 +39,6 @@ export default async function handler(req, res) {
     return res.json({ user: data.user });
   }
 
-  // LOGIN
   if (type === 'login') {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
