@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
   try {
     const { msg, name, profile } = req.body;
-    const USER_ID = "f5af3bfe-ef28-4f69-811b-747cc7e47fb5";
+    const USER_ID = req.body.userId;
 
     if (msg === "generate image") {
       const { data: wallet, error: walletError } = await supabase
