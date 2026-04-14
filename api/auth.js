@@ -21,16 +21,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing email or password' });
   }
 
-  // ======================
-  // SIGNUP
-  // ======================
   if (type === 'signup') {
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Missing name' });
     }
 
     const trimmedName = name.trim();
-    console.log("USER ID:", user.id);
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -43,7 +39,6 @@ export default async function handler(req, res) {
     if (error) return res.status(400).json({ error: error.message });
     if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
 
-    // wallet
     const { data: existingWallet } = await supabaseAdmin
       .from('wallets')
       .select('id')
@@ -55,30 +50,28 @@ export default async function handler(req, res) {
         { user_id: data.user.id, balance: 10 }
       ]);
     }
-// user profile table
-const { data: existingUser } = await supabaseAdmin
-  .from('users')
-  .select('id')
-  .eq('id', data.user.id)
-  .maybeSingle();
 
-if (!existingUser) {
-  await supabaseAdmin.from('users').insert([
-    {
-      id: data.user.id,
-      name: trimmedName
+    const { data: existingUser } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (!existingUser) {
+      await supabaseAdmin.from('users').insert([
+        {
+          id: data.user.id,
+          name: trimmedName
+        }
+      ]);
     }
-  ]);
-}
+
     return res.json({
       user: data.user,
       session: data.session || null
     });
   }
 
-  // ======================
-  // LOGIN
-  // ======================
   if (type === 'login') {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -93,38 +86,47 @@ if (!existingUser) {
     });
   }
 
-  // ======================
-  // UPDATE NAME (FIXED)
-  // ======================
-console.log("USER ID:", user.id);
+  if (type === 'update-name') {
+    const authHeader = req.headers.authorization;
 
-const { data: updatedProfile, error: updateError } = await supabaseAdmin
-  .from('users')
-  .upsert(
-    { id: user.id, name: trimmedName },
-    { onConflict: 'id' }
-  )
-  .select('id, name')
-  .single();
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
-if (updateError) {
-  return res.status(400).json({ error: updateError.message });
-}
+    const trimmedName = (name || '').trim();
 
-return res.json({
-  success: true,
-  profile: updatedProfile
-});
+    if (!trimmedName) {
+      return res.status(400).json({ error: 'Missing name' });
+    }
 
+    const token = authHeader.replace('Bearer ', '');
 
-return res.json({
-  success: true
-});
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser(token);
+
+    if (userError || !user?.id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .upsert(
+        {
+          id: user.id,
+          name: trimmedName
+        },
+        { onConflict: 'id' }
+      );
+
+    if (updateError) {
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    return res.json({ success: true });
   }
 
-  // ======================
-  // FORGOT
-  // ======================
   if (type === 'forgot') {
     if (!email) {
       return res.status(400).json({ error: 'Missing email' });
@@ -139,9 +141,6 @@ return res.json({
     return res.json({ success: true });
   }
 
-  // ======================
-  // UPDATE PASSWORD
-  // ======================
   if (type === 'update-password') {
     const { access_token, refresh_token, password: newPassword } = req.body || {};
 
@@ -177,9 +176,6 @@ return res.json({
     return res.json({ success: true });
   }
 
-  // ======================
-  // GOOGLE
-  // ======================
   if (type === 'google') {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -192,40 +188,6 @@ return res.json({
 
     return res.json({ url: data.url });
   }
-if (type === 'update-name') {
-  const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-  const { data, error } = await supabase.auth.getUser(token);
-
-  if (error || !data.user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const user = data.user;
-  const { name } = req.body || {};
-  const trimmedName = name?.trim();
-
-  if (!trimmedName) {
-    return res.status(400).json({ error: 'Missing name' });
-  }
-
-const { error: updateError } = await supabaseAdmin
-  .from('users')
-  .upsert(
-    { id: user.id, name: trimmedName },
-    { onConflict: 'id' }
-  );
-
-  if (updateError) {
-    return res.status(400).json({ error: updateError.message });
-  }
-
-  return res.json({ success: true });
-}
   return res.status(400).json({ error: 'Invalid type' });
 }
