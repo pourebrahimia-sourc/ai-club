@@ -6,16 +6,24 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  const { userId } = req.query;
+  const authHeader = req.headers.authorization;
 
-  if (!userId) {
-    return res.status(400).json({ error: 'Missing userId' });
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+
+  const { data: userData, error: userError } = await supabase.auth.getUser(token);
+
+  if (userError || !userData?.user?.id) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   const { data: wallet, error } = await supabase
     .from('wallets')
     .select('balance')
-    .eq('user_id', userId)
+    .eq('user_id', userData.user.id)
     .single();
 
   if (error) {
@@ -23,6 +31,7 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
-    balance: wallet?.balance || 0
+    balance: wallet?.balance || 0,
+    userId: userData.user.id
   });
 }
