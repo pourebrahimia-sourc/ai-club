@@ -231,8 +231,6 @@ Interaction style:
       { role: "model", parts: [{ text: reply }] }
     ].slice(-10);
 
-    saveMemory();
-
     return res.status(200).json({ reply, balance: newBalance });
 
   } catch (e) {
