@@ -129,46 +129,43 @@ export default async function handler(req, res) {
     return res.json({ success: true });
   }
 
-  if (type === 'update-name') {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Missing name' });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-
-    const {
-      data: { user },
-      error: userError
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user?.id) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const trimmedName = name.trim();
-
-    const { data: updatedUser, error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
-      user_metadata: {
-        ...(user.user_metadata || {}),
-        name: trimmedName
-      }
-    });
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    return res.json({
-      success: true,
-      user: updatedUser.user
-    });
+if (type === 'update-name') {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Missing name' });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+
+  const {
+    data: { user },
+    error: userError
+  } = await supabase.auth.getUser(token);
+
+  if (userError || !user?.id) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const trimmedName = name.trim();
+
+  const { error: updateError } = await supabase
+    .from('wallets')
+    .update({ name: trimmedName })
+    .eq('user_id', user.id);
+
+  if (updateError) {
+    return res.status(400).json({ error: updateError.message });
+  }
+
+  return res.json({
+    success: true,
+    name: trimmedName
+  });
+}
 
   if (type === 'google') {
     const { data, error } = await supabase.auth.signInWithOAuth({
