@@ -6,7 +6,7 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  const { type, email, password, name } = req.body;
+  const { type, email, password, name } = req.body || {};
 
   if ((type === 'signup' || type === 'login') && (!email || !password)) {
     return res.status(400).json({ error: 'Missing email or password' });
@@ -28,15 +28,27 @@ export default async function handler(req, res) {
     });
 
     if (error) return res.status(400).json({ error: error.message });
+    if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
 
-    await supabase.from('wallets').insert([
-      {
-        user_id: data.user.id,
-        balance: 10
-      }
-    ]);
+    const { data: existingWallet } = await supabase
+      .from('wallets')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
 
-    return res.json({ user: data.user });
+    if (!existingWallet) {
+      await supabase.from('wallets').insert([
+        {
+          user_id: data.user.id,
+          balance: 10
+        }
+      ]);
+    }
+
+    return res.json({
+      user: data.user,
+      session: data.session || null
+    });
   }
 
   if (type === 'login') {
@@ -47,58 +59,64 @@ export default async function handler(req, res) {
 
     if (error) return res.status(400).json({ error: error.message });
 
-    return res.json({ user: data.user });
+    return res.json({
+      user: data.user,
+      session: data.session || null
+    });
   }
-if (type === 'forgot') {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://ai-club-one-iota.vercel.app/reset-password.html'
-  });
 
-  if (error) return res.status(400).json({ error: error.message });
+  if (type === 'forgot') {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://ai-club-one-iota.vercel.app/reset-password.html'
+    });
 
-  return res.json({ success: true });
-}
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ success: true });
+  }
+
   if (type === 'update-password') {
-  const { access_token, refresh_token, password } = req.body;
+    const { access_token, refresh_token, password: newPassword } = req.body || {};
 
-  if (!access_token || !refresh_token || !password) {
-    return res.status(400).json({ error: 'Missing token or password' });
-  }
-
-  const {
-    data: { session },
-    error: sessionError
-  } = await supabase.auth.setSession({
-    access_token,
-    refresh_token
-  });
-
-  if (sessionError || !session) {
-    return res.status(400).json({ error: sessionError?.message || 'Invalid session' });
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    password
-  });
-
-  if (error) {
-    return res.status(400).json({ error: error.message });
-  }
-
-  return res.json({ success: true });
-}
-  if (type === 'google') {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: 'https://ai-club-one-iota.vercel.app/result.html'
+    if (!access_token || !refresh_token || !newPassword) {
+      return res.status(400).json({ error: 'Missing token or password' });
     }
-  });
 
-  if (error) return res.status(400).json({ error: error.message });
+    const {
+      data: { session },
+      error: sessionError
+    } = await supabase.auth.setSession({
+      access_token,
+      refresh_token
+    });
 
-  return res.json({ url: data.url });
-}
+    if (sessionError || !session) {
+      return res.status(400).json({ error: sessionError?.message || 'Invalid session' });
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.json({ success: true });
+  }
+
+  if (type === 'google') {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://ai-club-one-iota.vercel.app/result.html'
+      }
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ url: data.url });
+  }
 
   return res.status(400).json({ error: 'Invalid type' });
 }
