@@ -13,7 +13,6 @@ export default async function handler(req, res) {
   }
 
   const token = authHeader.replace('Bearer ', '');
-
   const { data, error } = await supabase.auth.getUser(token);
 
   if (error || !data.user) {
