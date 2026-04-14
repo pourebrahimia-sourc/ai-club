@@ -24,16 +24,17 @@ margin-bottom:20px;
   </div>
 <div style="display:flex;align-items:center;gap:10px;">
 
-  <button style="
+<button onclick="window.location.href='subscribe.html'" style="
   padding:6px 12px;
   border-radius:10px;
   border:none;
   background:#ff4fa3;
   color:#fff;
   font-size:12px;
+  cursor:pointer;
   ">
-    Subscribe
-  </button>
+  Subscribe
+</button>
 
   <div id="tokenBalance" style="
   background:#1a1a1a;
@@ -44,12 +45,12 @@ margin-bottom:20px;
     💰 ...
   </div>
 
-  <div style="
+<div onclick="window.location.href='gift.html'" style="
   font-size:18px;
   cursor:pointer;
   ">
-    🎁
-  </div>
+  🎁
+</div>
 
   <div onclick="window.location.href='profile.html'" style="
   width:34px;
@@ -593,10 +594,12 @@ tokenModal.addEventListener('click', (e) => {
 
 getTokensBtn.addEventListener('click', () => {
   closeModal();
+  window.location.href = 'gift.html';
 });
 
 subscribeBtn.addEventListener('click', () => {
   closeModal();
+  window.location.href = 'subscribe.html';
 });
 
 function editCharacter() {
