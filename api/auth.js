@@ -54,7 +54,21 @@ export default async function handler(req, res) {
         { user_id: data.user.id, balance: 10 }
       ]);
     }
+// user profile table
+const { data: existingUser } = await supabaseAdmin
+  .from('users')
+  .select('id')
+  .eq('id', data.user.id)
+  .maybeSingle();
 
+if (!existingUser) {
+  await supabaseAdmin.from('users').insert([
+    {
+      id: data.user.id,
+      name: trimmedName
+    }
+  ]);
+}
     return res.json({
       user: data.user,
       session: data.session || null
@@ -105,18 +119,6 @@ export default async function handler(req, res) {
 
     const trimmedName = name.trim();
 
-    // 🔥 مهم: آپدیت داخل AUTH (همونی که UI ازش میخونه)
-    const { data: updatedUser, error } =
-      await supabaseAdmin.auth.admin.updateUserById(user.id, {
-        user_metadata: {
-          ...user.user_metadata,
-          name: trimmedName
-        }
-      });
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
 
     return res.json({
       success: true,
