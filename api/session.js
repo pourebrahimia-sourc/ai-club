@@ -27,15 +27,6 @@ export default async function handler(req, res) {
     .eq('user_id', user.id)
     .maybeSingle();
 
-  if (!wallet) {
-    await supabase.from('wallets').insert([
-      {
-        user_id: user.id,
-        balance: 10
-      }
-    ]);
-  }
-
   return res.json({
     data: {
       session: {
