@@ -6,7 +6,7 @@
   <style>
     *{
       box-sizing:border-box;
-      -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color:transparent;
     }
 
     body{
@@ -38,17 +38,10 @@
       font-size:14px;
       cursor:pointer;
       padding:0;
+      outline:none;
+      box-shadow:none;
       appearance:none;
       -webkit-appearance:none;
-      outline:none;
-      box-shadow:none;
-    }
-
-    .back-btn:focus,
-    .back-btn:active{
-      outline:none;
-      box-shadow:none;
-      background:none;
     }
 
     .avatar{
@@ -80,6 +73,24 @@
       display:flex;
       align-items:center;
       gap:6px;
+    }
+
+    .edit-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+      border:none;
+      outline:none;
+      box-shadow:none;
+      cursor:pointer;
+      font-size:14px;
+      color:#ff4fa3;
+      padding:0;
+      margin:0;
+      line-height:1;
+      appearance:none;
+      -webkit-appearance:none;
     }
 
     .btn{
@@ -140,33 +151,71 @@
       padding:8px 0;
     }
 
-    .edit-btn{
-      display:inline-flex;
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:100;
+      background:rgba(0,0,0,0.6);
       align-items:center;
       justify-content:center;
-      background:transparent;
-      border:none;
-      outline:none;
-      box-shadow:none;
-      cursor:pointer;
-      font-size:14px;
-      color:#ff4fa3;
-      padding:0;
-      margin:0;
-      line-height:1;
-      appearance:none;
-      -webkit-appearance:none;
-      border-radius:0;
+      padding:20px;
     }
 
-    .edit-btn:hover,
-    .edit-btn:focus,
-    .edit-btn:active,
-    .edit-btn:focus-visible{
-      background:transparent;
-      outline:none;
-      box-shadow:none;
+    .modal-box{
+      width:100%;
+      max-width:340px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.45);
+    }
+
+    .modal-title{
+      font-size:17px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .modal-input{
+      width:100%;
+      height:48px;
       border:none;
+      outline:none;
+      border-radius:12px;
+      background:#111;
+      border:1px solid #2b2b2b;
+      color:#fff;
+      padding:0 14px;
+      font-size:14px;
+      margin-bottom:12px;
+    }
+
+    .modal-actions{
+      display:flex;
+      gap:10px;
+    }
+
+    .modal-btn{
+      flex:1;
+      height:44px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .modal-cancel{
+      background:#2a2a2a;
+      color:#fff;
+      border:1px solid #3a3a3a;
+    }
+
+    .modal-save{
+      background:#ff4fa3;
+      color:#fff;
     }
   </style>
 </head>
@@ -184,7 +233,7 @@
     <span>Name:</span>
     <div class="name-wrap">
       <strong id="name">-</strong>
-      <button type="button" class="edit-btn" onclick="editName()">✏️</button>
+      <button type="button" class="edit-btn" onclick="openNameModal()">✏️</button>
     </div>
   </div>
 
@@ -206,6 +255,17 @@
   <button class="btn dark" onclick="goAlbum()">🖼 Album</button>
   <button class="btn primary" onclick="logout()">Logout</button>
 
+</div>
+
+<div id="nameModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-title">Edit your name</div>
+    <input id="nameInput" class="modal-input" type="text" placeholder="Enter your name" />
+    <div class="modal-actions">
+      <button class="modal-btn modal-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="modal-btn modal-save" onclick="saveName()">Save</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -240,6 +300,8 @@ const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
 const avatarEl = document.getElementById('avatar');
+const nameModal = document.getElementById('nameModal');
+const nameInput = document.getElementById('nameInput');
 
 nameEl.innerText = localStorage.getItem('userName') || 'User';
 emailEl.innerText = localStorage.getItem('userEmail') || '-';
@@ -271,11 +333,19 @@ async function loadTokens(){
   }
 }
 
-async function editName(){
-  const current = localStorage.getItem('userName') || '';
-  const newName = prompt('Enter your name', current);
+function openNameModal(){
+  nameInput.value = localStorage.getItem('userName') || '';
+  nameModal.style.display = 'flex';
+  setTimeout(() => nameInput.focus(), 50);
+}
 
-  if(!newName || !newName.trim()) return;
+function closeNameModal(){
+  nameModal.style.display = 'none';
+}
+
+async function saveName(){
+  const newName = nameInput.value.trim();
+  if(!newName) return;
 
   try{
     const res = await fetch('/api/auth', {
@@ -285,7 +355,7 @@ async function editName(){
       }),
       body: JSON.stringify({
         type: 'update-name',
-        name: newName.trim()
+        name: newName
       })
     });
 
@@ -296,8 +366,9 @@ async function editName(){
       return;
     }
 
-    localStorage.setItem('userName', newName.trim());
-    nameEl.innerText = newName.trim();
+    localStorage.setItem('userName', newName);
+    nameEl.innerText = newName;
+    closeNameModal();
 
   }catch(e){
     alert('Error updating name');
@@ -354,6 +425,18 @@ function goSubscribe(){
 function goAlbum(){
   window.location.href = 'album.html';
 }
+
+nameModal.addEventListener('click', (e) => {
+  if(e.target === nameModal){
+    closeNameModal();
+  }
+});
+
+nameInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    saveName();
+  }
+});
 
 loadTokens();
 loadRecentChats();
