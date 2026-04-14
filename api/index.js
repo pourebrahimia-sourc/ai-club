@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -15,31 +15,52 @@ if (fs.existsSync(filePath)) {
   memoryStore = JSON.parse(data || "{}");
 }
 
+function saveMemory() {
+  fs.writeFileSync(filePath, JSON.stringify(memoryStore, null, 2), "utf-8");
+}
+
+async function getAuthedUserId(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+
+  const token = authHeader.replace('Bearer ', '');
+  const { data, error } = await supabase.auth.getUser(token);
+
+  if (error || !data?.user?.id) return null;
+  return data.user.id;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-const { msg, name, profile, userId } = req.body;
-const USER_ID = userId;
-if (!USER_ID) {
-  return res.status(400).json({ error: "No user" });
-}
-    if (msg === "generate image") {
-      const { data: wallet, error: walletError } = await supabase
-        .from('wallets')
-        .select('balance')
-        .eq('user_id', USER_ID)
-        .single();
+    const { msg, name, profile, history = [] } = req.body || {};
+    const USER_ID = await getAuthedUserId(req);
 
-      if (walletError || !wallet || Number(wallet.balance) < 10) {
+    if (!USER_ID) {
+      return res.status(401).json({ error: "No user" });
+    }
+
+    const { data: wallet, error: walletError } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', USER_ID)
+      .single();
+
+    if (walletError || !wallet) {
+      return res.status(400).json({ error: "Wallet not found" });
+    }
+
+    if (msg === "generate image") {
+      if (Number(wallet.balance) < 10) {
         return res.status(200).json({ error: "Not enough tokens" });
       }
 
       const savedProfile = profile || {};
 
-const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
+      const imagePrompt = `beautiful AI girlfriend, half body, vertical portrait, ultra realistic,
 ${savedProfile?.ethnicity || ""} woman,
 ${savedProfile?.age || ""} years old, young adult, fresh face, youthful skin, soft facial features,
 ${savedProfile?.body || ""} body,
@@ -76,32 +97,31 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         return res.status(500).json({ error: JSON.stringify(imgData) });
       }
 
-const imageBase64 =
-  imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
+      const imageBase64 =
+        imgData.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
 
-if (!imageBase64) {
-  return res.status(500).json({ error: "Image generation failed" });
-}
+      if (!imageBase64) {
+        return res.status(500).json({ error: "Image generation failed" });
+      }
 
-const fileName = `ai-${Date.now()}.png`;
-const buffer = Buffer.from(imageBase64, "base64");
+      const fileName = `ai-${Date.now()}.png`;
+      const buffer = Buffer.from(imageBase64, "base64");
 
-const { error: uploadError } = await supabase.storage
-  .from('ai-images')
-  .upload(fileName, buffer, {
-    contentType: 'image/png'
-  });
+      const { error: uploadError } = await supabase.storage
+        .from('ai-images')
+        .upload(fileName, buffer, {
+          contentType: 'image/png'
+        });
 
-if (uploadError) {
-  return res.status(500).json({ error: uploadError.message });
-}
+      if (uploadError) {
+        return res.status(500).json({ error: uploadError.message });
+      }
 
-const { data: publicUrlData } = supabase.storage
-  .from('ai-images')
-  .getPublicUrl(fileName);
+      const { data: publicUrlData } = supabase.storage
+        .from('ai-images')
+        .getPublicUrl(fileName);
 
-const imageUrl = publicUrlData.publicUrl;
-
+      const imageUrl = publicUrlData.publicUrl;
       const newBalance = Number(wallet.balance) - 10;
 
       await supabase
@@ -109,22 +129,30 @@ const imageUrl = publicUrlData.publicUrl;
         .update({ balance: newBalance })
         .eq('user_id', USER_ID);
 
-  return res.status(200).json({ imageUrl, balance: newBalance });
+      return res.status(200).json({ imageUrl, balance: newBalance });
     }
 
-    if (!memoryStore[name]) {
-      memoryStore[name] = {
-        profile,
+    if (Number(wallet.balance) <= 0) {
+      return res.status(200).json({ reply: "No tokens left 🔒" });
+    }
+
+    const memoryKey = `${USER_ID}:${name || 'AI'}`;
+
+    if (!memoryStore[memoryKey]) {
+      memoryStore[memoryKey] = {
+        profile: profile || {},
         history: []
       };
     }
 
-    memoryStore[name].profile = profile;
+    memoryStore[memoryKey].profile = profile || memoryStore[memoryKey].profile || {};
 
-    let replyText = "";
-    const savedHistory = memoryStore[name]?.history || [];
-    const limitedHistory = savedHistory.slice(-6);
-    const savedProfile = memoryStore[name]?.profile || profile || {};
+    const savedProfile = memoryStore[memoryKey]?.profile || profile || {};
+    const normalizedHistory = Array.isArray(history)
+      ? history.slice(-8).filter(item => item?.role && item?.parts?.[0]?.text)
+      : [];
+    const memoryHistory = memoryStore[memoryKey].history || [];
+    const limitedHistory = normalizedHistory.length ? normalizedHistory : memoryHistory.slice(-8);
 
     const contents = [
       {
@@ -166,10 +194,7 @@ Interaction style:
         role: "model",
         parts: [{ text: "OK" }]
       },
-      ...limitedHistory.map((h, index) => ({
-        role: index % 2 === 0 ? "user" : "model",
-        parts: [{ text: h }]
-      })),
+      ...limitedHistory,
       {
         role: "user",
         parts: [{ text: msg }]
@@ -191,24 +216,15 @@ Interaction style:
       return res.status(500).json({ error: JSON.stringify(data) });
     }
 
-    const { data: wallet, error: walletError } = await supabase
-      .from('wallets')
-      .select('balance')
-      .eq('user_id', USER_ID)
-      .single();
-
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
-
-    if (walletError || !wallet || Number(wallet.balance) <= 0) {
-      return res.status(200).json({ reply: "No tokens left 🔒" });
-    }
+    const newBalance = Number(wallet.balance) - 1;
 
     await supabase
       .from('wallets')
-      .update({ balance: Number(wallet.balance) - 1 })
+      .update({ balance: newBalance })
       .eq('user_id', USER_ID);
 
-    const insertResult = await supabase.from('chat_history').insert([
+    await supabase.from('chat_history').insert([
       {
         user_id: USER_ID,
         message: msg,
@@ -221,12 +237,15 @@ Interaction style:
       }
     ]);
 
-    console.log('CHAT_HISTORY_INSERT:', insertResult);
+    memoryStore[memoryKey].history = [
+      ...limitedHistory,
+      { role: "user", parts: [{ text: msg }] },
+      { role: "model", parts: [{ text: reply }] }
+    ].slice(-10);
 
-    replyText = reply;
-    memoryStore[name].history.push(replyText);
+    saveMemory();
 
-    return res.status(200).json({ reply });
+    return res.status(200).json({ reply, balance: newBalance });
 
   } catch (e) {
     return res.status(500).json({ error: String(e) });
