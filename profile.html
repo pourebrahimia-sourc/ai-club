@@ -297,6 +297,7 @@ if(!getAccessToken()){
 }
 
 const nameEl = document.getElementById('name');
+  console.log("LOCALSTORAGE NAME:", localStorage.getItem('userName'));
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
 const avatarEl = document.getElementById('avatar');
@@ -339,7 +340,9 @@ async function loadUserProfile(){
 
     const data = await res.json();
     const user = data?.data?.session?.user;
-
+console.log("SESSION USER:", user);
+console.log("SESSION NAME:", user?.user_metadata?.name);
+    
     if(user){
       const latestName = user.user_metadata?.name || 'User';
       const latestEmail = user.email || '-';
@@ -379,7 +382,7 @@ async function saveName(){
     });
 
     const data = await res.json();
-
+console.log("UPDATE RESPONSE:", data);
     if(data.error){
       alert(data.error);
       return;
