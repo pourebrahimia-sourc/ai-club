@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -8,16 +6,6 @@ const supabase = createClient(
 );
 
 let memoryStore = {};
-const filePath = path.join(process.cwd(), "memory.json");
-
-if (fs.existsSync(filePath)) {
-  const data = fs.readFileSync(filePath, "utf-8");
-  memoryStore = JSON.parse(data || "{}");
-}
-
-function saveMemory() {
-  fs.writeFileSync(filePath, JSON.stringify(memoryStore, null, 2), "utf-8");
-}
 
 async function getAuthedUserId(req) {
   const authHeader = req.headers.authorization;
