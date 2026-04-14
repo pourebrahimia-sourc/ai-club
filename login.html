@@ -213,24 +213,23 @@
       <h2 id="pageTitle" class="login-title">Login</h2>
       <p id="pageSubtitle" class="login-subtitle">Sign in to continue to your AI girlfriend</p>
 
-<div class="field">
-  <input id="email" type="email" placeholder="Email" />
-</div>
+      <div class="field">
+        <input id="email" type="email" placeholder="Email" />
+      </div>
 
-<!-- ADD THIS -->
-<div class="field" id="nameWrap" style="display:none;">
-  <input id="name" type="text" placeholder="Name" />
-</div>
+      <div class="field" id="nameWrap" style="display:none;">
+        <input id="name" type="text" placeholder="Name" />
+      </div>
 
-<div class="field">
-  <input id="password" type="password" placeholder="Password" />
-  <button class="toggle-pass" type="button" onclick="togglePassword('password', this)">Show</button>
-</div>
+      <div class="field">
+        <input id="password" type="password" placeholder="Password" />
+        <button class="toggle-pass" type="button" onclick="togglePassword('password', this)">Show</button>
+      </div>
 
-<div class="field" id="confirmWrap" style="display:none;">
-  <input id="confirmPassword" type="password" placeholder="Repeat Password" />
-  <button class="toggle-pass" type="button" onclick="togglePassword('confirmPassword', this)">Show</button>
-</div>
+      <div class="field" id="confirmWrap" style="display:none;">
+        <input id="confirmPassword" type="password" placeholder="Repeat Password" />
+        <button class="toggle-pass" type="button" onclick="togglePassword('confirmPassword', this)">Show</button>
+      </div>
 
       <button id="mainBtn" class="btn btn-primary" onclick="submitAuth()">Login</button>
 
@@ -258,6 +257,27 @@
 
     function setStatus(text){
       statusEl.innerText = text || '';
+    }
+
+    function saveAuth(data){
+      if (data?.session?.access_token) {
+        localStorage.setItem('accessToken', data.session.access_token);
+      }
+      if (data?.session?.refresh_token) {
+        localStorage.setItem('refreshToken', data.session.refresh_token);
+      }
+      if (data?.user?.id) {
+        localStorage.setItem('userId', data.user.id);
+      }
+      localStorage.setItem('userEmail', data?.user?.email || '');
+      localStorage.setItem('userName', data?.user?.user_metadata?.name || 'User');
+    }
+
+    function clearGeneratedState(){
+      localStorage.removeItem('aiImage');
+      localStorage.removeItem('imageUnlocked');
+      localStorage.removeItem('lastProfileKey');
+      localStorage.removeItem('aiName');
     }
 
     function togglePassword(id, btn){
@@ -311,7 +331,7 @@
       const confirmPassword = document.getElementById('confirmPassword').value.trim();
       const name = document.getElementById('name').value.trim();
 
-      if(!email || !password || !confirmPassword){
+      if(!email || !password || !confirmPassword || !name){
         setStatus('Fill all fields');
         return;
       }
@@ -327,12 +347,12 @@
         const res = await fetch('/api/auth', {
           method:'POST',
           headers:{ 'Content-Type':'application/json' },
-body: JSON.stringify({
-  type:'signup',
-  email,
-  password,
-  name
-})
+          body: JSON.stringify({
+            type:'signup',
+            email,
+            password,
+            name
+          })
         });
 
         const data = await res.json();
@@ -342,15 +362,14 @@ body: JSON.stringify({
           return;
         }
 
-localStorage.setItem('userId', data.user.id);
-localStorage.setItem('userEmail', data.user.email || '');
-localStorage.setItem('accessToken', data.session?.access_token || '');
-localStorage.setItem('userName', data.user.user_metadata?.name || 'User');
-        
-        localStorage.removeItem('aiImage');
-        localStorage.removeItem('imageUnlocked');
-        localStorage.removeItem('lastProfileKey');
-        localStorage.removeItem('aiName');
+        if (!data.session?.access_token) {
+          setStatus('Account created. Please check your email, then log in.');
+          setMode('login');
+          return;
+        }
+
+        saveAuth(data);
+        clearGeneratedState();
         window.location.href = 'result.html';
       } catch(e){
         setStatus('Signup failed');
@@ -386,74 +405,74 @@ localStorage.setItem('userName', data.user.user_metadata?.name || 'User');
           return;
         }
 
-        localStorage.setItem('userId', data.user.id);
-        localStorage.setItem('userEmail', data.user.email || '');
-        localStorage.removeItem('aiImage');
-        localStorage.removeItem('imageUnlocked');
-        localStorage.removeItem('lastProfileKey');
-        localStorage.removeItem('aiName');
+        if (!data.session?.access_token) {
+          setStatus('Login session failed');
+          return;
+        }
+
+        saveAuth(data);
+        clearGeneratedState();
         window.location.href = 'result.html';
       } catch(e){
         setStatus('Login failed');
       }
     }
 
-async function googleLogin(){
-  try{
-    const res = await fetch('/api/auth', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        type:'google'
-      })
-    });
+    async function googleLogin(){
+      try{
+        const res = await fetch('/api/auth', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            type:'google'
+          })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if(data.error){
-      setStatus(data.error);
-      return;
+        if(data.error){
+          setStatus(data.error);
+          return;
+        }
+
+        window.location.href = data.url;
+      } catch(e){
+        setStatus('Google login failed');
+      }
     }
 
-    window.location.href = data.url;
-  } catch(e){
-    setStatus('Google login failed');
-  }
-}
+    async function forgotPassword(){
+      const email = document.getElementById('email').value.trim();
 
-     async function forgotPassword(){
-  const email = document.getElementById('email').value.trim();
+      if(!email){
+        setStatus('Enter your email');
+        return;
+      }
 
-  if(!email){
-    setStatus('Enter your email');
-    return;
-  }
+      setStatus('Sending reset email...');
 
-  setStatus('Sending reset email...');
+      try{
+        const res = await fetch('/api/auth', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            type:'forgot',
+            email
+          })
+        });
 
-  try{
-    const res = await fetch('/api/auth', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        type:'forgot',
-        email
-      })
-    });
+        const data = await res.json();
 
-    const data = await res.json();
+        if(data.error){
+          setStatus(data.error);
+          return;
+        }
 
-    if(data.error){
-      setStatus(data.error);
-      return;
+        setStatus('Reset email sent ✔️');
+      } catch(e){
+        setStatus('Error sending email');
+      }
     }
-
-    setStatus('Reset email sent ✔️');
-  } catch(e){
-    setStatus('Error sending email');
-  }
-}
-
 
     setMode('login');
   </script>
