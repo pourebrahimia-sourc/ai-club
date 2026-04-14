@@ -108,28 +108,61 @@ cursor:pointer;
 </div>
 
 <script>
-  if (!localStorage.getItem('userId')) {
+function getAccessToken() {
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}) {
+  const token = getAccessToken();
+  return token
+    ? { ...extra, Authorization: 'Bearer ' + token }
+    : extra;
+}
+
+function clearUserState() {
+  [
+    'userId',
+    'userEmail',
+    'userName',
+    'accessToken',
+    'refreshToken',
+    'aiImage',
+    'imageUnlocked',
+    'lastProfileKey',
+    'aiName'
+  ].forEach(key => localStorage.removeItem(key));
+}
+
+if (!getAccessToken()) {
   window.location.href = 'login.html';
 }
+
 document.getElementById('name').innerText = localStorage.getItem('userName') || 'User';
 document.getElementById('email').innerText = localStorage.getItem('userEmail') || '-';
 
 async function loadTokens(){
-   
   try{
-    const userId = localStorage.getItem('userId');
-const res = await fetch('/api/wallet?userId=' + userId);
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
     const data = await res.json();
+
+    if (data.error) {
+      document.getElementById('tokens').innerText = 0;
+      return;
+    }
+
     document.getElementById('tokens').innerText = data.balance || 0;
+    if (data.userId) {
+      localStorage.setItem('userId', data.userId);
+    }
   }catch(e){
     document.getElementById('tokens').innerText = 0;
   }
 }
 
 function logout(){
-  localStorage.removeItem('userId');
-  localStorage.removeItem('userEmail');
-  localStorage.removeItem('userName');
+  clearUserState();
   window.location.href = 'login.html';
 }
 
@@ -138,6 +171,7 @@ function goGift(){
 }
 
 loadTokens();
+
 function editName(){
   const current = localStorage.getItem('userName') || '';
   const newName = prompt('Enter your name', current);
