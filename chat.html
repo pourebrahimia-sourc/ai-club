@@ -41,13 +41,6 @@ body::after{
   position:fixed;
   inset:0;
   z-index:1;
-  /*background:linear-gradient(
-    to top,
-    rgba(17,17,17,0.96) 0%,
-    rgba(17,17,17,0.78) 30%,
-    rgba(17,17,17,0.38) 58%,
-    rgba(17,17,17,0.18) 100%
-  );*/
   pointer-events:none;
 }
 
@@ -181,7 +174,7 @@ body::after{
     max-height:500px;
   }
 }
-	.top-area{
+  .top-area{
   position:relative;
   z-index:2;
 }
@@ -193,7 +186,7 @@ body::after{
   bottom:16px;
   z-index:2;
 }
-	@media (min-width:768px){
+  @media (min-width:768px){
   .bottom-area{
     width:420px;
     left:50%;
@@ -201,7 +194,7 @@ body::after{
     transform:translateX(-50%);
   }
 }
-	.character-header{
+  .character-header{
   display:flex;
   align-items:center;
   gap:12px;
@@ -218,7 +211,7 @@ body::after{
   height:44px;
   border-radius:50%;
   background-position:center 3px;
-background-size:120%;
+  background-size:120%;
 }
 
 .char-info{
@@ -237,7 +230,7 @@ background-size:120%;
 }
 </style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
 </head>
 <body>
 <div class="bg">
@@ -264,7 +257,7 @@ backdrop-filter:blur(3px);
   box-shadow:0 0 24px rgba(255,79,163,0.35);
   "></div>
 </div>
-	<div id="lockOverlay" style="
+  <div id="lockOverlay" style="
 position:absolute;
 top:50%;
 left:50%;
@@ -295,7 +288,7 @@ cursor:pointer;
   <div class="logo">AI Club</div>
   <h2 class="title">Your AI Girlfriend 💖</h2>
 </div>
-	<div class="character-header">
+  <div class="character-header">
   <div class="avatar"></div>
 
   <div class="char-info">
@@ -314,8 +307,24 @@ cursor:pointer;
 
 <script>
 const savedImage = localStorage.getItem('aiImage');
-	const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 const lockOverlay = document.getElementById('lockOverlay');
+
+function getAccessToken() {
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}) {
+  const token = getAccessToken();
+  return token
+    ? { ...extra, Authorization: 'Bearer ' + token }
+    : extra;
+}
+
+if (!getAccessToken()) {
+  window.location.href = 'login.html';
+}
+
 function openTokenModal() {
   const tokenModal = document.getElementById('tokenModal');
   if (tokenModal) tokenModal.style.display = "flex";
@@ -330,16 +339,16 @@ document.addEventListener('click', (e) => {
   if (e.target && e.target.id === 'closeTokenModal') closeModal();
   if (e.target && e.target.id === 'tokenModal') closeModal();
 });
-	lockOverlay.addEventListener('click', async () => {
-		if (imageUnlocked) return;
-		const loading = document.getElementById('imageLoading');
-loading.style.display = "flex";
- 
+
+lockOverlay.addEventListener('click', async () => {
+  if (imageUnlocked) return;
+  const loading = document.getElementById('imageLoading');
+  loading.style.display = "flex";
 
   try {
     const res = await fetch('/api', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         msg: "generate image",
         name: aiName,
@@ -351,7 +360,7 @@ loading.style.display = "flex";
 
     if (data.error === "Not enough tokens") {
       openTokenModal();
-		loading.style.display = "none";
+      loading.style.display = "none";
       return;
     }
 
@@ -360,13 +369,17 @@ loading.style.display = "flex";
       localStorage.setItem('imageUnlocked', "true");
       loading.style.display = "none";
       location.reload();
+      return;
     }
+
+    loading.style.display = "none";
   } catch (e) {
+    loading.style.display = "none";
     alert("Error generating image");
   }
 });
 
-  if (imageUnlocked) {
+if (imageUnlocked) {
   lockOverlay.style.display = "none";
 } else {
   lockOverlay.style.display = "flex";
@@ -374,7 +387,6 @@ loading.style.display = "flex";
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
 
-// همیشه بک‌گراند پریویو باشه
 if (imageUnlocked && savedImage) {
   bgImage.src = savedImage;
   bgImage.style.filter = "blur(0px)";
@@ -406,7 +418,7 @@ if(!aiName){
 
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
-	document.getElementById('charName').innerText = aiName;
+document.getElementById('charName').innerText = aiName;
 const voiceBtn = document.getElementById('voiceBtn');
 
 speechSynthesis.getVoices();
@@ -448,10 +460,10 @@ async function talk(){
   input.value = '';
 
   try{
-	  document.getElementById('charStatus').innerText = "Typing...";
+    document.getElementById('charStatus').innerText = "Typing...";
     const res = await fetch('/api', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         msg,
         history,
@@ -463,19 +475,20 @@ async function talk(){
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
 
-if (reply.includes("No tokens left")) {
-  addMessage(aiName, reply, '#ff4fa3');
-  document.getElementById('lockOverlay').style.display = "flex";
-  return;
-}
+    if (reply.includes("No tokens left")) {
+      addMessage(aiName, reply, '#ff4fa3');
+      document.getElementById('lockOverlay').style.display = "flex";
+      document.getElementById('charStatus').innerText = "Online";
+      return;
+    }
 
-
-	  addMessage(aiName, reply, '#ff4fa3');
-	  document.getElementById('charStatus').innerText = "Online";
+    addMessage(aiName, reply, '#ff4fa3');
+    document.getElementById('charStatus').innerText = "Online";
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
   }catch(e){
+    document.getElementById('charStatus').innerText = "Online";
     addMessage(aiName, 'Error', '#ff4fa3');
   }
 }
@@ -520,7 +533,7 @@ input.addEventListener('keydown', function(e){
   }
 });
 </script>
-	<div id="tokenModal" style="
+  <div id="tokenModal" style="
 display:none;
 position:fixed;
 inset:0;
