@@ -344,7 +344,7 @@ console.log("SESSION USER:", user);
 console.log("SESSION NAME:", user?.user_metadata?.name);
     
     if(user){
-      const latestName = user.user_metadata?.name || 'User';
+      const latestName = data?.data?.session?.profileName || 'User';
       const latestEmail = user.email || '-';
 
       localStorage.setItem('userName', latestName);
