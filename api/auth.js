@@ -30,6 +30,7 @@ export default async function handler(req, res) {
     }
 
     const trimmedName = name.trim();
+    console.log("USER ID:", user.id);
 
     const { data, error } = await supabase.auth.signUp({
       email,
