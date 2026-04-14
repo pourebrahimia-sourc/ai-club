@@ -121,10 +121,9 @@ if (!existingUser) {
     const trimmedName = name.trim();
 
 
-    return res.json({
-      success: true,
-      user: updatedUser.user
-    });
+return res.json({
+  success: true
+});
   }
 
   // ======================
