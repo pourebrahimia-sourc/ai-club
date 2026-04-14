@@ -533,12 +533,18 @@ async function generateImage() {
 
     const data = await res.json();
 
-    if (data.error === "Not enough tokens") {
-      loading.style.display = "none";
-      imageLock.style.pointerEvents = "auto";
-      openTokenModalWithAmount(10);
-      return;
-    }
+if (data.error) {
+  loading.style.display = "none";
+  imageLock.style.pointerEvents = "auto";
+
+  if (data.error === "Not enough tokens") {
+    openTokenModalWithAmount(10);
+  } else {
+    alert(data.error);
+  }
+
+  return;
+}
 
     if (data.imageUrl) {
       img.style.opacity = "0";
