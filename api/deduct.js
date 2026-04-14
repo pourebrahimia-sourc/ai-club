@@ -10,17 +10,30 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const { amount, userId } = req.body;
+  const authHeader = req.headers.authorization;
 
-    if (!userId || !amount) {
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const token = authHeader.replace('Bearer ', '');
+    const { data: userData, error: userError } = await supabase.auth.getUser(token);
+
+    if (userError || !userData?.user?.id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { amount } = req.body || {};
+
+    if (!amount) {
       return res.status(400).json({ error: 'Missing data' });
     }
 
     const { data: wallet, error: walletError } = await supabase
       .from('wallets')
       .select('balance')
-      .eq('user_id', userId)
+      .eq('user_id', userData.user.id)
       .single();
 
     if (walletError || !wallet) {
@@ -41,7 +54,7 @@ export default async function handler(req, res) {
     const { data: updatedWallet, error: updateError } = await supabase
       .from('wallets')
       .update({ balance: newBalance })
-      .eq('user_id', userId)
+      .eq('user_id', userData.user.id)
       .select('balance')
       .single();
 
