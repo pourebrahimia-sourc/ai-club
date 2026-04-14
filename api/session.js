@@ -21,11 +21,24 @@ export default async function handler(req, res) {
 
 const user = data.user;
 
-const { data: profile } = await supabase
+let { data: profile } = await supabase
   .from('users')
   .select('name')
   .eq('id', user.id)
   .maybeSingle();
+
+if (!profile) {
+  await supabase
+    .from('users')
+    .insert([
+      {
+        id: user.id,
+        name: user.user_metadata?.name || 'User'
+      }
+    ]);
+
+  profile = { name: user.user_metadata?.name || 'User' };
+}
 
 const { data: wallet } = await supabase
   .from('wallets')
