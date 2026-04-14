@@ -152,10 +152,10 @@ if (type === 'update-name') {
 
   const trimmedName = name.trim();
 
-  const { error: updateError } = await supabase
-    .from('wallets')
-    .update({ name: trimmedName })
-    .eq('user_id', user.id);
+const { error: updateError } = await supabase
+  .from('user_profiles_with_wallet')
+  .update({ name: trimmedName })
+  .eq('user_id', user.id);
 
   if (updateError) {
     return res.status(400).json({ error: updateError.message });
