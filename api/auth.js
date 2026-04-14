@@ -2,10 +2,14 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { type, email, password, name } = req.body || {};
 
   if ((type === 'signup' || type === 'login') && (!email || !password)) {
@@ -13,16 +17,18 @@ export default async function handler(req, res) {
   }
 
   if (type === 'signup') {
-    if (!name) {
+    if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Missing name' });
     }
+
+    const trimmedName = name.trim();
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          name
+          name: trimmedName
         }
       }
     });
@@ -37,12 +43,16 @@ export default async function handler(req, res) {
       .maybeSingle();
 
     if (!existingWallet) {
-      await supabase.from('wallets').insert([
+      const { error: walletError } = await supabase.from('wallets').insert([
         {
           user_id: data.user.id,
           balance: 10
         }
       ]);
+
+      if (walletError) {
+        return res.status(400).json({ error: walletError.message });
+      }
     }
 
     return res.json({
@@ -66,6 +76,10 @@ export default async function handler(req, res) {
   }
 
   if (type === 'forgot') {
+    if (!email) {
+      return res.status(400).json({ error: 'Missing email' });
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://ai-club-one-iota.vercel.app/reset-password.html'
     });
@@ -103,6 +117,47 @@ export default async function handler(req, res) {
     }
 
     return res.json({ success: true });
+  }
+
+  if (type === 'update-name') {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Missing name' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser(token);
+
+    if (userError || !user?.id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const trimmedName = name.trim();
+
+    const { data: updatedUser, error } = await supabase.auth.admin.updateUserById(user.id, {
+      user_metadata: {
+        ...(user.user_metadata || {}),
+        name: trimmedName
+      }
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.json({
+      success: true,
+      user: updatedUser.user
+    });
   }
 
   if (type === 'google') {
