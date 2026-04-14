@@ -17,7 +17,27 @@
     .chat-name{font-size:14px;font-weight:700;}
     .chat-date{font-size:11px;opacity:0.6;}
     .name-wrap{display:flex;align-items:center;gap:6px;}
-    .edit-btn{background:none;border:none;cursor:pointer;font-size:14px;color:#fff;}
+    .edit-btn{
+  background:transparent;
+  border:none;
+  outline:none;
+  box-shadow:none;
+  cursor:pointer;
+  font-size:14px;
+  color:#ff4fa3;
+  padding:0;
+  margin:0;
+  line-height:1;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.edit-btn:focus,
+.edit-btn:active{
+  outline:none;
+  box-shadow:none;
+  background:transparent;
+}
   </style>
 </head>
 <body>
