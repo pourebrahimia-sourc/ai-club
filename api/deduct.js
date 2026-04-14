@@ -25,47 +25,27 @@ export default async function handler(req, res) {
     }
 
     const { amount } = req.body || {};
-
-    if (!amount) {
-      return res.status(400).json({ error: 'Missing data' });
-    }
-
-    const { data: wallet, error: walletError } = await supabase
-      .from('wallets')
-      .select('balance')
-      .eq('user_id', userData.user.id)
-      .single();
-
-    if (walletError || !wallet) {
-      return res.status(400).json({
-        error: walletError?.message || 'Wallet not found'
-      });
-    }
-
-    const currentBalance = Number(wallet.balance);
     const deductAmount = Number(amount);
 
-    if (currentBalance < deductAmount) {
+    if (!deductAmount || deductAmount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const { data: newBalance, error: deductError } = await supabase.rpc('deduct_tokens', {
+      user_id_input: userData.user.id,
+      amount_input: deductAmount
+    });
+
+    if (deductError) {
+      return res.status(400).json({ error: deductError.message });
+    }
+
+    if (newBalance === null) {
       return res.status(400).json({ error: 'Not enough tokens' });
     }
 
-    const newBalance = currentBalance - deductAmount;
-
-    const { data: updatedWallet, error: updateError } = await supabase
-      .from('wallets')
-      .update({ balance: newBalance })
-      .eq('user_id', userData.user.id)
-      .select('balance')
-      .single();
-
-    if (updateError) {
-      return res.status(400).json({
-        error: updateError.message
-      });
-    }
-
     return res.status(200).json({
-      balance: updatedWallet.balance
+      balance: newBalance
     });
 
   } catch (e) {
