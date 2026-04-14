@@ -4,91 +4,36 @@
   <title>Profile - AI Club</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body{
-      margin:0;
-      background:#111;
-      color:#fff;
-      font-family:Arial, Helvetica, sans-serif;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-      padding:20px;
-    }
-
-    .card{
-      width:100%;
-      max-width:380px;
-      background:#1a1a1a;
-      border:1px solid #2b2b2b;
-      border-radius:18px;
-      padding:20px;
-    }
-
-    .avatar{
-      width:70px;
-      height:70px;
-      border-radius:50%;
-      background:#2a2a2a;
-      margin:0 auto 15px;
-    }
-
-    .title{
-      text-align:center;
-      font-size:20px;
-      margin-bottom:20px;
-    }
-
-    .row{
-      margin-bottom:12px;
-      font-size:14px;
-      display:flex;
-      justify-content:space-between;
-    }
-
-    .btn{
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:12px;
-      margin-top:10px;
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .logout{
-      background:#ff4fa3;
-      color:#fff;
-    }
-
-    .gift{
-      background:#2a2a2a;
-      color:#fff;
-      border:1px solid #3a3a3a;
-    }
+    body{margin:0;background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
+    .card{width:100%;max-width:420px;background:#1a1a1a;border:1px solid #2b2b2b;border-radius:18px;padding:20px;}
+    .avatar{width:70px;height:70px;border-radius:50%;background:#2a2a2a;margin:0 auto 15px;background-size:cover;background-position:center;}
+    .title{text-align:center;font-size:20px;margin-bottom:20px;}
+    .row{margin-bottom:12px;font-size:14px;display:flex;justify-content:space-between;gap:12px;}
+    .btn{width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;cursor:pointer;font-weight:700;}
+    .primary{background:#ff4fa3;color:#fff;}
+    .dark{background:#2a2a2a;color:#fff;border:1px solid #3a3a3a;}
+    .chat-item{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #2a2a2a;cursor:pointer;}
+    .chat-avatar{width:40px;height:40px;border-radius:50%;background:#2a2a2a;background-size:cover;background-position:center;}
+    .chat-name{font-size:14px;font-weight:700;}
+    .chat-date{font-size:11px;opacity:0.6;}
+    .name-wrap{display:flex;align-items:center;gap:6px;}
+    .edit-btn{background:none;border:none;cursor:pointer;font-size:14px;color:#fff;}
   </style>
 </head>
 <body>
 
 <div class="card">
 
-  <div class="avatar"></div>
-<button onclick="window.location.href='result.html'" style="
-margin-bottom:10px;
-background:none;
-border:none;
-color:#ff4fa3;
-font-size:14px;
-cursor:pointer;
-">← Back</button>
+  <div class="avatar" id="avatar"></div>
+
   <div class="title">Your Profile</div>
 
   <div class="row">
-<span>Name:</span>
-<div style="display:flex;align-items:center;gap:6px;">
-  <strong id="name">-</strong>
-  <button onclick="editName()" style="background:none;border:none;cursor:pointer;font-size:14px;">✏️</button>
-</div>
+    <span>Name:</span>
+    <div class="name-wrap">
+      <strong id="name">-</strong>
+      <button class="edit-btn" onclick="editName()">✏️</button>
+    </div>
   </div>
 
   <div class="row">
@@ -101,25 +46,27 @@ cursor:pointer;
     <strong id="tokens">0</strong>
   </div>
 
-  <button class="btn gift" onclick="goGift()">🎁 Gifts</button>
+  <h3 style="margin-top:20px;">Recent Chats</h3>
+  <div id="recentChats"></div>
 
-  <button class="btn logout" onclick="logout()">Logout</button>
+  <button class="btn dark" onclick="goGift()">🎁 Gifts</button>
+  <button class="btn dark" onclick="goSubscribe()">💎 Subscribe</button>
+  <button class="btn dark" onclick="goAlbum()">🖼 Album</button>
+  <button class="btn primary" onclick="logout()">Logout</button>
 
 </div>
 
 <script>
-function getAccessToken() {
+function getAccessToken(){
   return localStorage.getItem('accessToken') || '';
 }
 
-function authHeaders(extra = {}) {
+function authHeaders(extra = {}){
   const token = getAccessToken();
-  return token
-    ? { ...extra, Authorization: 'Bearer ' + token }
-    : extra;
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
 }
 
-function clearUserState() {
+function clearUserState(){
   [
     'userId',
     'userEmail',
@@ -133,12 +80,22 @@ function clearUserState() {
   ].forEach(key => localStorage.removeItem(key));
 }
 
-if (!getAccessToken()) {
+if(!getAccessToken()){
   window.location.href = 'login.html';
 }
 
-document.getElementById('name').innerText = localStorage.getItem('userName') || 'User';
-document.getElementById('email').innerText = localStorage.getItem('userEmail') || '-';
+const nameEl = document.getElementById('name');
+const emailEl = document.getElementById('email');
+const tokenEl = document.getElementById('tokens');
+const avatarEl = document.getElementById('avatar');
+
+nameEl.innerText = localStorage.getItem('userName') || 'User';
+emailEl.innerText = localStorage.getItem('userEmail') || '-';
+
+const savedImage = localStorage.getItem('aiImage');
+if(savedImage){
+  avatarEl.style.backgroundImage = `url(${savedImage})`;
+}
 
 async function loadTokens(){
   try{
@@ -147,18 +104,84 @@ async function loadTokens(){
     });
     const data = await res.json();
 
-    if (data.error) {
-      document.getElementById('tokens').innerText = 0;
+    if(data.error){
+      tokenEl.innerText = 0;
       return;
     }
 
-    document.getElementById('tokens').innerText = data.balance || 0;
-    if (data.userId) {
+    tokenEl.innerText = data.balance || 0;
+
+    if(data.userId){
       localStorage.setItem('userId', data.userId);
     }
   }catch(e){
-    document.getElementById('tokens').innerText = 0;
+    tokenEl.innerText = 0;
   }
+}
+
+async function editName(){
+  const current = localStorage.getItem('userName') || '';
+  const newName = prompt('Enter your name', current);
+
+  if(!newName || !newName.trim()) return;
+
+  try{
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: authHeaders({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        type: 'update-name',
+        name: newName.trim()
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      alert(data.error);
+      return;
+    }
+
+    localStorage.setItem('userName', newName.trim());
+    nameEl.innerText = newName.trim();
+
+  }catch(e){
+    alert('Error updating name');
+  }
+}
+
+function loadRecentChats(){
+  const container = document.getElementById('recentChats');
+  container.innerHTML = '';
+
+  const chats = JSON.parse(localStorage.getItem('recentChats') || '[]').slice(-5).reverse();
+
+  if(!chats.length){
+    container.innerHTML = '<div style="opacity:.6;font-size:13px;padding:8px 0;">No recent chats</div>';
+    return;
+  }
+
+  chats.forEach(chat => {
+    const div = document.createElement('div');
+    div.className = 'chat-item';
+
+    div.innerHTML = `
+      <div class="chat-avatar" style="background-image:url('${chat.image || ''}')"></div>
+      <div>
+        <div class="chat-name">${chat.name || 'AI'}</div>
+        <div class="chat-date">${chat.date || ''}</div>
+      </div>
+    `;
+
+    div.onclick = () => {
+      localStorage.setItem('aiName', chat.name || 'AI');
+      window.location.href = 'chat.html';
+    };
+
+    container.appendChild(div);
+  });
 }
 
 function logout(){
@@ -167,20 +190,19 @@ function logout(){
 }
 
 function goGift(){
-  alert('Gift page later');
+  window.location.href = 'gift.html';
+}
+
+function goSubscribe(){
+  window.location.href = 'subscribe.html';
+}
+
+function goAlbum(){
+  window.location.href = 'album.html';
 }
 
 loadTokens();
-
-function editName(){
-  const current = localStorage.getItem('userName') || '';
-  const newName = prompt('Enter your name', current);
-
-  if(newName && newName.trim()){
-    localStorage.setItem('userName', newName.trim());
-    document.getElementById('name').innerText = newName.trim();
-  }
-}
+loadRecentChats();
 </script>
 
 </body>
