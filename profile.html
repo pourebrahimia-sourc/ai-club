@@ -366,8 +366,11 @@ async function saveName(){
       return;
     }
 
-    localStorage.setItem('userName', newName);
-    nameEl.innerText = newName;
+    const finalUser = data.user || {};
+    const finalName = finalUser.user_metadata?.name || newName;
+
+    localStorage.setItem('userName', finalName);
+    nameEl.innerText = finalName;
     closeNameModal();
 
   }catch(e){
