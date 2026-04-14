@@ -19,19 +19,26 @@ export default async function handler(req, res) {
     return res.json({ data: { session: null } });
   }
 
-  const user = data.user;
+const user = data.user;
 
-  const { data: wallet } = await supabase
-    .from('wallets')
-    .select('id')
-    .eq('user_id', user.id)
-    .maybeSingle();
+const { data: profile } = await supabase
+  .from('users')
+  .select('name')
+  .eq('id', user.id)
+  .maybeSingle();
 
-  return res.json({
-    data: {
-      session: {
-        user
-      }
+const { data: wallet } = await supabase
+  .from('wallets')
+  .select('id')
+  .eq('user_id', user.id)
+  .maybeSingle();
+
+return res.json({
+  data: {
+    session: {
+      user,
+      profileName: profile?.name || user.user_metadata?.name || 'User'
     }
-  });
+  }
+});
 }
