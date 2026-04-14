@@ -119,27 +119,29 @@ export default async function handler(req, res) {
     return res.json({ success: true });
   }
 
-  if (type === 'update-name') {
-    const authHeader = req.headers.authorization;
+if (type === 'update-name') {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
 
-    if (!authHeader) {
-      return res.status(401).json({ error: 'Unauthorized' });
+  const token = authHeader.replace('Bearer ', '');
+
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) return res.status(401).json({ error: 'Unauthorized' });
+
+  const trimmedName = name.trim();
+
+  const { data, error: updateError } = await supabase.auth.updateUser({
+    data: {
+      name: trimmedName
     }
+  });
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Missing name' });
-    }
+  if (updateError) {
+    return res.status(400).json({ error: updateError.message });
+  }
 
-    const token = authHeader.replace('Bearer ', '');
-
-    const {
-      data: { user },
-      error: userError
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user?.id) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+  return res.json({ success: true, user: data.user });
+}
 
     const trimmedName = name.trim();
 
