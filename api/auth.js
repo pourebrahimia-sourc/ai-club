@@ -66,19 +66,37 @@ export default async function handler(req, res) {
     });
   }
 
-  if (type === 'login') {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+if (type === 'login') {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
-    if (error) return res.status(400).json({ error: error.message });
+  if (error) return res.status(400).json({ error: error.message });
 
-    return res.json({
-      user: data.user,
-      session: data.session || null
-    });
+  let finalUser = data.user;
+
+  const { data: profileRow } = await supabaseAdmin
+    .from('users')
+    .select('name')
+    .eq('id', data.user.id)
+    .maybeSingle();
+
+  if (profileRow?.name) {
+    finalUser = {
+      ...data.user,
+      user_metadata: {
+        ...(data.user.user_metadata || {}),
+        name: profileRow.name
+      }
+    };
   }
+
+  return res.json({
+    user: finalUser,
+    session: data.session || null
+  });
+}
 
   if (type === 'forgot') {
     if (!email) {
@@ -131,6 +149,7 @@ export default async function handler(req, res) {
 
 if (type === 'update-name') {
   const authHeader = req.headers.authorization;
+
   if (!authHeader) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -152,10 +171,10 @@ if (type === 'update-name') {
 
   const trimmedName = name.trim();
 
-const { error: updateError } = await supabase
-  .from('user_profiles_with_wallet')
-  .update({ name: trimmedName })
-  .eq('user_id', user.id);
+  const { error: updateError } = await supabaseAdmin
+    .from('users')
+    .update({ name: trimmedName })
+    .eq('id', user.id);
 
   if (updateError) {
     return res.status(400).json({ error: updateError.message });
