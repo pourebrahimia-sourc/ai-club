@@ -42,7 +42,16 @@ export default async function handler(req, res) {
     }
 
     if (msg === "generate image") {
-      if (Number(wallet.balance) < 10) {
+      const { data: updatedImageBalance, error: deductImageError } = await supabase.rpc('deduct_tokens', {
+        user_id_input: USER_ID,
+        amount_input: 10
+      });
+
+      if (deductImageError) {
+        return res.status(500).json({ error: deductImageError.message });
+      }
+
+      if (updatedImageBalance === null) {
         return res.status(200).json({ error: "Not enough tokens" });
       }
 
@@ -110,14 +119,8 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .getPublicUrl(fileName);
 
       const imageUrl = publicUrlData.publicUrl;
-      const newBalance = Number(wallet.balance) - 10;
 
-      await supabase
-        .from('wallets')
-        .update({ balance: newBalance })
-        .eq('user_id', USER_ID);
-
-      return res.status(200).json({ imageUrl, balance: newBalance });
+      return res.status(200).json({ imageUrl, balance: updatedImageBalance });
     }
 
     if (Number(wallet.balance) <= 0) {
@@ -205,12 +208,19 @@ Interaction style:
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hey you 😘";
-    const newBalance = Number(wallet.balance) - 1;
 
-    await supabase
-      .from('wallets')
-      .update({ balance: newBalance })
-      .eq('user_id', USER_ID);
+    const { data: updatedChatBalance, error: deductChatError } = await supabase.rpc('deduct_tokens', {
+      user_id_input: USER_ID,
+      amount_input: 1
+    });
+
+    if (deductChatError) {
+      return res.status(500).json({ error: deductChatError.message });
+    }
+
+    if (updatedChatBalance === null) {
+      return res.status(200).json({ reply: "No tokens left 🔒" });
+    }
 
     await supabase.from('chat_history').insert([
       {
@@ -231,7 +241,7 @@ Interaction style:
       { role: "model", parts: [{ text: reply }] }
     ].slice(-10);
 
-    return res.status(200).json({ reply, balance: newBalance });
+    return res.status(200).json({ reply, balance: updatedChatBalance });
 
   } catch (e) {
     return res.status(500).json({ error: String(e) });
