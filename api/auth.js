@@ -214,10 +214,12 @@ if (type === 'update-name') {
     return res.status(400).json({ error: 'Missing name' });
   }
 
-  const { error: updateError } = await supabaseAdmin
-    .from('users')
-    .update({ name: trimmedName })
-    .eq('id', user.id);
+const { error: updateError } = await supabaseAdmin
+  .from('users')
+  .upsert(
+    { id: user.id, name: trimmedName },
+    { onConflict: 'id' }
+  );
 
   if (updateError) {
     return res.status(400).json({ error: updateError.message });
