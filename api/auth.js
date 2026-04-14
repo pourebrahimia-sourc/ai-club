@@ -125,22 +125,29 @@ if (type === 'update-name') {
 
   const token = authHeader.replace('Bearer ', '');
 
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) return res.status(401).json({ error: 'Unauthorized' });
+  const {
+    data: { user },
+    error: userError
+  } = await supabase.auth.getUser(token);
+
+  if (userError || !user?.id) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   const trimmedName = name.trim();
 
-  const { data, error: updateError } = await supabase.auth.updateUser({
-    data: {
+  const { error } = await supabase.auth.admin.updateUserById(user.id, {
+    user_metadata: {
+      ...(user.user_metadata || {}),
       name: trimmedName
     }
   });
 
-  if (updateError) {
-    return res.status(400).json({ error: updateError.message });
+  if (error) {
+    return res.status(400).json({ error: error.message });
   }
 
-  return res.json({ success: true, user: data.user });
+  return res.json({ success: true });
 }
 
     const trimmedName = name.trim();
