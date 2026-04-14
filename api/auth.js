@@ -2,6 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
@@ -36,14 +41,14 @@ export default async function handler(req, res) {
     if (error) return res.status(400).json({ error: error.message });
     if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
 
-    const { data: existingWallet } = await supabase
+    const { data: existingWallet } = await supabaseAdmin
       .from('wallets')
       .select('id')
       .eq('user_id', data.user.id)
       .maybeSingle();
 
     if (!existingWallet) {
-      const { error: walletError } = await supabase.from('wallets').insert([
+      const { error: walletError } = await supabaseAdmin.from('wallets').insert([
         {
           user_id: data.user.id,
           balance: 10
@@ -96,10 +101,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing token or password' });
     }
 
+    const tempSupabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY
+    );
+
     const {
       data: { session },
       error: sessionError
-    } = await supabase.auth.setSession({
+    } = await tempSupabase.auth.setSession({
       access_token,
       refresh_token
     });
@@ -108,7 +118,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: sessionError?.message || 'Invalid session' });
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await tempSupabase.auth.updateUser({
       password: newPassword
     });
 
@@ -119,40 +129,31 @@ export default async function handler(req, res) {
     return res.json({ success: true });
   }
 
-if (type === 'update-name') {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  if (type === 'update-name') {
+    const authHeader = req.headers.authorization;
 
-  const token = authHeader.replace('Bearer ', '');
-
-  const {
-    data: { user },
-    error: userError
-  } = await supabase.auth.getUser(token);
-
-  if (userError || !user?.id) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const trimmedName = name.trim();
-
-  const { error } = await supabase.auth.admin.updateUserById(user.id, {
-    user_metadata: {
-      ...(user.user_metadata || {}),
-      name: trimmedName
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
-  });
 
-  if (error) {
-    return res.status(400).json({ error: error.message });
-  }
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Missing name' });
+    }
 
-  return res.json({ success: true });
-}
+    const token = authHeader.replace('Bearer ', '');
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser(token);
+
+    if (userError || !user?.id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     const trimmedName = name.trim();
 
-    const { data: updatedUser, error } = await supabase.auth.admin.updateUserById(user.id, {
+    const { data: updatedUser, error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
       user_metadata: {
         ...(user.user_metadata || {}),
         name: trimmedName
