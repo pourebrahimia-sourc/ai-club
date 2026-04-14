@@ -303,7 +303,6 @@ const avatarEl = document.getElementById('avatar');
 const nameModal = document.getElementById('nameModal');
 const nameInput = document.getElementById('nameInput');
 
-nameEl.innerText = localStorage.getItem('userName') || 'User';
 emailEl.innerText = localStorage.getItem('userEmail') || '-';
 
 const savedImage = localStorage.getItem('aiImage');
@@ -332,7 +331,27 @@ async function loadTokens(){
     tokenEl.innerText = 0;
   }
 }
+async function loadUserProfile(){
+  try{
+    const res = await fetch('/api/session', {
+      headers: authHeaders()
+    });
 
+    const data = await res.json();
+    const user = data?.data?.session?.user;
+
+    if(user){
+      const latestName = user.user_metadata?.name || 'User';
+      const latestEmail = user.email || '-';
+
+      localStorage.setItem('userName', latestName);
+      localStorage.setItem('userEmail', latestEmail);
+
+      nameEl.innerText = latestName;
+      emailEl.innerText = latestEmail;
+    }
+  }catch(e){}
+}
 function openNameModal(){
   nameInput.value = localStorage.getItem('userName') || '';
   nameModal.style.display = 'flex';
@@ -369,9 +388,8 @@ async function saveName(){
     const finalUser = data.user || {};
     const finalName = finalUser.user_metadata?.name || newName;
 
-    localStorage.setItem('userName', finalName);
-    nameEl.innerText = finalName;
-    closeNameModal();
+closeNameModal();
+await loadUserProfile();
 
   }catch(e){
     alert('Error updating name');
@@ -441,6 +459,7 @@ nameInput.addEventListener('keydown', (e) => {
   }
 });
 
+loadUserProfile();
 loadTokens();
 loadRecentChats();
 </script>
