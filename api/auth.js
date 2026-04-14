@@ -192,6 +192,38 @@ return res.json({
 
     return res.json({ url: data.url });
   }
+if (type === 'update-name') {
+  const authHeader = req.headers.authorization;
 
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+  const { data, error } = await supabase.auth.getUser(token);
+
+  if (error || !data.user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const user = data.user;
+  const { name } = req.body || {};
+  const trimmedName = name?.trim();
+
+  if (!trimmedName) {
+    return res.status(400).json({ error: 'Missing name' });
+  }
+
+  const { error: updateError } = await supabaseAdmin
+    .from('users')
+    .update({ name: trimmedName })
+    .eq('id', user.id);
+
+  if (updateError) {
+    return res.status(400).json({ error: updateError.message });
+  }
+
+  return res.json({ success: true });
+}
   return res.status(400).json({ error: 'Invalid type' });
 }
