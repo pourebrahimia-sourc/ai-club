@@ -4,45 +4,177 @@
   <title>Profile - AI Club</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body{margin:0;background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}
-    .card{width:100%;max-width:420px;background:#1a1a1a;border:1px solid #2b2b2b;border-radius:18px;padding:20px;}
-    .avatar{width:70px;height:70px;border-radius:50%;background:#2a2a2a;margin:0 auto 15px;background-size:cover;background-position:center;}
-    .title{text-align:center;font-size:20px;margin-bottom:20px;}
-    .row{margin-bottom:12px;font-size:14px;display:flex;justify-content:space-between;gap:12px;}
-    .btn{width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;cursor:pointer;font-weight:700;}
-    .primary{background:#ff4fa3;color:#fff;}
-    .dark{background:#2a2a2a;color:#fff;border:1px solid #3a3a3a;}
-    .chat-item{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #2a2a2a;cursor:pointer;}
-    .chat-avatar{width:40px;height:40px;border-radius:50%;background:#2a2a2a;background-size:cover;background-position:center;}
-    .chat-name{font-size:14px;font-weight:700;}
-    .chat-date{font-size:11px;opacity:0.6;}
-    .name-wrap{display:flex;align-items:center;gap:6px;}
-    .edit-btn{
-  background:transparent;
-  border:none;
-  outline:none;
-  box-shadow:none;
-  cursor:pointer;
-  font-size:14px;
-  color:#ff4fa3;
-  padding:0;
-  margin:0;
-  line-height:1;
-  appearance:none;
-  -webkit-appearance:none;
-}
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.edit-btn:focus,
-.edit-btn:active{
-  outline:none;
-  box-shadow:none;
-  background:transparent;
-}
+    body{
+      margin:0;
+      background:#111;
+      color:#fff;
+      font-family:Arial, Helvetica, sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .card{
+      width:100%;
+      max-width:420px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      border-radius:18px;
+      padding:20px;
+    }
+
+    .back-btn{
+      margin-bottom:10px;
+      background:none;
+      border:none;
+      color:#ff4fa3;
+      font-size:14px;
+      cursor:pointer;
+      padding:0;
+      appearance:none;
+      -webkit-appearance:none;
+      outline:none;
+      box-shadow:none;
+    }
+
+    .back-btn:focus,
+    .back-btn:active{
+      outline:none;
+      box-shadow:none;
+      background:none;
+    }
+
+    .avatar{
+      width:70px;
+      height:70px;
+      border-radius:50%;
+      background:#2a2a2a;
+      margin:0 auto 15px;
+      background-size:cover;
+      background-position:center;
+    }
+
+    .title{
+      text-align:center;
+      font-size:20px;
+      margin-bottom:20px;
+    }
+
+    .row{
+      margin-bottom:12px;
+      font-size:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .name-wrap{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .btn{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      margin-top:10px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .primary{
+      background:#ff4fa3;
+      color:#fff;
+    }
+
+    .dark{
+      background:#2a2a2a;
+      color:#fff;
+      border:1px solid #3a3a3a;
+    }
+
+    .chat-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 0;
+      border-bottom:1px solid #2a2a2a;
+      cursor:pointer;
+    }
+
+    .chat-avatar{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:#2a2a2a;
+      background-size:cover;
+      background-position:center;
+      flex-shrink:0;
+    }
+
+    .chat-name{
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .chat-date{
+      font-size:11px;
+      opacity:0.6;
+      margin-top:2px;
+    }
+
+    .empty{
+      opacity:0.6;
+      font-size:13px;
+      padding:8px 0;
+    }
+
+    .edit-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+      border:none;
+      outline:none;
+      box-shadow:none;
+      cursor:pointer;
+      font-size:14px;
+      color:#ff4fa3;
+      padding:0;
+      margin:0;
+      line-height:1;
+      appearance:none;
+      -webkit-appearance:none;
+      border-radius:0;
+    }
+
+    .edit-btn:hover,
+    .edit-btn:focus,
+    .edit-btn:active,
+    .edit-btn:focus-visible{
+      background:transparent;
+      outline:none;
+      box-shadow:none;
+      border:none;
+    }
   </style>
 </head>
 <body>
 
 <div class="card">
+
+  <button class="back-btn" onclick="window.location.href='result.html'">← Back</button>
 
   <div class="avatar" id="avatar"></div>
 
@@ -52,7 +184,7 @@
     <span>Name:</span>
     <div class="name-wrap">
       <strong id="name">-</strong>
-      <button class="edit-btn" onclick="editName()">✏️</button>
+      <button type="button" class="edit-btn" onclick="editName()">✏️</button>
     </div>
   </div>
 
@@ -176,10 +308,12 @@ function loadRecentChats(){
   const container = document.getElementById('recentChats');
   container.innerHTML = '';
 
-  const chats = JSON.parse(localStorage.getItem('recentChats') || '[]').slice(-5).reverse();
+  const chats = JSON.parse(localStorage.getItem('recentChats') || '[]')
+    .slice(-5)
+    .reverse();
 
   if(!chats.length){
-    container.innerHTML = '<div style="opacity:.6;font-size:13px;padding:8px 0;">No recent chats</div>';
+    container.innerHTML = '<div class="empty">No recent chats</div>';
     return;
   }
 
