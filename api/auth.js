@@ -96,29 +96,25 @@ if (!existingUser) {
   // ======================
   // UPDATE NAME (FIXED)
   // ======================
-  if (type === 'update-name') {
-    const authHeader = req.headers.authorization;
+console.log("USER ID:", user.id);
 
-    if (!authHeader) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+const { data: updatedProfile, error: updateError } = await supabaseAdmin
+  .from('users')
+  .upsert(
+    { id: user.id, name: trimmedName },
+    { onConflict: 'id' }
+  )
+  .select('id, name')
+  .single();
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Missing name' });
-    }
+if (updateError) {
+  return res.status(400).json({ error: updateError.message });
+}
 
-    const token = authHeader.replace('Bearer ', '');
-
-    const {
-      data: { user },
-      error: userError
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user?.id) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const trimmedName = name.trim();
+return res.json({
+  success: true,
+  profile: updatedProfile
+});
 
 
 return res.json({
