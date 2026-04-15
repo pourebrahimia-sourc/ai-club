@@ -205,20 +205,21 @@ justify-content:center;
 Edit
 </button>
 <button id="regenerateBtn" onclick="generateImage()" style="
-flex:1;
-padding:8px 6px;
+padding:8px 10px;
 border-radius:10px;
 border:none;
-background:#2a2a2a;
+background:#ff4fa3;
 color:#fff;
 font-weight:600;
 height:34px;
-font-size:12px;
+font-size:11px;
 cursor:pointer;
 display:none;
 align-items:center;
 justify-content:center;
-border:1px solid #3a3a3a;
+white-space:nowrap;
+flex:0 0 auto;
+min-width:92px;
 ">
 Regenerate
 </button>
@@ -642,14 +643,7 @@ window.location.href = 'subscribe.html';
 
 function editCharacter() {
   localStorage.setItem('funnelFrom', 'result');
-
-  const unlocked = localStorage.getItem('imageUnlocked') === "true";
-  if (unlocked) {
-    generateImage();
-    return;
-  }
-
-  window.location.href = "age.html";
+  window.location.href = 'age.html';
 }
   function goProfile(){
   const token = getAccessToken();
