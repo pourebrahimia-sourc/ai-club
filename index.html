@@ -276,15 +276,30 @@ function start(){
 }
 
 function goProfile(){
-  window.location.href = isLoggedIn ? 'profile.html' : 'login.html';
+  if(isLoggedIn){
+    window.location.href = 'profile.html';
+  } else {
+    localStorage.setItem('loginReturnTo', 'index.html');
+    window.location.href = 'login.html';
+  }
 }
 
 function goGift(){
-  window.location.href = isLoggedIn ? 'gift.html' : 'login.html';
+  if(isLoggedIn){
+    window.location.href = 'gift.html';
+  } else {
+    localStorage.setItem('loginReturnTo', 'index.html');
+    window.location.href = 'login.html';
+  }
 }
 
 function goSubscribe(){
-  window.location.href = isLoggedIn ? 'subscribe.html' : 'login.html';
+  if(isLoggedIn){
+    window.location.href = 'subscribe.html';
+  } else {
+    localStorage.setItem('loginReturnTo', 'index.html');
+    window.location.href = 'login.html';
+  }
 }
 
 checkSession();
