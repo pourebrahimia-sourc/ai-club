@@ -24,7 +24,7 @@ margin-bottom:20px;
   </div>
 <div style="display:flex;align-items:center;gap:10px;">
 
-<button onclick="window.location.href='subscribe.html'" style="
+<button onclick="goSubscribe()" style="
   padding:6px 12px;
   border-radius:10px;
   border:none;
@@ -648,6 +648,17 @@ function editCharacter() {
   }
 
   window.location.href = 'gift.html';
+}
+  function goSubscribe(){
+  const token = getAccessToken();
+
+  if (!token) {
+    localStorage.setItem('loginReturnTo', 'result.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  window.location.href = 'subscribe.html';
 }
 </script>
 </body>
