@@ -333,7 +333,28 @@ padding:20px;
     </button>
   </div>
 </div>
-
+<div id="pageLoadingOverlay" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:9999;
+background:rgba(0,0,0,0.55);
+backdrop-filter:blur(4px);
+-webkit-backdrop-filter:blur(4px);
+align-items:center;
+justify-content:center;
+cursor:wait;
+">
+  <div style="
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,0.18);
+  border-top:4px solid #ff4fa3;
+  animation:spin 0.9s linear infinite;
+  box-shadow:0 0 28px rgba(255,79,163,0.35);
+  "></div>
+</div>
 <script>
 function formatText(text) {
   if (!text) return '-';
@@ -479,7 +500,15 @@ function startVideoChat() {
 
 const img = document.getElementById('aiImage');
 const loading = document.getElementById('imageLoading');
+  const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
 const imageLock = document.getElementById('imageLock');
+  function showPageLoading(){
+  pageLoadingOverlay.style.display = 'flex';
+}
+
+function hidePageLoading(){
+  pageLoadingOverlay.style.display = 'none';
+}
 const tokenEl = document.getElementById('tokenBalance');
 const tokenModal = document.getElementById('tokenModal');
 const closeTokenModal = document.getElementById('closeTokenModal');
@@ -587,10 +616,11 @@ async function generateImage() {
     return;
   }
 
-  if (loading.style.display === 'flex') return;
+if (loading.style.display === 'flex') return;
 
-  loading.style.display = 'flex';
-  imageLock.style.pointerEvents = 'none';
+loading.style.display = 'flex';
+showPageLoading();
+imageLock.style.pointerEvents = 'none';
 
   try {
     const profile = getProfile();
@@ -610,6 +640,7 @@ async function generateImage() {
 
     if (data.error) {
       loading.style.display = 'none';
+      hidePageLoading();
       imageLock.style.pointerEvents = 'auto';
 
       if (data.error === 'Not enough tokens') {
@@ -626,6 +657,7 @@ async function generateImage() {
 
       img.onload = async () => {
         loading.style.display = 'none';
+        hidePageLoading();
         imageLock.style.pointerEvents = 'auto';
         img.style.filter = 'blur(0px)';
         imageLock.style.display = 'none';
@@ -650,10 +682,12 @@ async function generateImage() {
     }
 
     loading.style.display = 'none';
+    hidePageLoading();
     imageLock.style.pointerEvents = 'auto';
     openInfoModal('Error', 'Something went wrong. Please try again.');
   } catch (err) {
     loading.style.display = 'none';
+    hidePageLoading();
     imageLock.style.pointerEvents = 'auto';
     openInfoModal('Error', 'Connection error. Please try again.');
   }
