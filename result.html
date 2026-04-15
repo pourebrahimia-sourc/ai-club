@@ -45,14 +45,14 @@ margin-bottom:20px;
     💰 ...
   </div>
 
-<div onclick="window.location.href='gift.html'" style="
+<div onclick="goGift()" style="
   font-size:18px;
   cursor:pointer;
   ">
   🎁
 </div>
 
-  <div onclick="window.location.href='profile.html'" style="
+  <div onclick="goProfile()" style="
   width:34px;
   height:34px;
   border-radius:50%;
@@ -605,7 +605,15 @@ getTokensBtn.addEventListener('click', () => {
 
 subscribeBtn.addEventListener('click', () => {
   closeModal();
-  window.location.href = 'subscribe.html';
+ const token = getAccessToken();
+
+if (!token) {
+  localStorage.setItem('loginReturnTo', 'result.html');
+  window.location.href = 'login.html';
+  return;
+}
+
+window.location.href = 'subscribe.html';
 });
 
 function editCharacter() {
@@ -618,6 +626,28 @@ function editCharacter() {
   }
 
   window.location.href = "age.html";
+}
+  function goProfile(){
+  const token = getAccessToken();
+
+  if (!token) {
+    localStorage.setItem('loginReturnTo', 'result.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  window.location.href = 'profile.html';
+}
+  function goGift(){
+  const token = getAccessToken();
+
+  if (!token) {
+    localStorage.setItem('loginReturnTo', 'result.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  window.location.href = 'gift.html';
 }
 </script>
 </body>
