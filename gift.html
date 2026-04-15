@@ -4,90 +4,35 @@
   <title>Gifts - AI Club</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
-
   <style>
-    .section-title{
-      font-size:18px;
-      margin:20px 0 10px;
-      font-weight:700;
-    }
+    .section-title{ font-size:18px; margin:20px 0 10px; font-weight:700; }
+    .gift-card{ background:#1a1a1a; border:1px solid #2b2b2b; border-radius:16px; padding:14px; margin-bottom:12px; }
+    .gift-row{ display:flex; justify-content:space-between; align-items:center; }
+    .gift-title{ font-size:14px; font-weight:700; }
+    .gift-desc{ font-size:12px; opacity:0.7; margin-top:4px; }
+    .gift-btn{ padding:8px 14px; border-radius:10px; border:none; background:#ff4fa3; color:#fff; font-size:12px; cursor:pointer; font-weight:700; transition: 0.3s; }
+    
+    /* استایل دکمه غیرفعال و خاکستری */
+    .gift-btn:disabled { background: #333 !important; color: #777; cursor: not-allowed; }
 
-    .gift-card{
-      background:#1a1a1a;
-      border:1px solid #2b2b2b;
-      border-radius:16px;
-      padding:14px;
-      margin-bottom:12px;
-    }
+    .referral-box{ display:flex; justify-content:space-between; gap:8px; margin-top:12px; }
+    .ref-circle{ flex:1; height:50px; border-radius:12px; background:#111; border:1px solid #2b2b2b; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:12px; }
+    .ref-active{ border:1px solid #ff4fa3; color:#ff4fa3; }
+    .header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .back{ cursor:pointer; font-size:14px; color:#ff4fa3; }
 
-    .gift-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .gift-title{
-      font-size:14px;
-      font-weight:700;
-    }
-
-    .gift-desc{
-      font-size:12px;
-      opacity:0.7;
-      margin-top:4px;
-    }
-
-    .gift-btn{
-      padding:8px 14px;
-      border-radius:10px;
-      border:none;
-      background:#ff4fa3;
-      color:#fff;
-      font-size:12px;
-      cursor:pointer;
-    }
-
-    .referral-box{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      margin-top:12px;
-    }
-
-    .ref-circle{
-      flex:1;
-      height:50px;
-      border-radius:12px;
-      background:#111;
-      border:1px solid #2b2b2b;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-    }
-
-    .ref-active{
-      border:1px solid #ff4fa3;
-      color:#ff4fa3;
-    }
-
-    .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:20px;
-    }
-
-    .back{
-      cursor:pointer;
-      font-size:14px;
-      color:#ff4fa3;
+    /* سیستم اعلان زیبا */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #ff4fa3; color: white; padding: 12px 24px;
+      border-radius: 14px; font-size: 14px; font-weight: 700;
+      display: none; z-index: 1000; box-shadow: 0 10px 30px rgba(255, 79, 163, 0.4);
     }
   </style>
 </head>
-
 <body>
+
+<div id="toast"></div>
 
 <div class="header">
   <div class="back" onclick="history.back()">← Back</div>
@@ -95,137 +40,107 @@
   <div></div>
 </div>
 
-<!-- Referral -->
 <div class="section-title">Invite Friends</div>
-
 <div class="gift-card">
   <div class="gift-title">Earn tokens by inviting friends</div>
-
   <div class="referral-box">
     <div class="ref-circle ref-active">5<br>+50</div>
     <div class="ref-circle">10<br>+100</div>
     <div class="ref-circle">20<br>+250</div>
   </div>
-
-  <button class="gift-btn" style="margin-top:12px;width:100%;">
+  <button id="copyBtn" class="gift-btn" style="margin-top:12px;width:100%;">
     Copy Referral Link
   </button>
 </div>
 
-<!-- Daily -->
 <div class="section-title">Daily Rewards</div>
-
 <div class="gift-card">
   <div class="gift-row">
     <div>
       <div class="gift-title">Daily Login</div>
       <div class="gift-desc">Get free tokens every day</div>
     </div>
-    <button class="gift-btn">Claim +10</button>
+    <button class="gift-btn" onclick="claimGift('daily', this)">Claim +10</button>
   </div>
 </div>
 
-<!-- Ads -->
 <div class="gift-card">
   <div class="gift-row">
     <div>
       <div class="gift-title">Watch Ads</div>
       <div class="gift-desc">2 ads = 5 tokens</div>
     </div>
-    <button class="gift-btn">Watch</button>
+    <button class="gift-btn" onclick="claimGift('ad', this)">Watch</button>
   </div>
 </div>
 
-<!-- Share -->
 <div class="gift-card">
   <div class="gift-row">
     <div>
       <div class="gift-title">Share</div>
       <div class="gift-desc">Share app (2x daily)</div>
     </div>
-    <button class="gift-btn">Share</button>
+    <button class="gift-btn" onclick="claimGift('share', this)">Share</button>
   </div>
 </div>
 
-<!-- Rate -->
-<div class="gift-card">
-  <div class="gift-row">
-    <div>
-      <div class="gift-title">Rate App</div>
-      <div class="gift-desc">One-time reward</div>
-    </div>
-    <button class="gift-btn">+10</button>
-  </div>
-</div>
-  <script>
-    // توابع کمکی برای تایید هویت
-function getAccessToken() {
-  return localStorage.getItem('accessToken') || '';
-}
-
-function authHeaders(extra = {}) {
+<script>
+function getAccessToken(){ return localStorage.getItem('accessToken') || ''; }
+function authHeaders(extra = {}){
   const token = getAccessToken();
   return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
 }
 
-// تابع اصلی برای دریافت جوایز (روزانه، تبلیغ، اشتراک)
-async function claimGift(type) {
+function showNotification(msg) {
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+async function claimGift(type, btn) {
+  const originalText = btn.innerText;
+  btn.innerText = '...';
+  btn.disabled = true;
+
   try {
     const res = await fetch('/api/gifts', {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ type })
     });
-
     const data = await res.json();
-
+    
     if (data.error) {
-      alert(data.error === 'Already claimed today' ? 'امروز قبلاً جایزه گرفته‌اید' : data.error);
-      return;
+      showNotification(data.error === 'Already claimed today' ? 'Already claimed today!' : data.error);
+      if (data.error !== 'Already claimed today') {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      } else {
+        btn.innerText = 'Claimed';
+      }
+    } else {
+      btn.innerText = 'Claimed';
+      showNotification('Success! New Balance: ' + data.balance);
     }
-
-    if (data.success) {
-      alert('تبریک! توکن اضافه شد. موجودی جدید: ' + data.balance);
-    }
-  } catch (e) {
-    alert('خطا در ارتباط با سرور');
+  } catch (e) { 
+    showNotification('Connection error');
+    btn.disabled = false;
+    btn.innerText = originalText;
   }
 }
 
-// تابع کپی لینک دعوت
 function copyReferral() {
   const userId = localStorage.getItem('userId');
-  if (!userId) {
-    alert('لطفاً ابتدا وارد حساب خود شوید');
-    return;
-  }
-  
-  // ساخت لینک دعوت با استفاده از آیدی کاربر
+  if (!userId) { showNotification('Please login first'); return; }
   const refLink = window.location.origin + '/age.html?ref=' + userId;
-  
   navigator.clipboard.writeText(refLink).then(() => {
-    alert('لینک دعوت کپی شد! آن را برای دوستان خود بفرستید.');
+    showNotification('Referral link copied!');
   });
 }
 
-// وصل کردن دکمه‌ها به توابع (بعد از لود شدن صفحه)
-document.addEventListener('DOMContentLoaded', () => {
-  // دکمه کپی رفرال
-  const refBtn = document.querySelector('.gift-card .gift-btn');
-  if (refBtn) refBtn.onclick = copyReferral;
-
-  // پیدا کردن همه دکمه‌های کلیم
-  const btns = document.querySelectorAll('.gift-btn');
-  
-  // دکمه جایزه روزانه (دومین دکمه در صفحه)
-  if (btns[1]) btns[1].onclick = () => claimGift('daily');
-  
-  // دکمه تبلیغ (سومین دکمه)
-  if (btns[2]) btns[2].onclick = () => claimGift('ad');
-  
-  // دکمه اشتراک‌گذاری (چهارمین دکمه)
-  if (btns[3]) btns[3].onclick = () => claimGift('share');
-});
+document.getElementById('copyBtn').onclick = copyReferral;
 </script>
+
 </body>
 </html>
