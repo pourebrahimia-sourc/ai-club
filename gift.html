@@ -157,6 +157,75 @@
     <button class="gift-btn">+10</button>
   </div>
 </div>
+  <script>
+    // توابع کمکی برای تایید هویت
+function getAccessToken() {
+  return localStorage.getItem('accessToken') || '';
+}
 
+function authHeaders(extra = {}) {
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+}
+
+// تابع اصلی برای دریافت جوایز (روزانه، تبلیغ، اشتراک)
+async function claimGift(type) {
+  try {
+    const res = await fetch('/api/gifts', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ type })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      alert(data.error === 'Already claimed today' ? 'امروز قبلاً جایزه گرفته‌اید' : data.error);
+      return;
+    }
+
+    if (data.success) {
+      alert('تبریک! توکن اضافه شد. موجودی جدید: ' + data.balance);
+    }
+  } catch (e) {
+    alert('خطا در ارتباط با سرور');
+  }
+}
+
+// تابع کپی لینک دعوت
+function copyReferral() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    alert('لطفاً ابتدا وارد حساب خود شوید');
+    return;
+  }
+  
+  // ساخت لینک دعوت با استفاده از آیدی کاربر
+  const refLink = window.location.origin + '/age.html?ref=' + userId;
+  
+  navigator.clipboard.writeText(refLink).then(() => {
+    alert('لینک دعوت کپی شد! آن را برای دوستان خود بفرستید.');
+  });
+}
+
+// وصل کردن دکمه‌ها به توابع (بعد از لود شدن صفحه)
+document.addEventListener('DOMContentLoaded', () => {
+  // دکمه کپی رفرال
+  const refBtn = document.querySelector('.gift-card .gift-btn');
+  if (refBtn) refBtn.onclick = copyReferral;
+
+  // پیدا کردن همه دکمه‌های کلیم
+  const btns = document.querySelectorAll('.gift-btn');
+  
+  // دکمه جایزه روزانه (دومین دکمه در صفحه)
+  if (btns[1]) btns[1].onclick = () => claimGift('daily');
+  
+  // دکمه تبلیغ (سومین دکمه)
+  if (btns[2]) btns[2].onclick = () => claimGift('ad');
+  
+  // دکمه اشتراک‌گذاری (چهارمین دکمه)
+  if (btns[3]) btns[3].onclick = () => claimGift('share');
+});
+</script>
 </body>
 </html>
