@@ -204,7 +204,24 @@ justify-content:center;
 ">
 Edit
 </button>
-
+<button id="regenerateBtn" onclick="generateImage()" style="
+flex:1;
+padding:8px 6px;
+border-radius:10px;
+border:none;
+background:#2a2a2a;
+color:#fff;
+font-weight:600;
+height:34px;
+font-size:12px;
+cursor:pointer;
+display:none;
+align-items:center;
+justify-content:center;
+border:1px solid #3a3a3a;
+">
+Regenerate
+</button>
 </div>
 
 </div>  
@@ -433,6 +450,7 @@ const closeTokenModal = document.getElementById('closeTokenModal');
 const getTokensBtn = document.getElementById('getTokensBtn');
 const subscribeBtn = document.getElementById('subscribeBtn');
 const editBtn = document.getElementById('editBtn');
+  const regenerateBtn = document.getElementById('regenerateBtn');
 const tokenModalText = document.getElementById('tokenModalText');
 
 function openTokenModal() {
@@ -562,7 +580,7 @@ if (data.error) {
         imageLock.style.display = "none";
         img.style.opacity = "1";
         editBtn.style.display = "flex";
-        editBtn.innerText = "Regenerate";
+        regenerateBtn.style.display = "flex";
       };
 
       img.src = data.imageUrl;
