@@ -660,6 +660,23 @@ async function generateImage() {
 }
 
 function editCharacter() {
+  const hasImage = localStorage.getItem('imageUnlocked') === 'true';
+
+  if (hasImage) {
+    openInfoModal(
+      'Change Character',
+      'If you continue, this character will not be used for chat. You can find it later in your album.'
+    );
+    
+    // وقتی OK زد → بره ادیت
+    document.getElementById('infoModalOkBtn').onclick = () => {
+      localStorage.setItem('funnelFrom', 'result');
+      window.location.href = 'age.html';
+    };
+
+    return;
+  }
+
   localStorage.setItem('funnelFrom', 'result');
   window.location.href = 'age.html';
 }
