@@ -292,109 +292,134 @@ function clearUserState(){
   ].forEach(key => localStorage.removeItem(key));
 }
 
+// 🔐 اگر لاگین نیست → برو لاگین
 if(!getAccessToken()){
   window.location.href = 'login.html';
 }
 
 const nameEl = document.getElementById('name');
-  console.log("LOCALSTORAGE NAME:", localStorage.getItem('userName'));
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
 const avatarEl = document.getElementById('avatar');
 const nameModal = document.getElementById('nameModal');
 const nameInput = document.getElementById('nameInput');
 
+// ایمیل موقت از لوکال (تا لود کامل)
 emailEl.innerText = localStorage.getItem('userEmail') || '-';
 
+// آواتار
 const savedImage = localStorage.getItem('aiImage');
 if(savedImage){
   avatarEl.style.backgroundImage = `url(${savedImage})`;
 }
 
-async function loadTokens(){
+// ✅ تابع اصلی (پروفایل + توکن)
+async function loadUserProfile(){
+  try {
+    const res = await fetch('/api/session', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+    const session = data?.data?.session;
+
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const latestName = session.profileName || 'User';
+    const latestEmail = session.user?.email || '-';
+    const latestBalance = session.balance ?? null;
+
+    // ذخیره
+    localStorage.setItem('userName', latestName);
+    localStorage.setItem('userEmail', latestEmail);
+    if(session.user?.id){
+      localStorage.setItem('userId', session.user.id);
+    }
+
+    // نمایش
+    nameEl.innerText = latestName;
+    emailEl.innerText = latestEmail;
+
+    // ✅ اگر از سشن بالانس داشت → استفاده کن
+    if (latestBalance !== null) {
+      tokenEl.innerText = latestBalance;
+    } else {
+      // 🔁 fallback (خیلی مهم)
+      await loadTokensFallback();
+    }
+
+  } catch(e){
+    console.log('Session error, fallback...');
+    await loadTokensFallback();
+  }
+}
+
+// 🔁 fallback گرفتن توکن
+async function loadTokensFallback(){
   try{
     const res = await fetch('/api/wallet', {
       headers: authHeaders()
     });
+
     const data = await res.json();
-
-    if(data.error){
-      tokenEl.innerText = 0;
-      return;
-    }
-
     tokenEl.innerText = data.balance || 0;
 
     if(data.userId){
       localStorage.setItem('userId', data.userId);
     }
+
   }catch(e){
     tokenEl.innerText = 0;
   }
 }
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+// ✏️ مودال اسم
+function openNameModal(){
+  nameInput.value = localStorage.getItem('userName') || '';
+  nameModal.style.display = 'flex';
+  setTimeout(() => nameInput.focus(), 50);
+}
 
-export default async function handler(req, res) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+function closeNameModal(){
+  nameModal.style.display = 'none';
+}
 
-  const token = authHeader.replace('Bearer ', '');
-  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-  if (userError || !user) return res.status(401).json({ error: 'Unauthorized' });
+// 💾 ذخیره اسم
+async function saveName(){
+  const newName = nameInput.value.trim();
+  if(!newName) return;
 
-  const { type } = req.body;
+  try{
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: authHeaders({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        type: 'update-name',
+        name: newName
+      })
+    });
 
-  try {
-    // ۱. جایزه روزانه
-    if (type === 'daily') {
-      const today = new Date().toISOString().split('T')[0];
+    const data = await res.json();
 
-      // چک کردن اینکه قبلاً امروز جایزه گرفته یا نه
-      const { data: wallet } = await supabase
-        .from('wallets')
-        .select('last_claim_date')
-        .eq('user_id', user.id)
-        .single();
-
-      if (wallet?.last_claim_date === today) {
-        return res.status(400).json({ error: 'Already claimed today' });
-      }
-
-      // اضافه کردن ۱۰ توکن و آپدیت تاریخ
-      const { data: newBalance } = await supabase.rpc('add_tokens', {
-        user_id_input: user.id,
-        amount_input: 10
-      });
-
-      await supabase
-        .from('wallets')
-        .update({ last_claim_date: today })
-        .eq('user_id', user.id);
-
-      return res.json({ success: true, balance: newBalance });
+    if(data.error){
+      alert(data.error);
+      return;
     }
 
-    // ۲. جایزه تماشای تبلیغ (۵ توکن)
-    if (type === 'ad') {
-      const { data: newBalance } = await supabase.rpc('add_tokens', {
-        user_id_input: user.id,
-        amount_input: 5
-      });
-      return res.json({ success: true, balance: newBalance });
-    }
+    closeNameModal();
+    await loadUserProfile();
 
-    return res.status(400).json({ error: 'Invalid gift type' });
-
-  } catch (e) {
-    return res.status(500).json({ error: 'Server error' });
+  }catch(e){
+    alert('Error updating name');
   }
 }
 
+// 🧠 چت‌های اخیر
 function loadRecentChats(){
   const container = document.getElementById('recentChats');
   container.innerHTML = '';
@@ -429,37 +454,28 @@ function loadRecentChats(){
   });
 }
 
+// 🚪 خروج
 function logout(){
   clearUserState();
   window.location.href = 'login.html';
 }
 
-function goGift(){
-  window.location.href = 'gift.html';
-}
+// 🔗 ناوبری
+function goGift(){ window.location.href = 'gift.html'; }
+function goSubscribe(){ window.location.href = 'subscribe.html'; }
+function goAlbum(){ window.location.href = 'album.html'; }
 
-function goSubscribe(){
-  window.location.href = 'subscribe.html';
-}
-
-function goAlbum(){
-  window.location.href = 'album.html';
-}
-
+// مودال
 nameModal.addEventListener('click', (e) => {
-  if(e.target === nameModal){
-    closeNameModal();
-  }
+  if(e.target === nameModal) closeNameModal();
 });
 
 nameInput.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
-    saveName();
-  }
+  if(e.key === 'Enter') saveName();
 });
 
+// 🚀 init
 loadUserProfile();
-loadTokens();
 loadRecentChats();
 </script>
 
