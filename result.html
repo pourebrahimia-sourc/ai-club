@@ -399,7 +399,10 @@ function generateVoice() {
       return;
     }
 
-    alert('Voice coming soon');
+    openSimpleModal(
+  'Voice Chat',
+  'You can chat with her by voice.\nCustom voice generation coming soon.'
+);
   });
 }
 
@@ -417,7 +420,7 @@ function startVideoChat() {
       return;
     }
 
-    alert('Video chat coming soon');
+    openSimpleModal('Video Chat', 'Coming soon.');
   });
 }
 
@@ -443,6 +446,9 @@ function openTokenModalWithAmount(amount) {
 
 function closeModal() {
   tokenModal.style.display = "none";
+
+  getTokensBtn.style.display = 'block';
+  subscribeBtn.style.display = 'block';
 }
 
 async function refreshBalance() {
@@ -659,6 +665,14 @@ function editCharacter() {
   }
 
   window.location.href = 'subscribe.html';
+}
+  function openSimpleModal(title, text){
+  tokenModalText.innerText = text;
+
+  getTokensBtn.style.display = 'none';
+  subscribeBtn.style.display = 'none';
+
+  tokenModal.style.display = 'flex';
 }
 </script>
 </body>
