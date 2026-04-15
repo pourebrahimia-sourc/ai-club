@@ -609,11 +609,14 @@ subscribeBtn.addEventListener('click', () => {
 });
 
 function editCharacter() {
+  localStorage.setItem('funnelFrom', 'result');
+
   const unlocked = localStorage.getItem('imageUnlocked') === "true";
   if (unlocked) {
     generateImage();
     return;
   }
+
   window.location.href = "age.html";
 }
 </script>
