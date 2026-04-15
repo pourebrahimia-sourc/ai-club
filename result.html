@@ -610,6 +610,9 @@ if (data.error) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  editBtn.style.display = "flex";
+  regenerateBtn.style.display = "none";
+  
   await syncSessionFromUrl();
   applyProfileToSummary();
   await refreshBalance();
