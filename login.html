@@ -202,7 +202,7 @@
 
     <div class="login-card">
       <div class="close-row">
-        <span class="close-btn" onclick="window.location.href='result.html'">✕</span>
+        <span class="close-btn" onclick="closeLogin()">✕</span>
       </div>
 
       <div class="mode-row">
@@ -477,6 +477,10 @@ console.log("LOGIN - saved name:", localStorage.getItem('userName'));
     }
 
     setMode('login');
+    function closeLogin(){
+  const returnTo = localStorage.getItem('loginReturnTo');
+  window.location.href = returnTo || 'index.html';
+}
   </script>
 
 </body>
