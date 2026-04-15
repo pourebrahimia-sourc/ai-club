@@ -332,70 +332,66 @@ async function loadTokens(){
     tokenEl.innerText = 0;
   }
 }
-async function loadUserProfile(){
-  try{
-    const res = await fetch('/api/session', {
-      headers: authHeaders()
-    });
+import { createClient } from '@supabase/supabase-js';
 
-    const data = await res.json();
-    const user = data?.data?.session?.user;
-console.log("SESSION USER:", user);
-console.log("SESSION NAME:", user?.user_metadata?.name);
-    
-    if(user){
-      const latestName = data?.data?.session?.profileName || 'User';
-      const latestEmail = user.email || '-';
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
-      localStorage.setItem('userName', latestName);
-      localStorage.setItem('userEmail', latestEmail);
+export default async function handler(req, res) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
 
-      nameEl.innerText = latestName;
-      emailEl.innerText = latestEmail;
-    }
-  }catch(e){}
-}
-function openNameModal(){
-  nameInput.value = localStorage.getItem('userName') || '';
-  nameModal.style.display = 'flex';
-  setTimeout(() => nameInput.focus(), 50);
-}
+  const token = authHeader.replace('Bearer ', '');
+  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+  if (userError || !user) return res.status(401).json({ error: 'Unauthorized' });
 
-function closeNameModal(){
-  nameModal.style.display = 'none';
-}
+  const { type } = req.body;
 
-async function saveName(){
-  const newName = nameInput.value.trim();
-  if(!newName) return;
+  try {
+    // ۱. جایزه روزانه
+    if (type === 'daily') {
+      const today = new Date().toISOString().split('T')[0];
 
-  try{
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: authHeaders({
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({
-        type: 'update-name',
-        name: newName
-      })
-    });
+      // چک کردن اینکه قبلاً امروز جایزه گرفته یا نه
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('last_claim_date')
+        .eq('user_id', user.id)
+        .single();
 
-    const data = await res.json();
-console.log("UPDATE RESPONSE:", data);
-    if(data.error){
-      alert(data.error);
-      return;
+      if (wallet?.last_claim_date === today) {
+        return res.status(400).json({ error: 'Already claimed today' });
+      }
+
+      // اضافه کردن ۱۰ توکن و آپدیت تاریخ
+      const { data: newBalance } = await supabase.rpc('add_tokens', {
+        user_id_input: user.id,
+        amount_input: 10
+      });
+
+      await supabase
+        .from('wallets')
+        .update({ last_claim_date: today })
+        .eq('user_id', user.id);
+
+      return res.json({ success: true, balance: newBalance });
     }
 
-    const finalUser = data.user || {};
-    const finalName = finalUser.user_metadata?.name || newName;
+    // ۲. جایزه تماشای تبلیغ (۵ توکن)
+    if (type === 'ad') {
+      const { data: newBalance } = await supabase.rpc('add_tokens', {
+        user_id_input: user.id,
+        amount_input: 5
+      });
+      return res.json({ success: true, balance: newBalance });
+    }
 
-closeNameModal();
-await loadUserProfile();
+    return res.status(400).json({ error: 'Invalid gift type' });
 
-  }catch(e){
-    alert('Error updating name');
+  } catch (e) {
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
