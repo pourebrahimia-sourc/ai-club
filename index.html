@@ -18,45 +18,13 @@
       margin:40px auto;
       padding:0 16px;
       text-align:center;
-      position:relative;
     }
 
-    .top-bar{
+    .header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:10px;
-      margin-bottom:14px;
-    }
-
-    .top-left,
-    .top-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .top-btn{
-      padding:8px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.12);
-      background:rgba(255,255,255,0.06);
-      color:#fff;
-      font-size:12px;
-      cursor:pointer;
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-    }
-
-    .create-title{
-      margin:0 0 10px 0;
-      font-size:28px;
-    }
-
-    .create-subtitle{
-      margin:0 0 16px 0;
-      color:rgba(255,255,255,0.7);
-      font-size:15px;
+      margin-bottom:20px;
     }
 
     .video-wrapper{
@@ -69,6 +37,17 @@
       width:100%;
       display:block;
       border-radius:16px;
+    }
+
+    .create-title{
+      margin:0 0 10px 0;
+      font-size:28px;
+    }
+
+    .create-subtitle{
+      margin:0 0 16px 0;
+      color:rgba(255,255,255,0.7);
+      font-size:15px;
     }
 
     .desktop-btn{
@@ -105,22 +84,17 @@
         width:100%;
         height:100svh;
         margin:0;
-        padding:0;
+        padding:14px 14px 0 14px;
         position:relative;
       }
 
-      .top-bar{
+      .header{
         position:absolute;
         top:14px;
         left:14px;
         right:14px;
         z-index:5;
         margin-bottom:0;
-      }
-
-      .top-btn{
-        background:rgba(0,0,0,0.28);
-        border:1px solid rgba(255,255,255,0.14);
       }
 
       .create-title,
@@ -140,7 +114,7 @@
         width:100%;
         height:100%;
         object-fit:cover;
-        border-radius:0;
+        border-radius:18px;
       }
 
       .overlay-top{
@@ -208,14 +182,53 @@
 
 <div class="create-container">
 
-  <div class="top-bar">
-    <div class="top-left">
-      <button class="top-btn" onclick="goProfile()">👤 Profile</button>
+  <div class="header" style="
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  ">
+
+    <div style="font-weight:700;font-size:18px;">
+      AI Club
     </div>
 
-    <div class="top-right">
-      <button class="top-btn" onclick="goGift()">🎁 Gift</button>
-      <button class="top-btn" onclick="goSubscribe()">💎 Subscribe</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+
+      <button onclick="goSubscribe()" style="
+        padding:6px 12px;
+        border-radius:10px;
+        border:none;
+        background:#ff4fa3;
+        color:#fff;
+        font-size:12px;
+        cursor:pointer;
+      ">
+        Subscribe
+      </button>
+
+      <div onclick="goGift()" style="
+        font-size:18px;
+        cursor:pointer;
+      ">
+        🎁
+      </div>
+
+      <div onclick="goProfile()" style="
+        width:34px;
+        height:34px;
+        border-radius:50%;
+        background:#2a2a2a;
+        border:1px solid #3a3a3a;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        overflow:hidden;
+      ">
+        <span style="font-size:14px;">👤</span>
+      </div>
+
     </div>
   </div>
 
@@ -236,14 +249,14 @@
       Create 💖
     </button>
 
-    <div class="overlay-hook">She’s waiting for you…</div>
+    <div class="overlay-hook">Create your character for free</div>
   </div>
 
   <button class="desktop-btn" onclick="start()">
     Create 💖
   </button>
 
-  <div class="desktop-hook">She’s waiting for you…</div>
+  <div class="desktop-hook">Create your character for free</div>
 
 </div>
 
@@ -252,6 +265,7 @@ let isLoggedIn = false;
 
 async function checkSession(){
   const token = localStorage.getItem('accessToken');
+
   if(!token){
     isLoggedIn = false;
     return;
