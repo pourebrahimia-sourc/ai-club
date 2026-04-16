@@ -308,6 +308,14 @@ padding:20px;
     <button id="infoModalOkBtn" class="btn">
       OK
     </button>
+    <div id="infoModalCloseBtn" style="
+margin-top:10px;
+font-size:12px;
+opacity:0.7;
+cursor:pointer;
+">
+Close
+</div>
   </div>
 </div>
 <div id="pageLoadingOverlay" style="
@@ -498,7 +506,7 @@ const infoModal = document.getElementById('infoModal');
 const infoModalTitle = document.getElementById('infoModalTitle');
 const infoModalText = document.getElementById('infoModalText');
 const infoModalOkBtn = document.getElementById('infoModalOkBtn');
-
+const infoModalCloseBtn = document.getElementById('infoModalCloseBtn');
 function openTokenModal() {
   tokenModal.style.display = 'flex';
 }
@@ -743,7 +751,7 @@ subscribeBtn.addEventListener('click', () => {
 });
 
 infoModalOkBtn.addEventListener('click', closeInfoModal);
-
+infoModalCloseBtn.addEventListener('click', closeInfoModal);
 infoModal.addEventListener('click', (e) => {
   if (e.target === infoModal) closeInfoModal();
 });
