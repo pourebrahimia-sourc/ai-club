@@ -86,30 +86,7 @@ display:flex;
 justify-content:center;
 position:relative;
 ">
-  <div id="imageLoading" style="
-    display:none;
-    position:absolute;
-    inset:0;
-    z-index:7;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,0.28);
-    border-radius:18px;
-    backdrop-filter:blur(3px);
-    -webkit-backdrop-filter:blur(3px);
-    pointer-events:none;
-  ">
-    <div style="
-      width:64px;
-      height:64px;
-      border-radius:50%;
-      border:3px solid rgba(255,255,255,0.18);
-      border-top:3px solid #ff4fa3;
-      animation:spin 0.9s linear infinite;
-      box-shadow:0 0 24px rgba(255,79,163,0.35);
-    "></div>
-  </div>
-
+ 
   <div id="imageLock" style="
     position:absolute;
     top:50%;
@@ -499,8 +476,7 @@ function startVideoChat() {
 }
 
 const img = document.getElementById('aiImage');
-const loading = document.getElementById('imageLoading');
-  const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
+const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
 const imageLock = document.getElementById('imageLock');
   function showPageLoading(){
   pageLoadingOverlay.style.display = 'flex';
@@ -618,7 +594,6 @@ async function generateImage() {
 
 if (loading.style.display === 'flex') return;
 
-loading.style.display = 'flex';
 showPageLoading();
 imageLock.style.pointerEvents = 'none';
 
@@ -639,7 +614,6 @@ imageLock.style.pointerEvents = 'none';
     const data = await res.json();
 
     if (data.error) {
-      loading.style.display = 'none';
       hidePageLoading();
       imageLock.style.pointerEvents = 'auto';
 
@@ -656,7 +630,6 @@ imageLock.style.pointerEvents = 'none';
       img.style.opacity = '0';
 
       img.onload = async () => {
-        loading.style.display = 'none';
         hidePageLoading();
         imageLock.style.pointerEvents = 'auto';
         img.style.filter = 'blur(0px)';
@@ -681,12 +654,10 @@ imageLock.style.pointerEvents = 'none';
       return;
     }
 
-    loading.style.display = 'none';
     hidePageLoading();
     imageLock.style.pointerEvents = 'auto';
     openInfoModal('Error', 'Something went wrong. Please try again.');
   } catch (err) {
-    loading.style.display = 'none';
     hidePageLoading();
     imageLock.style.pointerEvents = 'auto';
     openInfoModal('Error', 'Connection error. Please try again.');
