@@ -360,6 +360,27 @@ cursor:wait;
   "></div>
 </div>
 <script>
+    const hash = new URLSearchParams(window.location.hash.substring(1));
+const accessToken = hash.get('access_token');
+const refreshToken = hash.get('refresh_token');
+
+if (accessToken) {
+  localStorage.setItem('accessToken', accessToken);
+  localStorage.setItem('refreshToken', refreshToken || '');
+
+  history.replaceState({}, document.title, window.location.pathname);
+  //location.reload();
+}
+let isLoggedIn = false;
+
+async function checkSession(){
+  const token = localStorage.getItem('accessToken');
+
+  if(!token){
+    isLoggedIn = false;
+    return;
+  }
+
 function formatText(text) {
   if (!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
