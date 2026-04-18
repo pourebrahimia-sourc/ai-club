@@ -447,24 +447,37 @@
 
 async function googleLogin(){
   try{
+    const returnTo = getReturnTo();
+    console.log('GOOGLE LOGIN START');
+    console.log('loginReturnTo =', returnTo);
+
     const res = await fetch('/api/auth', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({
         type:'google',
-        returnTo: getReturnTo()
+        returnTo
       })
     });
 
     const data = await res.json();
 
+    console.log('AUTH RESPONSE =', data);
+    alert('Auth response ready. Check console.');
+
     if(data.error){
+      console.log('AUTH ERROR =', data.error);
+      alert('Google auth error: ' + data.error);
       setStatus(data.error);
       return;
     }
 
+    console.log('REDIRECTING TO =', data.url);
+    alert('Redirecting to Google...');
     window.location.href = data.url;
   } catch(e){
+    console.log('GOOGLE LOGIN CATCH =', e);
+    alert('Google login failed in login.html');
     setStatus('Google login failed');
   }
 }
