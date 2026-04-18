@@ -165,6 +165,12 @@ function copyReferral() {
 
 // اجرای توابع در بدو ورود به صفحه
 document.addEventListener('DOMContentLoaded', () => {
+  if(!getAccessToken()){
+    localStorage.setItem('loginReturnTo', 'gift.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
   refreshHeaderBalance();
   document.getElementById('copyBtn').onclick = copyReferral;
 });

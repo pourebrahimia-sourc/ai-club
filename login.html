@@ -271,15 +271,30 @@
       }
       localStorage.setItem('userEmail', data?.user?.email || '');
       localStorage.setItem('userName', data?.user?.user_metadata?.name || 'User');
-      console.log("LOGIN - user_metadata:", data?.user?.user_metadata);
-console.log("LOGIN - saved name:", localStorage.getItem('userName'));
     }
 
     function clearGeneratedState(){
-      localStorage.removeItem('aiImage');
-      localStorage.removeItem('imageUnlocked');
-      localStorage.removeItem('lastProfileKey');
-      localStorage.removeItem('aiName');
+      [
+        'age',
+        'ethnicity',
+        'body',
+        'bodyDetails',
+        'hair',
+        'appearanceDetails',
+        'personality',
+        'aiImage',
+        'imageUnlocked',
+        'lastProfileKey',
+        'aiName',
+        'recentChats'
+      ].forEach(key => localStorage.removeItem(key));
+    }
+
+    function resetStateIfUserChanged(nextUserId){
+      const previousUserId = localStorage.getItem('userId');
+      if(previousUserId && nextUserId && previousUserId !== nextUserId){
+        clearGeneratedState();
+      }
     }
 
     function togglePassword(id, btn){
@@ -370,8 +385,8 @@ console.log("LOGIN - saved name:", localStorage.getItem('userName'));
           return;
         }
 
+        resetStateIfUserChanged(data?.user?.id);
         saveAuth(data);
-        clearGeneratedState();
         window.location.href = 'result.html';
       } catch(e){
         setStatus('Signup failed');
@@ -412,8 +427,8 @@ console.log("LOGIN - saved name:", localStorage.getItem('userName'));
           return;
         }
 
+        resetStateIfUserChanged(data?.user?.id);
         saveAuth(data);
-        clearGeneratedState();
         window.location.href = 'result.html';
       } catch(e){
         setStatus('Login failed');
@@ -479,6 +494,7 @@ console.log("LOGIN - saved name:", localStorage.getItem('userName'));
     setMode('login');
     function closeLogin(){
   const returnTo = localStorage.getItem('loginReturnTo');
+  localStorage.removeItem('loginReturnTo');
   window.location.href = returnTo || 'index.html';
 }
   </script>

@@ -285,10 +285,20 @@ function clearUserState(){
     'userName',
     'accessToken',
     'refreshToken',
+    'age',
+    'ethnicity',
+    'body',
+    'bodyDetails',
+    'hair',
+    'appearanceDetails',
+    'personality',
     'aiImage',
     'imageUnlocked',
     'lastProfileKey',
-    'aiName'
+    'aiName',
+    'recentChats',
+    'loginReturnTo',
+    'funnelFrom'
   ].forEach(key => localStorage.removeItem(key));
 }
 
@@ -307,11 +317,8 @@ const nameInput = document.getElementById('nameInput');
 // ایمیل موقت از لوکال (تا لود کامل)
 emailEl.innerText = localStorage.getItem('userEmail') || '-';
 
-// آواتار
-const savedImage = localStorage.getItem('aiImage');
-if(savedImage){
-  avatarEl.style.backgroundImage = `url(${savedImage})`;
-}
+// آواتار کاربر فعلاً عمومی است
+avatarEl.style.backgroundImage = 'none';
 
 // ✅ تابع اصلی (پروفایل + توکن)
 async function loadUserProfile(){
@@ -456,10 +463,7 @@ function loadRecentChats(){
 
 // 🚪 خروج
 function logout(){
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('userId');
-
+  clearUserState();
   window.location.href = 'index.html';
 }
 

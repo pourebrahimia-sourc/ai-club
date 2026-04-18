@@ -9,10 +9,29 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+
+    @keyframes revealUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-reveal {
+      opacity: 0;
+      animation: revealUp 0.42s ease forwards;
+    }
+
+    .result-reveal-delay-1 { animation-delay: 0.06s; }
+    .result-reveal-delay-2 { animation-delay: 0.12s; }
   </style>
 </head>
 <body>
-<div class="header" style="
+<div class="header result-reveal" style="
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -79,7 +98,7 @@ margin-bottom:20px;
   Your custom match
 </p>
 
-<div id="aiImageBox" style="
+<div id="aiImageBox" class="result-reveal result-reveal-delay-1" style="
 margin-bottom:10px;
 text-align:center;
 display:flex;
@@ -208,7 +227,7 @@ position:relative;
   </div>
 </div>
 
-<div class="summary-card" style="font-size:13px; padding:12px; max-width:420px; margin:0 auto;">
+<div class="summary-card result-reveal result-reveal-delay-2" style="font-size:13px; padding:12px; max-width:420px; margin:0 auto;">
   <div class="summary-row"><span>Age:</span><strong id="age"></strong></div>
   <div class="summary-row"><span>Ethnicity:</span><strong id="ethnicity"></strong></div>
   <div class="summary-row"><span>Body:</span><strong id="body"></strong></div>
@@ -371,7 +390,33 @@ function authHeaders(extra = {}) {
   return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
 }
 
+function clearCharacterState(){
+  [
+    'age',
+    'ethnicity',
+    'body',
+    'bodyDetails',
+    'hair',
+    'appearanceDetails',
+    'personality',
+    'aiImage',
+    'imageUnlocked',
+    'lastProfileKey',
+    'aiName',
+    'recentChats'
+  ].forEach(key => localStorage.removeItem(key));
+}
+
+function resetStateIfUserChanged(nextUserId){
+  const previousUserId = localStorage.getItem('userId');
+  if(previousUserId && nextUserId && previousUserId !== nextUserId){
+    clearCharacterState();
+  }
+}
+
 function saveUserSession(user, accessToken, refreshToken) {
+  resetStateIfUserChanged(user?.id || '');
+
   if (accessToken) localStorage.setItem('accessToken', accessToken);
   if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
   if (user?.id) localStorage.setItem('userId', user.id);
@@ -404,6 +449,23 @@ async function syncSessionFromUrl() {
     if (user) {
       saveUserSession(user, accessToken, refreshToken);
       history.replaceState({}, document.title, window.location.pathname);
+    }
+  } catch (e) {}
+}
+
+async function syncStoredSession(){
+  const token = getAccessToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch('/api/session', {
+      headers: authHeaders()
+    });
+    const json = await res.json();
+    const session = json?.data?.session;
+
+    if (session?.user) {
+      saveUserSession(session.user, token, localStorage.getItem('refreshToken') || '');
     }
   } catch (e) {}
 }
@@ -520,14 +582,18 @@ function closeModal() {
   tokenModal.style.display = 'none';
 }
 
-function openInfoModal(title, text) {
+let pendingInfoAction = null;
+
+function openInfoModal(title, text, onOk = null) {
   infoModalTitle.innerText = title;
   infoModalText.innerText = text;
+  pendingInfoAction = typeof onOk === 'function' ? onOk : null;
   infoModal.style.display = 'flex';
 }
 
 function closeInfoModal() {
   infoModal.style.display = 'none';
+  pendingInfoAction = null;
 }
 
 async function refreshBalance() {
@@ -676,15 +742,12 @@ function editCharacter() {
   if (hasImage) {
     openInfoModal(
       'Change Character',
-      'If you continue, this character will not be used for chat. You can find it later in your album.'
+      'If you continue, this character will not be used for chat. You can find it later in your album.',
+      () => {
+        localStorage.setItem('funnelFrom', 'result');
+        window.location.href = 'age.html';
+      }
     );
-    
-    // وقتی OK زد → بره ادیت
-    document.getElementById('infoModalOkBtn').onclick = () => {
-      localStorage.setItem('funnelFrom', 'result');
-      window.location.href = 'age.html';
-    };
-
     return;
   }
 
@@ -725,12 +788,16 @@ function goSubscribe() {
   window.location.href = 'subscribe.html';
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initResultPage() {
   await syncSessionFromUrl();
+  await syncStoredSession();
   applyProfileToSummary();
   await refreshBalance();
   applyImageState();
-});
+}
+
+document.addEventListener('DOMContentLoaded', initResultPage);
+window.addEventListener('pageshow', initResultPage);
 
 imageLock.addEventListener('click', generateImage);
 
@@ -750,7 +817,11 @@ subscribeBtn.addEventListener('click', () => {
   goSubscribe();
 });
 
-infoModalOkBtn.addEventListener('click', closeInfoModal);
+infoModalOkBtn.addEventListener('click', () => {
+  const action = pendingInfoAction;
+  closeInfoModal();
+  if (action) action();
+});
 infoModalCloseBtn.addEventListener('click', closeInfoModal);
 infoModal.addEventListener('click', (e) => {
   if (e.target === infoModal) closeInfoModal();
