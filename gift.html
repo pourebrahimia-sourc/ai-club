@@ -34,7 +34,7 @@
 <!-- هدر کامل و هماهنگ با بقیه صفحات -->
 <div class="header">
   <div style="font-weight:700;font-size:18px; cursor:pointer;" onclick="window.location.href='result.html'">
-    ← AI Club
+    ✕
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <button onclick="window.location.href='subscribe.html'" style="padding:6px 12px; border-radius:10px; border:none; background:#ff4fa3; color:#fff; font-size:12px; cursor:pointer;">
@@ -94,6 +94,14 @@
 </div>
 
 <script>
+  function closePage(){
+  const from = localStorage.getItem('funnelFrom');
+  if (from === 'result') {
+    window.location.href = 'result.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
 function getAccessToken(){ return localStorage.getItem('accessToken') || ''; }
 function authHeaders(extra = {}){
   const token = getAccessToken();
