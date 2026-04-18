@@ -67,7 +67,7 @@
 <body>
 
 <div class="header">
-  <div class="back" onclick="window.location.href='result.html'">← Back</div>
+  <div class="back" onclick="window.location.href='result.html'">✕</div>
   <div>💎 Subscribe</div>
   <div></div>
 </div>
@@ -107,6 +107,15 @@
   </div>
   <button class="buy-btn">Go VIP</button>
 </div>
-
+<script>
+  function closePage(){
+  const from = localStorage.getItem('funnelFrom');
+  if (from === 'result') {
+    window.location.href = 'result.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
 </body>
 </html>
