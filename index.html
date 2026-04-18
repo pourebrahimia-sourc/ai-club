@@ -261,6 +261,17 @@
 </div>
 
 <script>
+  const hash = new URLSearchParams(window.location.hash.substring(1));
+const accessToken = hash.get('access_token');
+const refreshToken = hash.get('refresh_token');
+
+if (accessToken) {
+  localStorage.setItem('accessToken', accessToken);
+  localStorage.setItem('refreshToken', refreshToken || '');
+
+  history.replaceState({}, document.title, window.location.pathname);
+  location.reload();
+}
 let isLoggedIn = false;
 
 async function checkSession(){
