@@ -176,24 +176,32 @@ export default async function handler(req, res) {
     return res.json({ success: true });
   }
 
-  if (type === 'google') {
-    const safeReturnTo =
-      returnTo === 'result.html' ? 'result.html' : 'index.html';
+if (type === 'google') {
+  const safeReturnTo =
+    returnTo === 'result.html' ? 'result.html' : 'index.html';
 
-    const redirectUrl =
-      `https://ai-club-one-iota.vercel.app/${safeReturnTo}`;
+  const redirectUrl =
+    `https://ai-club-one-iota.vercel.app/${safeReturnTo}`;
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl
-      }
-    });
+  console.log('GOOGLE TYPE HIT');
+  console.log('REQ returnTo =', returnTo);
+  console.log('SAFE returnTo =', safeReturnTo);
+  console.log('REDIRECT URL =', redirectUrl);
 
-    if (error) return res.status(400).json({ error: error.message });
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: redirectUrl
+    }
+  });
 
-    return res.json({ url: data.url });
-  }
+  console.log('SUPABASE DATA =', data);
+  console.log('SUPABASE ERROR =', error);
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.json({ url: data.url });
+}
 
   return res.status(400).json({ error: 'Invalid type' });
 }
