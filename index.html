@@ -321,7 +321,6 @@ function goSubscribe(){
   }
 }
 
-checkSession();
   function readAuthFromUrl() {
   const hash = new URLSearchParams(window.location.hash.substring(1));
   return {
@@ -360,7 +359,6 @@ async function syncSessionFromUrl() {
   }
 }
 
-syncSessionFromUrl();
   async function loadBalance(){
   const token = localStorage.getItem('accessToken');
   if(!token) return;
@@ -379,7 +377,13 @@ syncSessionFromUrl();
     }
   }catch(e){}
 }
-  loadBalance();
+  async function initIndexPage(){
+  await syncSessionFromUrl();
+  await checkSession();
+  await loadBalance();
+}
+
+initIndexPage();
 </script>
 
 </body>
