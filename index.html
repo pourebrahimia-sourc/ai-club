@@ -363,7 +363,7 @@ async function initIndexPage(){
   isLoggedIn = !!localStorage.getItem('accessToken');
 }
 
-initIndexPage();
+document.addEventListener('DOMContentLoaded', initIndexPage);
 </script>
 
 </body>
