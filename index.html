@@ -313,7 +313,6 @@ function goSubscribe(){
 }
 
 async function syncSessionFromUrl() {
-  if(!window.location.hash.includes('access_token')) return;
   const { accessToken, refreshToken } = readAuthFromUrl();
 
   if (!accessToken) return;
@@ -361,9 +360,10 @@ async function syncSessionFromUrl() {
     }
   }catch(e){}
 }
-function initIndexPage(){
-  syncSessionFromUrl();
-  loadBalance();
+async function initIndexPage(){
+  await syncSessionFromUrl();
+  await loadBalance();
+  isLoggedIn = !!localStorage.getItem('accessToken');
 }
 
 initIndexPage();
