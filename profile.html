@@ -223,7 +223,7 @@
 
 <div class="card">
 
-  <button class="back-btn" onclick="window.location.href='result.html'">← Back</button>
+  <button class="back-btn" onclick="window.location.href='result.html'">✕</button>
 
   <div class="avatar" id="avatar"></div>
 
@@ -269,6 +269,14 @@
 </div>
 
 <script>
+  function closePage(){
+  const from = localStorage.getItem('funnelFrom');
+  if (from === 'result') {
+    window.location.href = 'result.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
 function getAccessToken(){
   return localStorage.getItem('accessToken') || '';
 }
