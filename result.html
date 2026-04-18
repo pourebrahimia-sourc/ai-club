@@ -777,6 +777,7 @@ function editCharacter() {
 }
 
 function goProfile() {
+  localStorage.setItem('funnelFrom', 'result');
   const token = getAccessToken();
 
   if (!token) {
@@ -788,6 +789,7 @@ function goProfile() {
 }
 
 function goGift() {
+  localStorage.setItem('funnelFrom', 'result');
   const token = getAccessToken();
 
   if (!token) {
@@ -799,6 +801,7 @@ function goGift() {
 }
 
 function goSubscribe() {
+  localStorage.setItem('funnelFrom', 'result');
   const token = getAccessToken();
 
   if (!token) {
