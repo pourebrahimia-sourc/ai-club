@@ -338,8 +338,8 @@ try {
   }
 } catch(e) {}
 }
-
-  async function loadBalance(){
+async function loadBalance(){
+  if(!localStorage.getItem('accessToken')) return;
   const token = localStorage.getItem('accessToken');
   if(!token) return;
 
