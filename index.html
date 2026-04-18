@@ -317,12 +317,26 @@ async function syncSessionFromUrl() {
 
   if (!accessToken) return;
 
-  try {
+try {
+  const res = await fetch('/api/session', {
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
+
+  const json = await res.json();
+  const user = json.data?.session?.user;
+
+  if (user) {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken || '');
+    localStorage.setItem('userId', user.id);
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.user_metadata?.name || 'User');
 
     history.replaceState({}, document.title, window.location.pathname);
   }
+}
   } catch (e) {
     //console.log('Session sync error', e);
   }
