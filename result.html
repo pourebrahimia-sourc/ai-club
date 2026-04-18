@@ -380,7 +380,7 @@ async function checkSession(){
     isLoggedIn = false;
     return;
   }
-
+}
 function formatText(text) {
   if (!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
