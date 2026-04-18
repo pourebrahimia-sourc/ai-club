@@ -183,11 +183,6 @@ if (type === 'google') {
   const redirectUrl =
     `https://ai-club-one-iota.vercel.app/${safeReturnTo}`;
 
-  console.log('GOOGLE TYPE HIT');
-  console.log('REQ returnTo =', returnTo);
-  console.log('SAFE returnTo =', safeReturnTo);
-  console.log('REDIRECT URL =', redirectUrl);
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -195,8 +190,6 @@ if (type === 'google') {
     }
   });
 
-  console.log('SUPABASE DATA =', data);
-  console.log('SUPABASE ERROR =', error);
 
   if (error) return res.status(400).json({ error: error.message });
 
