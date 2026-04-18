@@ -302,6 +302,7 @@ function start(){
 }
 
 function goProfile(){
+     localStorage.setItem('funnelFrom', 'index');    
   if(isLoggedIn){
     window.location.href = 'profile.html';
   } else {
@@ -311,6 +312,7 @@ function goProfile(){
 }
 
 function goGift(){
+  localStorage.setItem('funnelFrom', 'index');
   if(isLoggedIn){
     window.location.href = 'gift.html';
   } else {
@@ -320,6 +322,7 @@ function goGift(){
 }
 
 function goSubscribe(){
+  localStorage.setItem('funnelFrom', 'index');
   if(isLoggedIn){
     window.location.href = 'subscribe.html';
   } else {
