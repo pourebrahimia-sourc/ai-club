@@ -850,45 +850,7 @@ infoModalCloseBtn.addEventListener('click', closeInfoModal);
 infoModal.addEventListener('click', (e) => {
   if (e.target === infoModal) closeInfoModal();
 });
-  function readAuthFromUrl() {
-  const hash = new URLSearchParams(window.location.hash.substring(1));
-  return {
-    accessToken: hash.get('access_token'),
-    refreshToken: hash.get('refresh_token')
-  };
-}
-
-async function syncSessionFromUrl() {
-  const { accessToken, refreshToken } = readAuthFromUrl();
-
-  if (!accessToken) return;
-
-  try {
-    const res = await fetch('/api/session', {
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    });
-
-    const json = await res.json();
-    const user = json.data?.session?.user;
-
-    if (user) {
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken || '');
-      localStorage.setItem('userId', user.id);
-      localStorage.setItem('userEmail', user.email || '');
-      localStorage.setItem('userName', user.user_metadata?.name || 'User');
-
-      // پاک کردن URL
-      history.replaceState({}, document.title, window.location.pathname);
-    }
-  } catch (e) {
-    console.log('Session sync error', e);
-  }
-}
-
-syncSessionFromUrl();
+ 
 </script>
 </body>
 </html>
