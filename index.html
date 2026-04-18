@@ -206,7 +206,7 @@
       ">
         Subscribe
       </button>
-
+<div id="tokenBalance">💰 ...</div>
       <div onclick="goGift()" style="
         font-size:18px;
         cursor:pointer;
@@ -371,6 +371,25 @@ async function syncSessionFromUrl() {
 }
 
 syncSessionFromUrl();
+  async function loadBalance(){
+  const token = localStorage.getItem('accessToken');
+  if(!token) return;
+
+  try{
+    const res = await fetch('/api/wallet', {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+
+    const data = await res.json();
+
+    if(data.balance !== undefined){
+      document.getElementById('tokenBalance').innerText = "💰 " + data.balance;
+    }
+  }catch(e){}
+}
+  loadBalance();
 </script>
 
 </body>
