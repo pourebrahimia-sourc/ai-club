@@ -255,6 +255,16 @@
     const loginModeBtn = document.getElementById('loginModeBtn');
     const signupModeBtn = document.getElementById('signupModeBtn');
 
+    function getReturnTo(){
+      return localStorage.getItem('loginReturnTo') || 'index.html';
+    }
+
+    function goAfterAuth(){
+      const returnTo = getReturnTo();
+      localStorage.removeItem('loginReturnTo');
+      window.location.href = returnTo;
+    }
+
     function setStatus(text){
       statusEl.innerText = text || '';
     }
@@ -387,7 +397,7 @@
 
         resetStateIfUserChanged(data?.user?.id);
         saveAuth(data);
-        window.location.href = 'result.html';
+        goAfterAuth();
       } catch(e){
         setStatus('Signup failed');
       }
@@ -429,7 +439,7 @@
 
         resetStateIfUserChanged(data?.user?.id);
         saveAuth(data);
-        window.location.href = 'result.html';
+        goAfterAuth();
       } catch(e){
         setStatus('Login failed');
       }
@@ -491,12 +501,13 @@
       }
     }
 
-    setMode('login');
     function closeLogin(){
-  const returnTo = localStorage.getItem('loginReturnTo');
-  localStorage.removeItem('loginReturnTo');
-  window.location.href = returnTo || 'index.html';
-}
+      const returnTo = getReturnTo();
+      localStorage.removeItem('loginReturnTo');
+      window.location.href = returnTo;
+    }
+
+    setMode('login');
   </script>
 
 </body>
