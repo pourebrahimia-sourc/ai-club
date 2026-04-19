@@ -129,7 +129,8 @@ await supabase.from('characters').insert([
     body_details: profile?.bodyDetails || null,
     hair: profile?.hair || null,
     appearance_details: profile?.appearanceDetails || null,
-    personality: profile?.personality || null
+    personality: profile?.personality || null,
+    name: name || 'AI'
   }
 ]);
       return res.status(200).json({ imageUrl, balance: updatedImageBalance });
