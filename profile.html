@@ -435,38 +435,46 @@ async function saveName(){
 }
 
 // 🧠 چت‌های اخیر
-function loadRecentChats(){
+async function loadCharacters(){
   const container = document.getElementById('recentChats');
   container.innerHTML = '';
 
-  const chats = JSON.parse(localStorage.getItem('recentChats') || '[]')
-    .slice(-5)
-    .reverse();
+  try{
+    const res = await fetch('/api/characters', {
+      headers: authHeaders()
+    });
 
-  if(!chats.length){
-    container.innerHTML = '<div class="empty">No recent chats</div>';
-    return;
+    const data = await res.json();
+    const chars = data.characters || [];
+
+    if(!chars.length){
+      container.innerHTML = '<div class="empty">No characters yet</div>';
+      return;
+    }
+
+    chars.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'chat-item';
+
+      div.innerHTML = `
+        <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
+        <div>
+          <div class="chat-name">${c.name || 'AI'}</div>
+          <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
+        </div>
+      `;
+
+      //div.onclick = () => {
+        //localStorage.setItem('aiName', c.name || 'AI');
+        //window.location.href = 'chat.html';
+      //};
+
+      container.appendChild(div);
+    });
+
+  }catch(e){
+    container.innerHTML = '<div class="empty">Error loading</div>';
   }
-
-  chats.forEach(chat => {
-    const div = document.createElement('div');
-    div.className = 'chat-item';
-
-    div.innerHTML = `
-      <div class="chat-avatar" style="background-image:url('${chat.image || ''}')"></div>
-      <div>
-        <div class="chat-name">${chat.name || 'AI'}</div>
-        <div class="chat-date">${chat.date || ''}</div>
-      </div>
-    `;
-
-    div.onclick = () => {
-      localStorage.setItem('aiName', chat.name || 'AI');
-      window.location.href = 'chat.html';
-    };
-
-    container.appendChild(div);
-  });
 }
 
 // 🚪 خروج
@@ -491,7 +499,7 @@ nameInput.addEventListener('keydown', (e) => {
 
 // 🚀 init
 loadUserProfile();
-loadRecentChats();
+loadCharacters();
 </script>
 
 </body>
