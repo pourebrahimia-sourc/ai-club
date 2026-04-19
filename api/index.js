@@ -120,7 +120,29 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
 
       const imageUrl = publicUrlData.publicUrl;
 
-      return res.status(200).json({ imageUrl, balance: updatedImageBalance });
+      const characterName = name || 'Luna';
+
+      const { data: insertedCharacter, error: characterError } = await supabase
+        .from('characters')
+        .insert([
+          {
+            user_id: USER_ID,
+            name: characterName,
+            image_url: imageUrl
+          }
+        ])
+        .select('id, name, image_url, created_at')
+        .single();
+
+      if (characterError) {
+        return res.status(500).json({ error: characterError.message });
+      }
+
+      return res.status(200).json({
+        imageUrl,
+        balance: updatedImageBalance,
+        character: insertedCharacter
+      });
     }
 
     if (Number(wallet.balance) <= 0) {
