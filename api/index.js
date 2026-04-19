@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { msg, name, profile, history = [] } = req.body || {};
+    const { msg, name, profile, history = [], characterId = null } = req.body || {};
     const USER_ID = await getAuthedUserId(req);
 
     if (!USER_ID) {
@@ -119,6 +119,17 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .getPublicUrl(fileName);
 
       const imageUrl = publicUrlData.publicUrl;
+      if (characterId) {
+  await supabase
+    .from('characters')
+    .update({
+      image_url: imageUrl
+    })
+    .eq('id', characterId)
+    .eq('user_id', USER_ID);
+
+  return res.status(200).json({ imageUrl, balance: updatedImageBalance, characterId });
+}
 const { data: insertedCharacter } = await supabase
   .from('characters')
   .insert([
