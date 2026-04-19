@@ -240,7 +240,15 @@ Interaction style:
     if (updatedChatBalance === null) {
       return res.status(200).json({ reply: "No tokens left 🔒" });
     }
+const lastCharacter = await supabase
+  .from('characters')
+  .select('id')
+  .eq('user_id', USER_ID)
+  .order('created_at', { ascending: false })
+  .limit(1)
+  .single();
 
+const CHARACTER_ID = lastCharacter.data?.id || null;
 await supabase.from('chat_history').insert([
   {
     user_id: USER_ID,
