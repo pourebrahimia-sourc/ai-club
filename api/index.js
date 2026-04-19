@@ -137,7 +137,6 @@ const { data: insertedCharacter } = await supabase
   ])
   .select('id')
   .single();
-const CHARACTER_ID = insertedCharacter.id;
 
 const CHARACTER_ID = insertedCharacter.id;
       return res.status(200).json({ imageUrl, balance: updatedImageBalance });
