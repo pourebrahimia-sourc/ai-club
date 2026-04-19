@@ -122,7 +122,14 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
 await supabase.from('characters').insert([
   {
     user_id: USER_ID,
-    image_url: imageUrl
+    image_url: imageUrl,
+    age: profile?.age || null,
+    ethnicity: profile?.ethnicity || null,
+    body: profile?.body || null,
+    body_details: profile?.bodyDetails || null,
+    hair: profile?.hair || null,
+    appearance_details: profile?.appearanceDetails || null,
+    personality: profile?.personality || null
   }
 ]);
       return res.status(200).json({ imageUrl, balance: updatedImageBalance });
