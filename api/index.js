@@ -4,10 +4,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+
 let memoryStore = {};
 
 async function getAuthedUserId(req) {
@@ -123,28 +120,7 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
 
       const imageUrl = publicUrlData.publicUrl;
 
-      const characterName = name || 'Luna';
-
-      const { data: insertedCharacter, error: characterError } = await supabaseAdmin
-        .from('characters')
-        .insert([
-          {
-            user_id: USER_ID,
-            image_url: imageUrl
-          }
-        ])
-        .select('id, name, image_url, created_at')
-        .single();
-
-      if (characterError) {
-        return res.status(500).json({ error: characterError.message });
-      }
-
-      return res.status(200).json({
-        imageUrl,
-        balance: updatedImageBalance,
-        character: insertedCharacter
-      });
+      return res.status(200).json({ imageUrl, balance: updatedImageBalance });
     }
 
     if (Number(wallet.balance) <= 0) {
