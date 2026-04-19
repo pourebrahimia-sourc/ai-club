@@ -464,10 +464,11 @@ async function loadCharacters(){
         </div>
       `;
 
-      //div.onclick = () => {
-        //localStorage.setItem('aiName', c.name || 'AI');
-        //window.location.href = 'chat.html';
-      //};
+div.onclick = () => {
+  localStorage.setItem('aiName', c.name || 'AI');
+  localStorage.setItem('selectedCharacterId', c.id);
+  window.location.href = 'chat.html';
+};
 
       container.appendChild(div);
     });
