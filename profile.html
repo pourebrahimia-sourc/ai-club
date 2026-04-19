@@ -463,7 +463,7 @@ async function loadCharacters(){
           <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
         </div>
       `;
-
+localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
 div.onclick = () => {
   localStorage.setItem('aiName', c.name || 'AI');
   localStorage.setItem('selectedCharacterId', c.id);
