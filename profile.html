@@ -468,6 +468,7 @@ div.onclick = () => {
   localStorage.setItem('aiName', c.name || 'AI');
   localStorage.setItem('selectedCharacterId', c.id);
   localStorage.setItem('aiImage', c.image_url || '');
+  localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
   window.location.href = 'chat.html';
 };
 
