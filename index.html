@@ -377,9 +377,10 @@ async function loadBalance() {
 }
 
 async function initIndexPage() {
-  await syncSessionFromUrl();
-  isLoggedIn = !!getAccessToken();
-  await loadBalance();
+  isLoggedIn = !!getAccessToken();   // 👈 فوری ست کن
+
+  await syncSessionFromUrl();        // بعداً sync کن
+  loadBalance();                     // async بدون await
 }
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
