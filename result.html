@@ -694,7 +694,9 @@ imageLock.style.pointerEvents = 'none';
     });
 
     const data = await res.json();
-
+if (data.characterId) {
+  localStorage.setItem('selectedCharacterId', data.characterId);
+}
     if (data.error) {
       hidePageLoading();
       imageLock.style.pointerEvents = 'auto';
