@@ -130,7 +130,6 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .insert([
           {
             user_id: USER_ID,
-            name: characterName,
             image_url: imageUrl
           }
         ])
