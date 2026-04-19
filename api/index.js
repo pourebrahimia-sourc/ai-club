@@ -241,18 +241,20 @@ Interaction style:
       return res.status(200).json({ reply: "No tokens left 🔒" });
     }
 
-    await supabase.from('chat_history').insert([
-      {
-        user_id: USER_ID,
-        message: msg,
-        role: "user"
-      },
-      {
-        user_id: USER_ID,
-        message: reply,
-        role: "ai"
-      }
-    ]);
+await supabase.from('chat_history').insert([
+  {
+    user_id: USER_ID,
+    message: msg,
+    role: "user",
+    character_id: CHARACTER_ID
+  },
+  {
+    user_id: USER_ID,
+    message: reply,
+    role: "ai",
+    character_id: CHARACTER_ID
+  }
+]);
 
     memoryStore[memoryKey].history = [
       ...limitedHistory,
