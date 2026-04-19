@@ -248,7 +248,7 @@ const lastCharacter = await supabase
   .limit(1)
   .single();
 
-const CHARACTER_ID = lastCharacter.data?.id || null;
+const CHARACTER_ID = lastCharacter?.data?.id || null;
 await supabase.from('chat_history').insert([
   {
     user_id: USER_ID,
