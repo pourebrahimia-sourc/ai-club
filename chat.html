@@ -461,16 +461,19 @@ async function talk(){
 
   try{
     document.getElementById('charStatus').innerText = "Typing...";
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        msg,
-        history,
-        name: aiName,
-        profile: getCharacterProfile()
-      })
-    });
+const selectedCharacterId = localStorage.getItem('selectedCharacterId');
+
+const res = await fetch('/api', {
+  method: 'POST',
+  headers: authHeaders({ 'Content-Type': 'application/json' }),
+  body: JSON.stringify({
+    msg,
+    history,
+    name: aiName,
+    profile: getCharacterProfile(),
+    characterId: selectedCharacterId
+  })
+});
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
