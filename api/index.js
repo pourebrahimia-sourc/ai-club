@@ -4,7 +4,10 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
-
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 let memoryStore = {};
 
 async function getAuthedUserId(req) {
@@ -122,7 +125,7 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
 
       const characterName = name || 'Luna';
 
-      const { data: insertedCharacter, error: characterError } = await supabase
+      const { data: insertedCharacter, error: characterError } = await supabaseAdmin
         .from('characters')
         .insert([
           {
