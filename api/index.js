@@ -119,7 +119,12 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .getPublicUrl(fileName);
 
       const imageUrl = publicUrlData.publicUrl;
-
+await supabase.from('characters').insert([
+  {
+    user_id: USER_ID,
+    image_url: imageUrl
+  }
+]);
       return res.status(200).json({ imageUrl, balance: updatedImageBalance });
     }
 
