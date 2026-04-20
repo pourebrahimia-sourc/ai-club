@@ -225,6 +225,11 @@ body{
   cursor:pointer;
   font-weight:700;
 }
+    .loading-blur{
+  filter: blur(6px);
+  opacity: 0.6;
+  transition: all 0.4s ease;
+}
   </style>
 </head>
 <body>
@@ -326,8 +331,11 @@ if(!getAccessToken()){
 }
 
 const nameEl = document.getElementById('name');
+  nameEl.classList.add('loading-blur');
+
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
+  tokenEl.classList.add('loading-blur');
 const avatarEl = document.getElementById('avatar');
 const nameModal = document.getElementById('nameModal');
 const nameInput = document.getElementById('nameInput');
@@ -366,8 +374,9 @@ async function loadUserProfile(){
 
     // نمایش
     nameEl.innerText = latestName;
-    emailEl.innerText = latestEmail;
-
+        emailEl.innerText = latestEmail;
+    nameEl.classList.remove('loading-blur');
+tokenEl.classList.remove('loading-blur');
     // ✅ اگر از سشن بالانس داشت → استفاده کن
     if (latestBalance !== null) {
       tokenEl.innerText = latestBalance;
