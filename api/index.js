@@ -150,7 +150,11 @@ const { data: insertedCharacter } = await supabase
   .single();
 
 const CHARACTER_ID = insertedCharacter.id;
-      return res.status(200).json({ imageUrl, balance: updatedImageBalance });
+      return res.status(200).json({
+  imageUrl,
+  balance: updatedImageBalance,
+  characterId: CHARACTER_ID
+});
     }
 
     if (Number(wallet.balance) <= 0) {
