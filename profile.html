@@ -4,27 +4,34 @@
   <title>Profile - AI Club</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
 
     body{
       margin:0;
-      min-height:100vh;
       background:#111;
       color:#fff;
       font-family:Arial, Helvetica, sans-serif;
-      padding:16px;
+      min-height:100vh;
+      padding:14px;
     }
 
     .page{
+      width:100%;
       max-width:420px;
       margin:0 auto;
+      animation:fadeUp 0.32s ease;
     }
 
     .card{
-      background:#1a1a1a;
+      width:100%;
+      background:linear-gradient(180deg, #1a1a1a 0%, #161616 100%);
       border:1px solid #2b2b2b;
       border-radius:18px;
-      padding:16px;
+      padding:14px;
+      box-shadow:0 14px 44px rgba(0,0,0,0.30);
     }
 
     .topbar{
@@ -35,42 +42,150 @@
     }
 
     .back-btn{
-      width:36px;height:36px;border:none;border-radius:10px;
-      background:#222;color:#ff4fa3;font-size:16px;cursor:pointer;
+      width:36px;
+      height:36px;
+      border:none;
+      border-radius:10px;
+      background:#222;
+      color:#ff4fa3;
+      font-size:16px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    .avatar{
-      width:36px;height:36px;border-radius:50%;
-      background:#2a2a2a;background-size:cover;background-position:center;
+    .topbar-title{
+      font-size:14px;
+      font-weight:700;
+      opacity:0.92;
     }
 
-    .mini-info{
-      font-size:13px;
-      line-height:1.8;
+    .hero{
+      display:flex;
+      align-items:center;
+      gap:12px;
       margin-bottom:12px;
-      opacity:0.9;
-    }
-
-    .mini-info span{opacity:0.6;}
-    .mini-info strong{font-weight:700;}
-
-    .section{
-      margin-top:10px;
-      padding:12px;
+      padding:10px 12px;
       border-radius:14px;
       background:#141414;
       border:1px solid #242424;
     }
 
-    .section h3{
-      margin:0 0 10px 0;
+    .avatar{
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      background:#2a2a2a;
+      background-size:cover;
+      background-position:center;
+      flex-shrink:0;
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow:0 8px 20px rgba(0,0,0,0.24);
+    }
+
+    .hero-text{
+      min-width:0;
+      flex:1;
+    }
+
+    .title{
+      font-size:18px;
+      font-weight:700;
+      margin:0 0 4px 0;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:12px;
+      color:rgba(255,255,255,0.66);
+      line-height:1.45;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .row{
+      min-height:44px;
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+      border-radius:13px;
+      background:#141414;
+      border:1px solid #242424;
+    }
+
+    .row-label{
+      color:rgba(255,255,255,0.72);
+      flex-shrink:0;
+    }
+
+    .name-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .value{
+      font-weight:700;
+      text-align:right;
+      word-break:break-word;
+      font-size:13px;
+    }
+
+    .edit-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+      border:none;
+      outline:none;
+      cursor:pointer;
+      font-size:13px;
+      color:#ff4fa3;
+      padding:0;
+      margin:0;
+      line-height:1;
+    }
+
+    .section{
+      margin-top:10px;
+      padding:12px;
+      border-radius:15px;
+      background:#141414;
+      border:1px solid #242424;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .section-title h3{
+      margin:0;
       font-size:14px;
     }
 
-    .recent{
-      min-height:220px;
+    .section-sub{
+      font-size:11px;
+      color:rgba(255,255,255,0.56);
+    }
+
+    .recent-chats{
+      min-height:200px;
       opacity:0;
-      transition:opacity 0.3s ease;
+      transition:opacity 0.35s ease;
     }
 
     .chat-item{
@@ -81,50 +196,104 @@
       border-bottom:1px solid #252525;
     }
 
-    .chat-avatar{
-      width:42px;height:42px;border-radius:50%;
-      background:#2a2a2a;background-size:cover;background-position:center;
+    .chat-item:last-child{
+      border-bottom:none;
+      padding-bottom:0;
     }
 
-    .chat-meta{flex:1;}
-    .chat-name{font-size:13px;font-weight:700;}
-    .chat-date{font-size:11px;opacity:0.6;}
+    .chat-avatar{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:#2a2a2a;
+      background-size:cover;
+      background-position:center;
+      flex-shrink:0;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .chat-meta{
+      flex:1;
+      min-width:0;
+    }
+
+    .chat-name{
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:3px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .chat-date{
+      font-size:10px;
+      opacity:0.6;
+    }
 
     .chat-btn{
       background:#ff4fa3;
       border:none;
       color:#fff;
       border-radius:10px;
-      padding:6px 10px;
+      padding:7px 11px;
       font-size:11px;
       cursor:pointer;
       font-weight:700;
+      min-width:60px;
+      box-shadow:0 8px 20px rgba(255,79,163,0.20);
+    }
+
+    .empty{
+      opacity:0.6;
+      font-size:12px;
+      padding:8px 0;
+    }
+
+    .actions{
+      margin-top:10px;
+      display:grid;
+      gap:8px;
     }
 
     .btn{
       width:100%;
-      padding:11px;
+      min-height:44px;
+      padding:10px;
       border:none;
       border-radius:12px;
-      margin-top:8px;
       cursor:pointer;
       font-weight:700;
       font-size:13px;
+      transition:transform 0.15s ease, opacity 0.2s ease;
     }
 
-    .dark{background:#2a2a2a;border:1px solid #333;}
-    .primary{background:#ff4fa3;}
+    .btn:active{
+      transform:scale(0.985);
+    }
+
+    .primary{
+      background:#ff4fa3;
+      color:#fff;
+    }
+
+    .dark{
+      background:#242424;
+      color:#fff;
+      border:1px solid #343434;
+    }
 
     .loading-blur{
-      filter:blur(5px);
-      opacity:0.6;
-      transition:0.3s;
+      filter:blur(6px);
+      opacity:0.55;
+      transition:all 0.35s ease;
     }
 
     .modal{
       display:none;
       position:fixed;
       inset:0;
+      z-index:100;
       background:rgba(0,0,0,0.6);
       align-items:center;
       justify-content:center;
@@ -133,15 +302,78 @@
 
     .modal-box{
       width:100%;
-      max-width:300px;
+      max-width:340px;
       background:#1a1a1a;
       border:1px solid #2b2b2b;
-      border-radius:16px;
-      padding:16px;
-      text-align:center;
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.45);
     }
 
-    .modal-box h3{margin-bottom:10px;}
+    .modal-title{
+      font-size:17px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .modal-input{
+      width:100%;
+      height:46px;
+      border:none;
+      outline:none;
+      border-radius:12px;
+      background:#111;
+      border:1px solid #2b2b2b;
+      color:#fff;
+      padding:0 14px;
+      font-size:14px;
+      margin-bottom:12px;
+    }
+
+    .modal-actions{
+      display:flex;
+      gap:10px;
+    }
+
+    .modal-btn{
+      flex:1;
+      height:42px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .modal-cancel{
+      background:#2a2a2a;
+      color:#fff;
+      border:1px solid #3a3a3a;
+    }
+
+    .modal-save{
+      background:#ff4fa3;
+      color:#fff;
+    }
+
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @media (max-width:380px){
+      body{ padding:12px; }
+      .card{ padding:12px; }
+      .hero{ padding:9px 10px; gap:10px; }
+      .avatar{ width:52px; height:52px; }
+      .title{ font-size:17px; }
+    }
   </style>
 </head>
 <body>
@@ -150,121 +382,408 @@
   <div class="card">
 
     <div class="topbar">
-      <button class="back-btn" onclick="goBack()">✕</button>
+      <button class="back-btn" onclick="closePage()">✕</button>
+      <div class="topbar-title">AI Club</div>
+      <div style="width:36px;"></div>
+    </div>
+
+    <div class="hero">
       <div class="avatar" id="avatar"></div>
-    </div>
-
-    <div class="mini-info">
-      <div><span>Name:</span> <strong id="name">-</strong></div>
-      <div><span>Email:</span> <strong id="email">-</strong></div>
-      <div><span>Tokens:</span> <strong id="tokens">0</strong></div>
-    </div>
-
-    <div class="section">
-      <h3>Recent Chats</h3>
-      <div id="recentChats" class="recent">
-        <div style="opacity:0.6">Loading...</div>
+      <div class="hero-text">
+        <div class="title">Your Profile</div>
+        <p class="subtitle">Manage your account, tokens, and recent characters.</p>
       </div>
     </div>
 
-    <button class="btn dark" onclick="goGift()">🎁 Gifts</button>
-    <button class="btn dark" onclick="goSubscribe()">💎 Subscribe</button>
-    <button class="btn primary" onclick="logout()">Logout</button>
+    <div class="stats">
+      <div class="row">
+        <span class="row-label">Name</span>
+        <div class="name-wrap">
+          <strong id="name" class="value">-</strong>
+          <button type="button" class="edit-btn" onclick="openNameModal()">✏️</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="row-label">Email</span>
+        <strong id="email" class="value">-</strong>
+      </div>
+
+      <div class="row">
+        <span class="row-label">Tokens</span>
+        <strong id="tokens" class="value">0</strong>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h3>Recent Chats</h3>
+        <span class="section-sub">Your latest characters</span>
+      </div>
+
+      <div id="recentChats" class="recent-chats">
+        <div class="empty">Loading chats...</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn dark" onclick="goGift()">🎁 Gifts</button>
+      <button class="btn dark" onclick="goSubscribe()">💎 Subscribe</button>
+      <button class="btn dark" onclick="goAlbum()">🖼 Album</button>
+      <button class="btn primary" onclick="logout()">Logout</button>
+    </div>
 
   </div>
 </div>
 
-<!-- Token Modal -->
-<div id="tokenModal" class="modal">
+<div id="nameModal" class="modal">
   <div class="modal-box">
-    <h3>Not enough tokens</h3>
-    <p>You need 5 tokens</p>
-    <button class="btn primary" onclick="goGift()">Get Tokens</button>
-    <button class="btn dark" onclick="closeModal()">Close</button>
+    <div class="modal-title">Edit your name</div>
+    <input id="nameInput" class="modal-input" type="text" placeholder="Enter your name" />
+    <div class="modal-actions">
+      <button class="modal-btn modal-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="modal-btn modal-save" onclick="saveName()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="tokenModal" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:120;
+background:rgba(0,0,0,0.6);
+align-items:center;
+justify-content:center;
+padding:20px;
+">
+  <div style="
+    width:100%;
+    max-width:320px;
+    background:#1a1a1a;
+    border:1px solid #2b2b2b;
+    border-radius:18px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  ">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
+      Not enough tokens
+    </div>
+
+    <div id="tokenModalText" style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
+      You need 5 tokens.
+    </div>
+
+    <button id="getTokensBtn" class="btn primary" style="margin-bottom:10px;">
+      Get Tokens
+    </button>
+
+    <button id="subscribeBtn" class="btn dark">
+      Subscribe
+    </button>
+
+    <div id="closeTokenModal" style="
+      margin-top:14px;
+      font-size:12px;
+      opacity:0.7;
+      cursor:pointer;
+    ">
+      Close
+    </div>
   </div>
 </div>
 
 <script>
-function getToken(){return localStorage.getItem('accessToken');}
-if(!getToken()) location.href='login.html';
+function closePage(){
+  const from = localStorage.getItem('funnelFrom');
+  if (from === 'result') {
+    window.location.href = 'result.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+function getAccessToken(){
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}){
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+}
+
+function clearUserState(){
+  [
+    'userId',
+    'userEmail',
+    'userName',
+    'accessToken',
+    'refreshToken',
+    'age',
+    'ethnicity',
+    'body',
+    'bodyDetails',
+    'hair',
+    'appearanceDetails',
+    'personality',
+    'aiImage',
+    'imageUnlocked',
+    'lastProfileKey',
+    'aiName',
+    'selectedCharacterId',
+    'recentChats',
+    'loginReturnTo',
+    'funnelFrom'
+  ].forEach(key => localStorage.removeItem(key));
+}
+
+if(!getAccessToken()){
+  window.location.href = 'login.html';
+}
 
 const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
-const recent = document.getElementById('recentChats');
-const modal = document.getElementById('tokenModal');
+const avatarEl = document.getElementById('avatar');
+const nameModal = document.getElementById('nameModal');
+const nameInput = document.getElementById('nameInput');
+const recentChatsEl = document.getElementById('recentChats');
+
+const tokenModal = document.getElementById('tokenModal');
+const tokenModalText = document.getElementById('tokenModalText');
+const closeTokenModal = document.getElementById('closeTokenModal');
+const getTokensBtn = document.getElementById('getTokensBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
 
 nameEl.classList.add('loading-blur');
 tokenEl.classList.add('loading-blur');
 
-async function loadProfile(){
-  const res = await fetch('/api/session',{headers:{Authorization:'Bearer '+getToken()}});
-  const d = await res.json();
-  const s = d.data.session;
+emailEl.innerText = localStorage.getItem('userEmail') || '-';
+avatarEl.style.backgroundImage = 'none';
 
-  nameEl.innerText = s.profileName || 'User';
-  emailEl.innerText = s.user.email || '-';
-  tokenEl.innerText = s.balance ?? 0;
-
-  nameEl.classList.remove('loading-blur');
-  tokenEl.classList.remove('loading-blur');
+function openTokenModalWithAmount(amount) {
+  tokenModalText.innerText = `You need ${amount} tokens.`;
+  tokenModal.style.display = 'flex';
 }
 
-async function loadChats(){
-  const res = await fetch('/api/characters',{headers:{Authorization:'Bearer '+getToken()}});
-  const d = await res.json();
-  const list = d.characters || [];
+function closeModal() {
+  tokenModal.style.display = 'none';
+}
 
-  if(!list.length){
-    recent.innerHTML = '<div style="opacity:0.6">No chats</div>';
-    recent.style.opacity=1;
+async function getUserBalance() {
+  try {
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+    const data = await res.json();
+    return Number(data.balance || 0);
+  } catch (e) {
+    return 0;
+  }
+}
+
+async function openChatForCharacter(c){
+  const balance = await getUserBalance();
+
+  if (balance < 5) {
+    openTokenModalWithAmount(5);
     return;
   }
 
-  recent.innerHTML='';
-  list.forEach(c=>{
-    const div=document.createElement('div');
-    div.className='chat-item';
-
-    div.innerHTML=`
-      <div class="chat-avatar" style="background-image:url('${c.image_url||''}')"></div>
-      <div class="chat-meta">
-        <div class="chat-name">${c.name||'AI'}</div>
-        <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
-      </div>
-      <button class="chat-btn">Chat</button>
-    `;
-
-    div.querySelector('.chat-btn').onclick=async ()=>{
-      const b = await getBalance();
-      if(b<5){ modal.style.display='flex'; return; }
-
-      localStorage.setItem('selectedCharacterId',c.id);
-      localStorage.setItem('aiName',c.name||'AI');
-      localStorage.setItem('aiImage',c.image_url||'');
-      location.href='chat.html';
-    };
-
-    recent.appendChild(div);
-  });
-
-  recent.style.opacity=1;
+  localStorage.setItem('aiName', c.name || 'AI');
+  localStorage.setItem('selectedCharacterId', c.id);
+  localStorage.setItem('aiImage', c.image_url || '');
+  localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
+  window.location.href = 'chat.html';
 }
 
-async function getBalance(){
-  const r=await fetch('/api/wallet',{headers:{Authorization:'Bearer '+getToken()}});
-  const d=await r.json();
-  return d.balance||0;
+async function loadUserProfile(){
+  try {
+    const res = await fetch('/api/session', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+    const session = data?.data?.session;
+
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const latestName = session.profileName || 'User';
+    const latestEmail = session.user?.email || '-';
+    const latestBalance = session.balance ?? null;
+
+    localStorage.setItem('userName', latestName);
+    localStorage.setItem('userEmail', latestEmail);
+
+    if(session.user?.id){
+      localStorage.setItem('userId', session.user.id);
+    }
+
+    nameEl.innerText = latestName;
+    emailEl.innerText = latestEmail;
+
+    if (latestBalance !== null) {
+      tokenEl.innerText = latestBalance;
+    } else {
+      await loadTokensFallback();
+    }
+
+    nameEl.classList.remove('loading-blur');
+    tokenEl.classList.remove('loading-blur');
+
+  } catch(e){
+    await loadTokensFallback();
+    nameEl.classList.remove('loading-blur');
+    tokenEl.classList.remove('loading-blur');
+  }
 }
 
-function closeModal(){modal.style.display='none';}
-function logout(){localStorage.clear();location.href='index.html';}
-function goGift(){location.href='gift.html';}
-function goSubscribe(){location.href='subscribe.html';}
-function goBack(){location.href='index.html';}
+async function loadTokensFallback(){
+  try{
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
 
-loadProfile();
-loadChats();
+    const data = await res.json();
+    tokenEl.innerText = data.balance || 0;
+
+    if(data.userId){
+      localStorage.setItem('userId', data.userId);
+    }
+  }catch(e){
+    tokenEl.innerText = 0;
+  }
+}
+
+function openNameModal(){
+  nameInput.value = localStorage.getItem('userName') || '';
+  nameModal.style.display = 'flex';
+  setTimeout(() => nameInput.focus(), 50);
+}
+
+function closeNameModal(){
+  nameModal.style.display = 'none';
+}
+
+async function saveName(){
+  const newName = nameInput.value.trim();
+  if(!newName) return;
+
+  try{
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: authHeaders({
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        type: 'update-name',
+        name: newName
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      alert(data.error);
+      return;
+    }
+
+    closeNameModal();
+    await loadUserProfile();
+
+  }catch(e){
+    alert('Error updating name');
+  }
+}
+
+async function loadCharacters(){
+  recentChatsEl.style.opacity = '0';
+  recentChatsEl.innerHTML = '';
+
+  try{
+    const res = await fetch('/api/characters', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+    const chars = data.characters || [];
+
+    if(!chars.length){
+      recentChatsEl.innerHTML = '<div class="empty">No characters yet</div>';
+      recentChatsEl.style.opacity = '1';
+      return;
+    }
+
+    chars.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'chat-item';
+
+      div.innerHTML = `
+        <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
+
+        <div class="chat-meta">
+          <div class="chat-name">${c.name || 'AI'}</div>
+          <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
+        </div>
+
+        <button class="chat-btn">Chat</button>
+      `;
+
+      const btn = div.querySelector('.chat-btn');
+
+      btn.onclick = () => {
+        openChatForCharacter(c);
+      };
+
+      recentChatsEl.appendChild(div);
+    });
+
+    recentChatsEl.style.opacity = '1';
+  }catch(e){
+    recentChatsEl.innerHTML = '<div class="empty">Error loading</div>';
+    recentChatsEl.style.opacity = '1';
+  }
+}
+
+function logout(){
+  clearUserState();
+  window.location.href = 'index.html';
+}
+
+function goGift(){ window.location.href = 'gift.html'; }
+function goSubscribe(){ window.location.href = 'subscribe.html'; }
+function goAlbum(){ window.location.href = 'album.html'; }
+
+nameModal.addEventListener('click', (e) => {
+  if(e.target === nameModal) closeNameModal();
+});
+
+nameInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') saveName();
+});
+
+closeTokenModal.addEventListener('click', closeModal);
+
+tokenModal.addEventListener('click', (e) => {
+  if (e.target === tokenModal) closeModal();
+});
+
+getTokensBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'gift.html';
+});
+
+subscribeBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'subscribe.html';
+});
+
+loadUserProfile();
+loadCharacters();
 </script>
 
 </body>
