@@ -560,9 +560,8 @@ function clearUserState(){
 
 if(!getAccessToken()){
   window.location.href = 'login.html';
-  return;
 }
-  document.body.classList.remove('auth-pending');
+
 
 const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
@@ -633,7 +632,7 @@ async function loadUserProfile(){
       window.location.href = 'login.html';
       return;
     }
-
+document.body.classList.remove('auth-pending');
     const latestName = session.profileName || 'User';
     const latestEmail = session.user?.email || '-';
     const latestBalance = session.balance ?? null;
