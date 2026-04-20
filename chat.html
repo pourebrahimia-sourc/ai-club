@@ -368,7 +368,9 @@ lockOverlay.addEventListener('click', async () => {
       localStorage.setItem('aiImage', data.imageUrl);
       localStorage.setItem('imageUnlocked', "true");
       loading.style.display = "none";
-      location.reload();
+if (data.characterId) {
+  localStorage.setItem('selectedCharacterId', data.characterId);
+}
       return;
     }
 
