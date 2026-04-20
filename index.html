@@ -3,6 +3,7 @@
 <head>
   <title>Create AI Girlfriend</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     *{box-sizing:border-box}
 
@@ -11,424 +12,266 @@
       background:#111;
       color:#fff;
       font-family:sans-serif;
+      overflow:hidden;
     }
 
-    .create-container{
-      max-width:380px;
-      margin:40px auto;
-      padding:0 16px;
-      text-align:center;
+    .container{
+      width:100%;
+      height:100svh;
+      position:relative;
+    }
+
+    video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding:20px;
+      background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 40%);
     }
 
     .header{
+      position:absolute;
+      top:16px;
+      left:16px;
+      right:16px;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:20px;
+      z-index:5;
     }
 
-    .video-wrapper{
-      position:relative;
-      width:100%;
-      margin:0 0 16px 0;
+    .logo{font-weight:700;font-size:18px}
+
+    .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
     }
 
-    .create-video{
-      width:100%;
-      display:block;
-      border-radius:16px;
-    }
-
-    .create-title{
-      margin:0 0 10px 0;
-      font-size:22px;
-    }
-
-    .create-subtitle{
-      margin:0 0 16px 0;
-      color:rgba(255,255,255,0.7);
-      font-size:15px;
-    }
-
-    .desktop-btn{
-      width:100%;
-      padding:14px 20px;
-      border-radius:14px;
+    .btn-small{
+      padding:6px 10px;
+      border-radius:10px;
       border:none;
       background:#ff4fa3;
       color:#fff;
-      font-size:16px;
+      font-size:12px;
       cursor:pointer;
-      font-weight:700;
     }
 
-    .desktop-hook{
-      margin-top:10px;
-      font-size:13px;
-      color:rgba(255,255,255,0.72);
-    }
-
-    .token-balance{
+    .token{
       background:#1a1a1a;
       padding:6px 10px;
       border-radius:10px;
       font-size:12px;
     }
 
-    .overlay-top,
-    .overlay-btn,
-    .overlay-hook{
+    .icon{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#2a2a2a;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
+    .title{
+      font-size:26px;
+      margin-bottom:6px;
+      text-shadow:0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .sub{
+      font-size:14px;
+      opacity:0.9;
+      margin-bottom:20px;
+    }
+
+    .cta{
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      background:#ff4fa3;
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .loader{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.3);
       display:none;
+      align-items:center;
+      justify-content:center;
     }
 
-    @media (max-width: 640px){
-      body{
-        overflow:hidden;
-      }
-
-      .create-container{
-        max-width:none;
-        width:100%;
-        height:100svh;
-        margin:0;
-        padding:14px 14px 0 14px;
-        position:relative;
-      }
-
-      .header{
-        position:absolute;
-        top:14px;
-        left:14px;
-        right:14px;
-        z-index:5;
-        margin-bottom:0;
-      }
-
-      .create-title,
-      .create-subtitle,
-      .desktop-btn,
-      .desktop-hook{
-        display:none;
-      }
-
-      .video-wrapper{
-        width:100%;
-        height:100svh;
-        margin:0;
-      }
-
-      .create-video{
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        border-radius:18px;
-      }
-
-      .overlay-top{
-        display:block;
-        position:absolute;
-        left:16px;
-        right:16px;
-        bottom:118px;
-        text-align:center;
-        z-index:3;
-      }
-
-      .overlay-top h2{
-        margin:0 0 8px 0;
-        font-size:24px;
-        line-height:1.25;
-        color:#fff;
-        text-shadow:0 3px 14px rgba(0,0,0,0.45);
-      }
-
-      .overlay-top p{
-        margin:0;
-        font-size:14px;
-        line-height:1.4;
-        color:rgba(255,255,255,0.9);
-        text-shadow:0 3px 14px rgba(0,0,0,0.45);
-      }
-
-      .overlay-btn{
-        display:block;
-        position:absolute;
-        left:16px;
-        right:16px;
-        bottom:46px;
-        width:auto;
-        padding:14px 20px;
-        border-radius:14px;
-        border:none;
-        background:#ff4fa3;
-        color:#fff;
-        font-size:16px;
-        font-weight:700;
-        cursor:pointer;
-        z-index:3;
-        margin:0;
-      }
-
-      .overlay-hook{
-        display:block;
-        position:absolute;
-        left:16px;
-        right:16px;
-        bottom:18px;
-        text-align:center;
-        z-index:3;
-        font-size:13px;
-        color:rgba(255,255,255,0.9);
-        text-shadow:0 3px 14px rgba(0,0,0,0.45);
-      }
+    .spinner{
+      width:50px;height:50px;
+      border-radius:50%;
+      border:3px solid rgba(255,255,255,0.2);
+      border-top:3px solid #ff4fa3;
+      animation:spin 0.8s linear infinite;
     }
-    @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+
+    @keyframes spin{
+      from{transform:rotate(0)}
+      to{transform:rotate(360deg)}
+    }
   </style>
 </head>
 
 <body>
 
-<div class="create-container">
+<div class="container">
 
-  <div class="header" style="
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-  ">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">AI Club</div>
 
-    <div style="font-weight:700;font-size:18px;">
-      AI Club
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;">
-
-      <button onclick="goSubscribe()" style="
-        padding:6px 12px;
-        border-radius:10px;
-        border:none;
-        background:#ff4fa3;
-        color:#fff;
-        font-size:12px;
-        cursor:pointer;
-      ">
-        Subscribe
-      </button>
-
-      <div id="tokenBalance" class="token-balance">💰 ...</div>
-
-      <div onclick="goGift()" style="
-        font-size:18px;
-        cursor:pointer;
-      ">
-        🎁
-      </div>
-
-      <div onclick="goProfile()" style="
-        width:34px;
-        height:34px;
-        border-radius:50%;
-        background:#2a2a2a;
-        border:1px solid #3a3a3a;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        cursor:pointer;
-        overflow:hidden;
-      ">
-        <span style="font-size:14px;">👤</span>
-      </div>
-
+    <div class="right">
+      <button class="btn-small" onclick="goSubscribe()">Subscribe</button>
+      <div id="balance" class="token">💰 ...</div>
+      <div class="icon" onclick="goGift()">🎁</div>
+      <div class="icon" onclick="goProfile()">👤</div>
     </div>
   </div>
 
-  <h2 class="create-title">Create your AI Girlfriend ✨</h2>
-  <p class="create-subtitle">Build your perfect AI companion</p>
+  <!-- VIDEO -->
+  <video autoplay muted loop playsinline poster="fallback.jpg" id="bgVideo">
+    <source src="video.mp4" type="video/mp4">
+  </video>
 
-  <div class="video-wrapper">
-    <video autoplay muted loop playsinline class="create-video">
-      <source src="video.mp4" type="video/mp4">
-    </video>
-
-    <div class="overlay-top">
-      <h2>Create your AI Girlfriend ✨</h2>
-      <p>Build your perfect AI companion</p>
-    </div>
-
-    <button class="overlay-btn" onclick="start()">
-      Create 💖
-    </button>
-
-    <div class="overlay-hook">Create your character for free</div>
+  <!-- CONTENT -->
+  <div class="overlay">
+    <div class="title">Create your AI Girlfriend ✨</div>
+    <div class="sub">Build your perfect AI companion</div>
+    <button class="cta" onclick="start()">Create 💖</button>
   </div>
 
-  <button class="desktop-btn" onclick="start()">
-    Create 💖
-  </button>
+</div>
 
-  <div class="desktop-hook">Create your character for free</div>
-
+<div id="loader" class="loader">
+  <div class="spinner"></div>
 </div>
 
 <script>
 
-function getAccessToken() {
+let navigating = false;
+
+function getToken(){
   return localStorage.getItem('accessToken') || '';
 }
 
-function setIndexFlowTarget() {
-  localStorage.setItem('funnelFrom', 'index');
+function showLoader(){
+  document.getElementById('loader').style.display = 'flex';
 }
 
-function start() {
-  setIndexFlowTarget();
-  window.location.href = 'age.html';
+function go(url){
+  if(navigating) return;
+  navigating = true;
+
+  showLoader();
+  document.body.style.opacity = '0.5';
+
+  setTimeout(()=>{
+    location.href = url;
+  },150);
 }
 
-function goProfile() {
-  setIndexFlowTarget();
-  if (getAccessToken()) {
-    goWithFade('profile.html');
-  } else {
-    localStorage.setItem('loginReturnTo', 'index.html');
-    goWithFade('login.html');
+function start(){
+  localStorage.setItem('funnelFrom','index');
+  go('age.html');
+}
+
+function goProfile(){
+  localStorage.setItem('funnelFrom','index');
+
+  if(getToken()){
+    go('profile.html');
+  }else{
+    localStorage.setItem('loginReturnTo','index.html');
+    go('login.html');
   }
 }
 
-function goGift() {
-  setIndexFlowTarget();
-  if (getAccessToken()) {
-    goWithFade('gift.html');
-  } else {
-    localStorage.setItem('loginReturnTo', 'index.html');
-    goWithFade('login.html');
+function goGift(){
+  localStorage.setItem('funnelFrom','index');
+
+  if(getToken()){
+    go('gift.html');
+  }else{
+    localStorage.setItem('loginReturnTo','index.html');
+    go('login.html');
   }
 }
 
-function goSubscribe() {
-  setIndexFlowTarget();
-  if (getAccessToken()) {
-    goWithFade('subscribe.html');
-  } else {
-    localStorage.setItem('loginReturnTo', 'index.html');
-    goWithFade('login.html');
+function goSubscribe(){
+  localStorage.setItem('funnelFrom','index');
+
+  if(getToken()){
+    go('subscribe.html');
+  }else{
+    localStorage.setItem('loginReturnTo','index.html');
+    go('login.html');
   }
 }
 
-function readAuthFromUrl() {
-  const hash = new URLSearchParams(window.location.hash.substring(1));
-  return {
-    accessToken: hash.get('access_token') || '',
-    refreshToken: hash.get('refresh_token') || ''
-  };
-}
+// 🔥 FAST BALANCE LOAD
+async function loadBalance(){
+  const el = document.getElementById('balance');
+  const token = getToken();
 
-async function syncSessionFromUrl() {
-  const { accessToken, refreshToken } = readAuthFromUrl();
-  if (!accessToken) return;
-
-  try {
-    const res = await fetch('/api/session', {
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    });
-
-    const json = await res.json();
-    const user = json.data?.session?.user;
-
-    if (user) {
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken || '');
-      localStorage.setItem('userId', user.id);
-      localStorage.setItem('userEmail', user.email || '');
-      localStorage.setItem('userName', user.user_metadata?.name || 'User');
-      history.replaceState({}, document.title, window.location.pathname);
-    }
-  } catch (e) {}
-}
-
-async function loadBalance() {
-  const token = getAccessToken();
-  const balanceEl = document.getElementById('tokenBalance');
-
-  if (!token) {
-    balanceEl.innerText = '💰 0';
+  if(!token){
+    el.innerText='💰 0';
     return;
   }
 
-  // 👇 فوری مقدار قبلی رو نشون بده (حس سرعت)
   const cached = localStorage.getItem('cachedBalance');
-  if (cached) {
-    balanceEl.innerText = '💰 ' + cached;
-  } else {
-    balanceEl.innerText = '💰 ...';
-  }
+  if(cached) el.innerText='💰 '+cached;
 
-  try {
-    const res = await fetch('/api/wallet', {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
+  try{
+    const r = await fetch('/api/wallet',{
+      headers:{Authorization:'Bearer '+token}
     });
+    const d = await r.json();
 
-    const data = await res.json();
+    el.innerText='💰 '+d.balance;
+    localStorage.setItem('cachedBalance', d.balance);
 
-    if (data.balance !== undefined) {
-      balanceEl.innerText = '💰 ' + data.balance;
-      localStorage.setItem('cachedBalance', data.balance);
-    } else {
-      balanceEl.innerText = '💰 0';
-    }
-  } catch (e) {
-    balanceEl.innerText = cached ? '💰 ' + cached : '💰 0';
+  }catch{
+    el.innerText='💰 '+(cached || 0);
   }
 }
 
-async function initIndexPage() {
+// 🔥 SESSION FIX (NO DELAY)
+function syncSession(){
+  const hash = new URLSearchParams(location.hash.slice(1));
+  const access = hash.get('access_token');
 
-  await syncSessionFromUrl();        // بعداً sync کن
-  loadBalance();                     // async بدون await
+  if(!access) return;
+
+  localStorage.setItem('accessToken', access);
+  localStorage.setItem('refreshToken', hash.get('refresh_token') || '');
+
+  history.replaceState({},'',location.pathname);
 }
 
-document.addEventListener('DOMContentLoaded', initIndexPage);
-function goWithFade(url) {
-  showLoader();
-  document.body.style.transition = 'opacity 0.2s ease';
-  document.body.style.opacity = '0.4';
+// 🚀 INIT
+syncSession();
+loadBalance();
 
-  setTimeout(() => {
-    window.location.href = url;
-  }, 180);
-}
-function showLoader() {
-  const el = document.getElementById('pageLoader');
-  if (el) el.style.display = 'flex';
-}
-  
 </script>
-<div id="pageLoader" style="
-display:none;
-position:fixed;
-inset:0;
-z-index:9999;
-background:rgba(0,0,0,0.35);
-backdrop-filter:blur(3px);
--webkit-backdrop-filter:blur(3px);
-align-items:center;
-justify-content:center;
-">
-  <div style="
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  border:3px solid rgba(255,255,255,0.18);
-  border-top:3px solid #ff4fa3;
-  animation:spin 0.8s linear infinite;
-  "></div>
-</div>
+
 </body>
 </html>
