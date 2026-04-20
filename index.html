@@ -352,8 +352,16 @@ async function loadBalance() {
   const balanceEl = document.getElementById('tokenBalance');
 
   if (!token) {
-    balanceEl.innerText = '💰 ...';
+    balanceEl.innerText = '💰 0';
     return;
+  }
+
+  // 👇 فوری مقدار قبلی رو نشون بده (حس سرعت)
+  const cached = localStorage.getItem('cachedBalance');
+  if (cached) {
+    balanceEl.innerText = '💰 ' + cached;
+  } else {
+    balanceEl.innerText = '💰 ...';
   }
 
   try {
@@ -367,11 +375,12 @@ async function loadBalance() {
 
     if (data.balance !== undefined) {
       balanceEl.innerText = '💰 ' + data.balance;
+      localStorage.setItem('cachedBalance', data.balance);
     } else {
       balanceEl.innerText = '💰 0';
     }
   } catch (e) {
-    balanceEl.innerText = '💰 0';
+    balanceEl.innerText = cached ? '💰 ' + cached : '💰 0';
   }
 }
 
