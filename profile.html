@@ -246,7 +246,7 @@ body{
   </div>
 
 <h3 style="margin-top:20px;">Recent Chats</h3>
-<div id="recentChats" style="min-height:180px;">
+<div id="recentChats" style="min-height:260px; opacity:0; transition:opacity 0.35s ease;">
   <div class="empty">Loading chats...</div>
 </div>
 
@@ -437,6 +437,7 @@ async function saveName(){
 // 🧠 چت‌های اخیر
 async function loadCharacters(){
   const container = document.getElementById('recentChats');
+  container.style.opacity = '0';
   container.innerHTML = '';
 
   try{
@@ -449,6 +450,7 @@ async function loadCharacters(){
 
     if(!chars.length){
       container.innerHTML = '<div class="empty">No characters yet</div>';
+      container.style.opacity = '1';
       return;
     }
 
@@ -473,9 +475,10 @@ div.onclick = () => {
 
       container.appendChild(div);
     });
-
+container.style.opacity = '1';
   }catch(e){
     container.innerHTML = '<div class="empty">Error loading</div>';
+    container.style.opacity = '1';
   }
 }
 
