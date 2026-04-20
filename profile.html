@@ -9,12 +9,26 @@
       -webkit-tap-highlight-color:transparent;
     }
 
+    :root{
+      --bg:#111;
+      --card:#181818;
+      --card-2:#141414;
+      --line:#2a2a2a;
+      --line-2:#242424;
+      --text:#fff;
+      --muted:rgba(255,255,255,0.64);
+      --pink:#ff4fa3;
+      --pink-soft:rgba(255,79,163,0.12);
+    }
+
     body{
       margin:0;
-      background:#111;
-      color:#fff;
-      font-family:Arial, Helvetica, sans-serif;
       min-height:100vh;
+      background:
+        radial-gradient(circle at top, rgba(255,79,163,0.10), transparent 26%),
+        var(--bg);
+      color:var(--text);
+      font-family:Arial, Helvetica, sans-serif;
       padding:14px;
     }
 
@@ -22,16 +36,16 @@
       width:100%;
       max-width:420px;
       margin:0 auto;
-      animation:fadeUp 0.32s ease;
+      animation:fadeUp 0.28s ease;
     }
 
     .card{
       width:100%;
-      background:linear-gradient(180deg, #1a1a1a 0%, #161616 100%);
-      border:1px solid #2b2b2b;
-      border-radius:18px;
+      background:linear-gradient(180deg, #1b1b1b 0%, #171717 100%);
+      border:1px solid var(--line);
+      border-radius:20px;
       padding:14px;
-      box-shadow:0 14px 44px rgba(0,0,0,0.30);
+      box-shadow:0 16px 44px rgba(0,0,0,0.34);
     }
 
     .topbar{
@@ -45,9 +59,9 @@
       width:36px;
       height:36px;
       border:none;
-      border-radius:10px;
+      border-radius:11px;
       background:#222;
-      color:#ff4fa3;
+      color:var(--pink);
       font-size:16px;
       cursor:pointer;
       display:flex;
@@ -58,7 +72,8 @@
     .topbar-title{
       font-size:14px;
       font-weight:700;
-      opacity:0.92;
+      letter-spacing:0.2px;
+      opacity:0.95;
     }
 
     .hero{
@@ -66,22 +81,22 @@
       align-items:center;
       gap:12px;
       margin-bottom:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      background:#141414;
-      border:1px solid #242424;
+      padding:12px;
+      border-radius:16px;
+      background:linear-gradient(180deg, #151515 0%, #131313 100%);
+      border:1px solid var(--line-2);
     }
 
     .avatar{
-      width:56px;
-      height:56px;
+      width:58px;
+      height:58px;
       border-radius:50%;
       background:#2a2a2a;
       background-size:cover;
       background-position:center;
       flex-shrink:0;
       border:1px solid rgba(255,255,255,0.08);
-      box-shadow:0 8px 20px rgba(0,0,0,0.24);
+      box-shadow:0 8px 20px rgba(0,0,0,0.25);
     }
 
     .hero-text{
@@ -92,19 +107,19 @@
     .title{
       font-size:18px;
       font-weight:700;
-      margin:0 0 4px 0;
+      margin:0 0 3px 0;
+      line-height:1.2;
     }
 
     .subtitle{
       margin:0;
       font-size:12px;
-      color:rgba(255,255,255,0.66);
+      color:var(--muted);
       line-height:1.45;
     }
 
     .stats{
       display:grid;
-      grid-template-columns:1fr;
       gap:8px;
       margin-bottom:12px;
     }
@@ -117,9 +132,9 @@
       align-items:center;
       gap:10px;
       padding:0 12px;
-      border-radius:13px;
-      background:#141414;
-      border:1px solid #242424;
+      border-radius:14px;
+      background:var(--card-2);
+      border:1px solid var(--line-2);
     }
 
     .row-label{
@@ -150,7 +165,7 @@
       outline:none;
       cursor:pointer;
       font-size:13px;
-      color:#ff4fa3;
+      color:var(--pink);
       padding:0;
       margin:0;
       line-height:1;
@@ -159,9 +174,9 @@
     .section{
       margin-top:10px;
       padding:12px;
-      border-radius:15px;
-      background:#141414;
-      border:1px solid #242424;
+      border-radius:16px;
+      background:linear-gradient(180deg, #151515 0%, #131313 100%);
+      border:1px solid var(--line-2);
     }
 
     .section-title{
@@ -183,7 +198,7 @@
     }
 
     .recent-chats{
-      min-height:200px;
+      min-height:188px;
       opacity:0;
       transition:opacity 0.35s ease;
     }
@@ -232,16 +247,16 @@
     }
 
     .chat-btn{
-      background:#ff4fa3;
+      background:var(--pink);
       border:none;
       color:#fff;
-      border-radius:10px;
-      padding:7px 11px;
+      border-radius:11px;
+      padding:8px 12px;
       font-size:11px;
       cursor:pointer;
       font-weight:700;
-      min-width:60px;
-      box-shadow:0 8px 20px rgba(255,79,163,0.20);
+      min-width:62px;
+      box-shadow:0 8px 20px rgba(255,79,163,0.18);
     }
 
     .empty{
@@ -261,11 +276,11 @@
       min-height:44px;
       padding:10px;
       border:none;
-      border-radius:12px;
+      border-radius:13px;
       cursor:pointer;
       font-weight:700;
       font-size:13px;
-      transition:transform 0.15s ease, opacity 0.2s ease;
+      transition:transform 0.14s ease, opacity 0.2s ease;
     }
 
     .btn:active{
@@ -273,8 +288,9 @@
     }
 
     .primary{
-      background:#ff4fa3;
+      background:var(--pink);
       color:#fff;
+      box-shadow:0 10px 26px rgba(255,79,163,0.16);
     }
 
     .dark{
@@ -352,7 +368,7 @@
     }
 
     .modal-save{
-      background:#ff4fa3;
+      background:var(--pink);
       color:#fff;
     }
 
@@ -370,9 +386,10 @@
     @media (max-width:380px){
       body{ padding:12px; }
       .card{ padding:12px; }
-      .hero{ padding:9px 10px; gap:10px; }
-      .avatar{ width:52px; height:52px; }
+      .hero{ padding:10px; gap:10px; }
+      .avatar{ width:54px; height:54px; }
       .title{ font-size:17px; }
+      .recent-chats{ min-height:176px; }
     }
   </style>
 </head>
