@@ -695,6 +695,7 @@ imageLock.style.pointerEvents = 'none';
 
     const data = await res.json();
 if (data.characterId) {
+  console.log('NEW CHARACTER ID:', data.characterId);
   localStorage.setItem('selectedCharacterId', data.characterId);
 }
     if (data.error) {
