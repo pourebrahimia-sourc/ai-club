@@ -287,30 +287,30 @@ function start() {
 function goProfile() {
   setIndexFlowTarget();
   if (getAccessToken()) {
-    window.location.href = 'profile.html';
+    goWithFade('profile.html');
   } else {
     localStorage.setItem('loginReturnTo', 'index.html');
-    window.location.href = 'login.html';
+    goWithFade('login.html');
   }
 }
 
 function goGift() {
   setIndexFlowTarget();
   if (getAccessToken()) {
-    window.location.href = 'gift.html';
+    goWithFade('gift.html');
   } else {
     localStorage.setItem('loginReturnTo', 'index.html');
-    window.location.href = 'login.html';
+    goWithFade('login.html');
   }
 }
 
 function goSubscribe() {
   setIndexFlowTarget();
   if (getAccessToken()) {
-    window.location.href = 'subscribe.html';
+    goWithFade('subscribe.html');
   } else {
     localStorage.setItem('loginReturnTo', 'index.html');
-    window.location.href = 'login.html';
+    goWithFade('login.html');
   }
 }
 
@@ -391,6 +391,13 @@ async function initIndexPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
+  function goWithFade(url) {
+  document.body.style.transition = 'opacity 0.18s ease';
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    window.location.href = url;
+  }, 180);
+}
 </script>
 
 </body>
