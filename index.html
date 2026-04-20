@@ -325,7 +325,7 @@ function readAuthFromUrl() {
 
 async function syncSessionFromUrl() {
   const { accessToken, refreshToken } = readAuthFromUrl();
-  if (!accessToken) return false;
+  if (!accessToken) return;
 
   try {
     const res = await fetch('/api/session', {
@@ -344,13 +344,8 @@ async function syncSessionFromUrl() {
       localStorage.setItem('userEmail', user.email || '');
       localStorage.setItem('userName', user.user_metadata?.name || 'User');
       history.replaceState({}, document.title, window.location.pathname);
-      return true;
     }
-
-    return false;
-  } catch (e) {
-    return false;
-  }
+  } catch (e) {}
 }
 
 async function loadBalance() {
@@ -382,15 +377,10 @@ async function loadBalance() {
 }
 
 async function initIndexPage() {
-  const synced = await syncSessionFromUrl();
+  isLoggedIn = !!getAccessToken();   // 👈 فوری ست کن
 
-  if (synced) {
-    isLoggedIn = true;
-  } else {
-    isLoggedIn = !!getAccessToken();
-  }
-
-  loadBalance();
+  await syncSessionFromUrl();        // بعداً sync کن
+  loadBalance();                     // async بدون await
 }
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
