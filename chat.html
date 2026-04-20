@@ -366,15 +366,25 @@ lockOverlay.addEventListener('click', async () => {
       return;
     }
 
-    if (data.imageUrl) {
-      localStorage.setItem('aiImage', data.imageUrl);
-      localStorage.setItem('imageUnlocked', "true");
-      loading.style.display = "none";
-if (data.characterId) {
-  localStorage.setItem('selectedCharacterId', data.characterId);
+if (data.imageUrl) {
+  localStorage.setItem('aiImage', data.imageUrl);
+  localStorage.setItem('imageUnlocked', "true");
+
+  if (data.characterId) {
+    localStorage.setItem('selectedCharacterId', data.characterId);
+  }
+
+  bgImage.src = data.imageUrl;
+  bgImage.style.filter = "blur(0px)";
+
+  avatar.style.display = "block";
+  avatar.style.backgroundImage = `url(${data.imageUrl})`;
+  avatar.style.backgroundColor = "transparent";
+
+  lockOverlay.style.display = "none";
+  loading.style.display = "none";
+  return;
 }
-      return;
-    }
 
     loading.style.display = "none";
   } catch (e) {
