@@ -31,6 +31,9 @@
       font-family:Arial, Helvetica, sans-serif;
       padding:14px;
     }
+    body.auth-pending{
+  visibility:hidden;
+}
 
     .page{
       width:100%;
@@ -393,7 +396,7 @@
     }
   </style>
 </head>
-<body>
+<body class="auth-pending">
 
 <div class="page">
   <div class="card">
@@ -557,7 +560,9 @@ function clearUserState(){
 
 if(!getAccessToken()){
   window.location.href = 'login.html';
+  return;
 }
+  document.body.classList.remove('auth-pending');
 
 const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
