@@ -9,68 +9,128 @@
       -webkit-tap-highlight-color:transparent;
     }
 
-body{
-  margin:0;
-  background:#111;
-  color:#fff;
-  font-family:Arial, Helvetica, sans-serif;
-  min-height:100vh;
-  padding:20px;
-}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top, rgba(255,79,163,0.10), transparent 28%),
+        #111;
+      color:#fff;
+      font-family:Arial, Helvetica, sans-serif;
+      padding:20px 16px 28px;
+    }
+
+    .page{
+      width:100%;
+      max-width:440px;
+      margin:0 auto;
+      animation:fadeUp 0.35s ease;
+    }
 
     .card{
       width:100%;
-      max-width:420px;
-      margin:0 auto;
-      background:#1a1a1a;
+      background:linear-gradient(180deg, #1a1a1a 0%, #161616 100%);
       border:1px solid #2b2b2b;
-      border-radius:18px;
-      padding:20px;
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
     }
 
     .back-btn{
-      margin-bottom:10px;
-      background:none;
+      width:38px;
+      height:38px;
       border:none;
+      border-radius:12px;
+      background:#222;
       color:#ff4fa3;
-      font-size:14px;
+      font-size:18px;
       cursor:pointer;
-      padding:0;
-      outline:none;
-      box-shadow:none;
-      appearance:none;
-      -webkit-appearance:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .topbar-title{
+      font-size:15px;
+      font-weight:700;
+      opacity:0.92;
+    }
+
+    .hero{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      margin-bottom:18px;
     }
 
     .avatar{
-      width:70px;
-      height:70px;
+      width:82px;
+      height:82px;
       border-radius:50%;
       background:#2a2a2a;
-      margin:0 auto 15px;
+      margin:0 auto 12px;
       background-size:cover;
       background-position:center;
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow:0 10px 28px rgba(0,0,0,0.28);
     }
 
     .title{
-      text-align:center;
-      font-size:20px;
-      margin-bottom:20px;
+      font-size:24px;
+      font-weight:700;
+      margin:0 0 6px 0;
+    }
+
+    .subtitle{
+      margin:0;
+      font-size:13px;
+      color:rgba(255,255,255,0.68);
+      line-height:1.5;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-bottom:16px;
     }
 
     .row{
-      margin-bottom:12px;
+      min-height:52px;
       font-size:14px;
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:12px;
+      padding:0 14px;
+      border-radius:16px;
+      background:#141414;
+      border:1px solid #242424;
+    }
+
+    .row-label{
+      color:rgba(255,255,255,0.72);
     }
 
     .name-wrap{
       display:flex;
       align-items:center;
-      gap:6px;
+      gap:8px;
+      min-width:0;
+    }
+
+    .value{
+      font-weight:700;
+      text-align:right;
+      word-break:break-word;
     }
 
     .edit-btn{
@@ -80,26 +140,128 @@ body{
       background:transparent;
       border:none;
       outline:none;
-      box-shadow:none;
       cursor:pointer;
       font-size:14px;
       color:#ff4fa3;
       padding:0;
       margin:0;
       line-height:1;
-      appearance:none;
-      -webkit-appearance:none;
+    }
+
+    .section{
+      margin-top:18px;
+      padding:14px;
+      border-radius:18px;
+      background:#141414;
+      border:1px solid #242424;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .section-title h3{
+      margin:0;
+      font-size:16px;
+    }
+
+    .section-sub{
+      font-size:12px;
+      color:rgba(255,255,255,0.58);
+    }
+
+    .recent-chats{
+      min-height:260px;
+      opacity:0;
+      transition:opacity 0.35s ease;
+    }
+
+    .chat-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 0;
+      border-bottom:1px solid #252525;
+    }
+
+    .chat-item:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .chat-avatar{
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      background:#2a2a2a;
+      background-size:cover;
+      background-position:center;
+      flex-shrink:0;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .chat-meta{
+      flex:1;
+      min-width:0;
+    }
+
+    .chat-name{
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:3px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .chat-date{
+      font-size:11px;
+      opacity:0.6;
+    }
+
+    .chat-btn{
+      background:#ff4fa3;
+      border:none;
+      color:#fff;
+      border-radius:11px;
+      padding:8px 12px;
+      font-size:12px;
+      cursor:pointer;
+      font-weight:700;
+      min-width:64px;
+      box-shadow:0 8px 20px rgba(255,79,163,0.22);
+    }
+
+    .empty{
+      opacity:0.6;
+      font-size:13px;
+      padding:10px 0;
+    }
+
+    .actions{
+      margin-top:16px;
+      display:grid;
+      gap:10px;
     }
 
     .btn{
       width:100%;
+      min-height:48px;
       padding:12px;
       border:none;
-      border-radius:12px;
-      margin-top:10px;
+      border-radius:14px;
       cursor:pointer;
       font-weight:700;
       font-size:14px;
+      transition:transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .btn:active{
+      transform:scale(0.985);
     }
 
     .primary{
@@ -108,45 +270,15 @@ body{
     }
 
     .dark{
-      background:#2a2a2a;
+      background:#242424;
       color:#fff;
-      border:1px solid #3a3a3a;
+      border:1px solid #343434;
     }
 
-    .chat-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 0;
-      border-bottom:1px solid #2a2a2a;
-      cursor:default;
-    }
-
-    .chat-avatar{
-      width:40px;
-      height:40px;
-      border-radius:50%;
-      background:#2a2a2a;
-      background-size:cover;
-      background-position:center;
-      flex-shrink:0;
-    }
-
-    .chat-name{
-      font-size:14px;
-      font-weight:700;
-    }
-
-    .chat-date{
-      font-size:11px;
-      opacity:0.6;
-      margin-top:2px;
-    }
-
-    .empty{
-      opacity:0.6;
-      font-size:13px;
-      padding:8px 0;
+    .loading-blur{
+      filter:blur(6px);
+      opacity:0.55;
+      transition:all 0.35s ease;
     }
 
     .modal{
@@ -215,61 +347,75 @@ body{
       background:#ff4fa3;
       color:#fff;
     }
-    .chat-btn{
-  background:#ff4fa3;
-  border:none;
-  color:#fff;
-  border-radius:10px;
-  padding:6px 10px;
-  font-size:12px;
-  cursor:pointer;
-  font-weight:700;
-}
-    .loading-blur{
-  filter: blur(6px);
-  opacity: 0.6;
-  transition: all 0.4s ease;
-}
+
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="card">
+<div class="page">
+  <div class="card">
 
-  <button class="back-btn" onclick="closePage()">✕</button>
-
-  <div class="avatar" id="avatar"></div>
-
-  <div class="title">Your Profile</div>
-
-  <div class="row">
-    <span>Name:</span>
-    <div class="name-wrap">
-      <strong id="name">-</strong>
-      <button type="button" class="edit-btn" onclick="openNameModal()">✏️</button>
+    <div class="topbar">
+      <button class="back-btn" onclick="closePage()">✕</button>
+      <div class="topbar-title">AI Club</div>
+      <div style="width:38px;"></div>
     </div>
+
+    <div class="hero">
+      <div class="avatar" id="avatar"></div>
+      <div class="title">Your Profile</div>
+      <p class="subtitle">Manage your account, tokens, and recent characters.</p>
+    </div>
+
+    <div class="stats">
+      <div class="row">
+        <span class="row-label">Name</span>
+        <div class="name-wrap">
+          <strong id="name" class="value">-</strong>
+          <button type="button" class="edit-btn" onclick="openNameModal()">✏️</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="row-label">Email</span>
+        <strong id="email" class="value">-</strong>
+      </div>
+
+      <div class="row">
+        <span class="row-label">Tokens</span>
+        <strong id="tokens" class="value">0</strong>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <h3>Recent Chats</h3>
+        <span class="section-sub">Your latest characters</span>
+      </div>
+
+      <div id="recentChats" class="recent-chats">
+        <div class="empty">Loading chats...</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn dark" onclick="goGift()">🎁 Gifts</button>
+      <button class="btn dark" onclick="goSubscribe()">💎 Subscribe</button>
+      <button class="btn dark" onclick="goAlbum()">🖼 Album</button>
+      <button class="btn primary" onclick="logout()">Logout</button>
+    </div>
+
   </div>
-
-  <div class="row">
-    <span>Email:</span>
-    <strong id="email">-</strong>
-  </div>
-
-  <div class="row">
-    <span>Tokens:</span>
-    <strong id="tokens">0</strong>
-  </div>
-
-<h3 style="margin-top:20px;">Recent Chats</h3>
-<div id="recentChats" style="min-height:260px; opacity:0; transition:opacity 0.35s ease;">
-  <div class="empty">Loading chats...</div>
-</div>
-
-  <button class="btn dark" onclick="goGift()">🎁 Gifts</button>
-  <button class="btn dark" onclick="goSubscribe()">💎 Subscribe</button>
-  <button class="btn dark" onclick="goAlbum()">🖼 Album</button>
-  <button class="btn primary" onclick="logout()">Logout</button>
-
 </div>
 
 <div id="nameModal" class="modal">
@@ -283,8 +429,56 @@ body{
   </div>
 </div>
 
+<!-- Token Modal -->
+<div id="tokenModal" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:120;
+background:rgba(0,0,0,0.6);
+align-items:center;
+justify-content:center;
+padding:20px;
+">
+  <div style="
+    width:100%;
+    max-width:320px;
+    background:#1a1a1a;
+    border:1px solid #2b2b2b;
+    border-radius:18px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  ">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
+      Not enough tokens
+    </div>
+
+    <div id="tokenModalText" style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
+      You need 5 tokens.
+    </div>
+
+    <button id="getTokensBtn" class="btn primary" style="margin-bottom:10px;">
+      Get Tokens
+    </button>
+
+    <button id="subscribeBtn" class="btn dark">
+      Subscribe
+    </button>
+
+    <div id="closeTokenModal" style="
+      margin-top:14px;
+      font-size:12px;
+      opacity:0.7;
+      cursor:pointer;
+    ">
+      Close
+    </div>
+  </div>
+</div>
+
 <script>
-  function closePage(){
+function closePage(){
   const from = localStorage.getItem('funnelFrom');
   if (from === 'result') {
     window.location.href = 'result.html';
@@ -292,6 +486,7 @@ body{
     window.location.href = 'index.html';
   }
 }
+
 function getAccessToken(){
   return localStorage.getItem('accessToken') || '';
 }
@@ -319,34 +514,73 @@ function clearUserState(){
     'imageUnlocked',
     'lastProfileKey',
     'aiName',
+    'selectedCharacterId',
     'recentChats',
     'loginReturnTo',
     'funnelFrom'
   ].forEach(key => localStorage.removeItem(key));
 }
 
-// 🔐 اگر لاگین نیست → برو لاگین
 if(!getAccessToken()){
   window.location.href = 'login.html';
 }
 
 const nameEl = document.getElementById('name');
-  nameEl.classList.add('loading-blur');
-
 const emailEl = document.getElementById('email');
 const tokenEl = document.getElementById('tokens');
-  tokenEl.classList.add('loading-blur');
 const avatarEl = document.getElementById('avatar');
 const nameModal = document.getElementById('nameModal');
 const nameInput = document.getElementById('nameInput');
+const recentChatsEl = document.getElementById('recentChats');
 
-// ایمیل موقت از لوکال (تا لود کامل)
+const tokenModal = document.getElementById('tokenModal');
+const tokenModalText = document.getElementById('tokenModalText');
+const closeTokenModal = document.getElementById('closeTokenModal');
+const getTokensBtn = document.getElementById('getTokensBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
+
+nameEl.classList.add('loading-blur');
+tokenEl.classList.add('loading-blur');
+
 emailEl.innerText = localStorage.getItem('userEmail') || '-';
-
-// آواتار کاربر فعلاً عمومی است
 avatarEl.style.backgroundImage = 'none';
 
-// ✅ تابع اصلی (پروفایل + توکن)
+function openTokenModalWithAmount(amount) {
+  tokenModalText.innerText = `You need ${amount} tokens.`;
+  tokenModal.style.display = 'flex';
+}
+
+function closeModal() {
+  tokenModal.style.display = 'none';
+}
+
+async function getUserBalance() {
+  try {
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+    const data = await res.json();
+    return Number(data.balance || 0);
+  } catch (e) {
+    return 0;
+  }
+}
+
+async function openChatForCharacter(c){
+  const balance = await getUserBalance();
+
+  if (balance < 5) {
+    openTokenModalWithAmount(5);
+    return;
+  }
+
+  localStorage.setItem('aiName', c.name || 'AI');
+  localStorage.setItem('selectedCharacterId', c.id);
+  localStorage.setItem('aiImage', c.image_url || '');
+  localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
+  window.location.href = 'chat.html';
+}
+
 async function loadUserProfile(){
   try {
     const res = await fetch('/api/session', {
@@ -365,33 +599,32 @@ async function loadUserProfile(){
     const latestEmail = session.user?.email || '-';
     const latestBalance = session.balance ?? null;
 
-    // ذخیره
     localStorage.setItem('userName', latestName);
     localStorage.setItem('userEmail', latestEmail);
+
     if(session.user?.id){
       localStorage.setItem('userId', session.user.id);
     }
 
-    // نمایش
     nameEl.innerText = latestName;
-        emailEl.innerText = latestEmail;
-    nameEl.classList.remove('loading-blur');
-tokenEl.classList.remove('loading-blur');
-    // ✅ اگر از سشن بالانس داشت → استفاده کن
+    emailEl.innerText = latestEmail;
+
     if (latestBalance !== null) {
       tokenEl.innerText = latestBalance;
     } else {
-      // 🔁 fallback (خیلی مهم)
       await loadTokensFallback();
     }
 
+    nameEl.classList.remove('loading-blur');
+    tokenEl.classList.remove('loading-blur');
+
   } catch(e){
-    console.log('Session error, fallback...');
     await loadTokensFallback();
+    nameEl.classList.remove('loading-blur');
+    tokenEl.classList.remove('loading-blur');
   }
 }
 
-// 🔁 fallback گرفتن توکن
 async function loadTokensFallback(){
   try{
     const res = await fetch('/api/wallet', {
@@ -404,13 +637,11 @@ async function loadTokensFallback(){
     if(data.userId){
       localStorage.setItem('userId', data.userId);
     }
-
   }catch(e){
     tokenEl.innerText = 0;
   }
 }
 
-// ✏️ مودال اسم
 function openNameModal(){
   nameInput.value = localStorage.getItem('userName') || '';
   nameModal.style.display = 'flex';
@@ -421,7 +652,6 @@ function closeNameModal(){
   nameModal.style.display = 'none';
 }
 
-// 💾 ذخیره اسم
 async function saveName(){
   const newName = nameInput.value.trim();
   if(!newName) return;
@@ -453,11 +683,9 @@ async function saveName(){
   }
 }
 
-// 🧠 چت‌های اخیر
 async function loadCharacters(){
-  const container = document.getElementById('recentChats');
-  container.style.opacity = '0';
-  container.innerHTML = '';
+  recentChatsEl.style.opacity = '0';
+  recentChatsEl.innerHTML = '';
 
   try{
     const res = await fetch('/api/characters', {
@@ -468,8 +696,8 @@ async function loadCharacters(){
     const chars = data.characters || [];
 
     if(!chars.length){
-      container.innerHTML = '<div class="empty">No characters yet</div>';
-      container.style.opacity = '1';
+      recentChatsEl.innerHTML = '<div class="empty">No characters yet</div>';
+      recentChatsEl.style.opacity = '1';
       return;
     }
 
@@ -477,47 +705,42 @@ async function loadCharacters(){
       const div = document.createElement('div');
       div.className = 'chat-item';
 
-div.innerHTML = `
-  <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
+      div.innerHTML = `
+        <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
 
-  <div style="flex:1;">
-    <div class="chat-name">${c.name || 'AI'}</div>
-    <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
-  </div>
+        <div class="chat-meta">
+          <div class="chat-name">${c.name || 'AI'}</div>
+          <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
+        </div>
 
-  <button class="chat-btn">Chat</button>
-`;
-const btn = div.querySelector('.chat-btn');
+        <button class="chat-btn">Chat</button>
+      `;
 
-btn.onclick = () => {
-  localStorage.setItem('aiName', c.name || 'AI');
-  localStorage.setItem('selectedCharacterId', c.id);
-  localStorage.setItem('aiImage', c.image_url || '');
-  localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
-  window.location.href = 'chat.html';
-};
+      const btn = div.querySelector('.chat-btn');
 
-      container.appendChild(div);
+      btn.onclick = () => {
+        openChatForCharacter(c);
+      };
+
+      recentChatsEl.appendChild(div);
     });
-container.style.opacity = '1';
+
+    recentChatsEl.style.opacity = '1';
   }catch(e){
-    container.innerHTML = '<div class="empty">Error loading</div>';
-    container.style.opacity = '1';
+    recentChatsEl.innerHTML = '<div class="empty">Error loading</div>';
+    recentChatsEl.style.opacity = '1';
   }
 }
 
-// 🚪 خروج
 function logout(){
   clearUserState();
   window.location.href = 'index.html';
 }
 
-// 🔗 ناوبری
 function goGift(){ window.location.href = 'gift.html'; }
 function goSubscribe(){ window.location.href = 'subscribe.html'; }
 function goAlbum(){ window.location.href = 'album.html'; }
 
-// مودال
 nameModal.addEventListener('click', (e) => {
   if(e.target === nameModal) closeNameModal();
 });
@@ -526,7 +749,22 @@ nameInput.addEventListener('keydown', (e) => {
   if(e.key === 'Enter') saveName();
 });
 
-// 🚀 init
+closeTokenModal.addEventListener('click', closeModal);
+
+tokenModal.addEventListener('click', (e) => {
+  if (e.target === tokenModal) closeModal();
+});
+
+getTokensBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'gift.html';
+});
+
+subscribeBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'subscribe.html';
+});
+
 loadUserProfile();
 loadCharacters();
 </script>
