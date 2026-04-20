@@ -346,13 +346,15 @@ lockOverlay.addEventListener('click', async () => {
   loading.style.display = "flex";
 
   try {
+    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
     const res = await fetch('/api', {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         msg: "generate image",
         name: aiName,
-        profile: getCharacterProfile()
+          profile: getCharacterProfile(),
+  characterId: selectedCharacterId
       })
     });
 
