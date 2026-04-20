@@ -119,7 +119,7 @@ body{
       gap:10px;
       padding:10px 0;
       border-bottom:1px solid #2a2a2a;
-      cursor:pointer;
+      cursor:default;
     }
 
     .chat-avatar{
@@ -215,6 +215,16 @@ body{
       background:#ff4fa3;
       color:#fff;
     }
+    .chat-btn{
+  background:#ff4fa3;
+  border:none;
+  color:#fff;
+  border-radius:10px;
+  padding:6px 10px;
+  font-size:12px;
+  cursor:pointer;
+  font-weight:700;
+}
   </style>
 </head>
 <body>
@@ -458,14 +468,19 @@ async function loadCharacters(){
       const div = document.createElement('div');
       div.className = 'chat-item';
 
-      div.innerHTML = `
-        <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
-        <div>
-          <div class="chat-name">${c.name || 'AI'}</div>
-          <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
-        </div>
-      `;
-div.onclick = () => {
+div.innerHTML = `
+  <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
+
+  <div style="flex:1;">
+    <div class="chat-name">${c.name || 'AI'}</div>
+    <div class="chat-date">${new Date(c.created_at).toLocaleDateString()}</div>
+  </div>
+
+  <button class="chat-btn">Chat</button>
+`;
+const btn = div.querySelector('.chat-btn');
+
+btn.onclick = () => {
   localStorage.setItem('aiName', c.name || 'AI');
   localStorage.setItem('selectedCharacterId', c.id);
   localStorage.setItem('aiImage', c.image_url || '');
