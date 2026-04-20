@@ -392,11 +392,11 @@ async function initIndexPage() {
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
   function goWithFade(url) {
-  document.body.style.transition = 'opacity 0.18s ease';
+  document.body.style.transition = 'opacity 0.35s ease';
   document.body.style.opacity = '0';
   setTimeout(() => {
     window.location.href = url;
-  }, 180);
+  }, 350);
 }
 </script>
 
