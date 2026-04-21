@@ -674,11 +674,13 @@ tokenModal.addEventListener('click', (e) => {
 
 getTokensBtn.addEventListener('click', () => {
   closeModal();
+  localStorage.setItem('chatReturnTo', 'chat.html');
   window.location.href = 'gift.html';
 });
 
 subscribeBtn.addEventListener('click', () => {
   closeModal();
+  localStorage.setItem('chatReturnTo', 'chat.html');
   window.location.href = 'subscribe.html';
 });
 </script>
