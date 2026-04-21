@@ -515,6 +515,8 @@ padding:20px;
 </div>
 
 <script>
+const ACTIVE_CHAT_CONTEXT_KEY = 'activeChatContext';
+
 function closePage(){
   const from = localStorage.getItem('funnelFrom');
   if (from === 'result') {
@@ -547,22 +549,16 @@ function clearUserState(){
     'hair',
     'appearanceDetails',
     'personality',
-    'aiImage',
-    'imageUnlocked',
-    'lastProfileKey',
-    'aiName',
-    'selectedCharacterId',
-    'recentChats',
     'loginReturnTo',
-    'chatHistory',
-    'funnelFrom'
+    'chatReturnTo',
+    'funnelFrom',
+    ACTIVE_CHAT_CONTEXT_KEY
   ].forEach(key => localStorage.removeItem(key));
 }
 
 if(!getAccessToken()){
   window.location.href = 'login.html';
 }
-
 
 const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
@@ -605,6 +601,10 @@ async function getUserBalance() {
   }
 }
 
+function writeActiveChatContext(ctx){
+  localStorage.setItem(ACTIVE_CHAT_CONTEXT_KEY, JSON.stringify(ctx || {}));
+}
+
 async function openChatForCharacter(c){
   const balance = await getUserBalance();
 
@@ -613,10 +613,23 @@ async function openChatForCharacter(c){
     return;
   }
 
-  localStorage.setItem('aiName', c.name || 'AI');
-  localStorage.setItem('selectedCharacterId', c.id);
-  localStorage.setItem('aiImage', c.image_url || '');
-  localStorage.setItem('imageUnlocked', c.image_url ? 'true' : 'false');
+  writeActiveChatContext({
+    source: 'profile',
+    characterId: c.id || null,
+    name: c.name || 'AI',
+    imageUrl: c.image_url || '',
+    imageUnlocked: !!c.image_url,
+    profile: {
+      age: c.age || '',
+      ethnicity: c.ethnicity || '',
+      body: c.body || '',
+      bodyDetails: c.body_details || '',
+      hair: c.hair || '',
+      appearanceDetails: c.appearance_details || '',
+      personality: c.personality || ''
+    }
+  });
+
   window.location.href = 'chat.html';
 }
 
@@ -633,7 +646,9 @@ async function loadUserProfile(){
       window.location.href = 'login.html';
       return;
     }
-document.body.classList.remove('auth-pending');
+
+    document.body.classList.remove('auth-pending');
+
     const latestName = session.profileName || 'User';
     const latestEmail = session.user?.email || '-';
     const latestBalance = session.balance ?? null;
