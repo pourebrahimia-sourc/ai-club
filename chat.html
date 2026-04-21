@@ -398,16 +398,7 @@ const chat = document.getElementById('chat');
 
 const chatKey = 'chatHistory_' + (localStorage.getItem('selectedCharacterId') || 'default');
 
-// ✅ جلوگیری از قاطی شدن چت
-const lastChatCharacter = localStorage.getItem('lastChatCharacter');
-
-if(lastChatCharacter !== chatKey){
-  chat.innerHTML = '';
-}
-
-localStorage.setItem('lastChatCharacter', chatKey);
-
-// ✅ لود چت
+// load chat
 const savedChat = localStorage.getItem(chatKey);
 if(savedChat){
   chat.innerHTML = savedChat;
@@ -436,6 +427,50 @@ if(!aiName){
 
 document.getElementById('charName').innerText = aiName;
 
+// ================== AUTH ==================
+function getAccessToken() {
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}) {
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+}
+
+// ================== NAV ==================
+function goBack(){
+  const from = sessionStorage.getItem('chatFrom') || '';
+  if (from === 'profile') {
+    window.location.href = 'profile.html';
+  } else {
+    window.location.href = 'result.html';
+  }
+}
+
+// ================== MODAL ==================
+function openTokenModalWithAmount(amount, message) {
+  tokenModalText.innerText = message || `You need ${amount} tokens.`;
+  tokenModal.style.display = 'flex';
+}
+
+function closeModal() {
+  tokenModal.style.display = 'none';
+}
+
+// ================== PROFILE ==================
+function getCharacterProfile(){
+  return {
+    age: localStorage.getItem('age') || '',
+    ethnicity: localStorage.getItem('ethnicity') || '',
+    body: localStorage.getItem('body') || '',
+    bodyDetails: localStorage.getItem('bodyDetails') || '',
+    hair: localStorage.getItem('hair') || '',
+    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
+    personality: localStorage.getItem('personality') || ''
+  };
+}
+
+// ================== MESSAGE ==================
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
   localStorage.setItem(chatKey, chat.innerHTML);
@@ -453,6 +488,67 @@ function addMessage(sender, text, color){
   }
 }
 
+// ================== IMAGE ==================
+lockOverlay.addEventListener('click', async () => {
+  if (imageUnlocked || imageGenerationBusy) return;
+
+  imageGenerationBusy = true;
+  pageLoadingOverlay.style.display = 'flex';
+
+  try {
+    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
+
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        msg: "generate image",
+        name: aiName,
+        profile: getCharacterProfile(),
+        characterId: selectedCharacterId
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error === "Not enough tokens") {
+      openTokenModalWithAmount(10, 'You need 10 tokens.');
+      return;
+    }
+
+    if (data.imageUrl) {
+      localStorage.setItem('aiImage', data.imageUrl);
+      localStorage.setItem('imageUnlocked', "true");
+      imageUnlocked = true;
+
+      bgImage.src = data.imageUrl;
+      bgImage.style.filter = "blur(0px)";
+
+      avatar.style.backgroundImage = `url(${data.imageUrl})`;
+      lockOverlay.style.display = "none";
+    }
+
+  } catch(e){
+    openTokenModalWithAmount(10, 'Error generating image');
+  }
+
+  pageLoadingOverlay.style.display = 'none';
+  imageGenerationBusy = false;
+});
+
+// initial image
+if (imageUnlocked && savedImage) {
+  bgImage.src = savedImage;
+  bgImage.style.filter = "blur(0px)";
+  avatar.style.backgroundImage = `url(${savedImage})`;
+  lockOverlay.style.display = "none";
+} else {
+  bgImage.src = "images/locked-preview.png";
+  avatar.style.backgroundColor = "#2a2a2a";
+  lockOverlay.style.display = "flex";
+}
+
+// ================== CHAT ==================
 async function talk(){
   const msg = input.value.trim();
   if(!msg) return;
@@ -465,8 +561,14 @@ async function talk(){
 
     const res = await fetch('/api', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ msg, history, name: aiName })
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        msg,
+        history,
+        name: aiName,
+        profile: getCharacterProfile(),
+        characterId: localStorage.getItem('selectedCharacterId')
+      })
     });
 
     const data = await res.json();
@@ -474,16 +576,14 @@ async function talk(){
     const reply = data.reply || '';
     const error = data.error || '';
 
-    // ✅ جواب AI همیشه نمایش داده میشه
     if(reply){
       addMessage(aiName, reply, '#ff4fa3');
     }
 
     document.getElementById('charStatus').innerText = "Online";
 
-    // ✅ بعدش اگر توکن تموم شد
     if (error.includes("No tokens left")) {
-      openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
+      openTokenModalWithAmount(1, 'You need 1 token.');
       return;
     }
 
@@ -496,18 +596,17 @@ async function talk(){
   }
 }
 
+// ================== VOICE ==================
 function startVoice(){
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if(!SpeechRecognition){
-    alert('Voice recognition is not supported on this browser');
+    alert('Voice not supported');
     return;
   }
 
   const recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.continuous = false;
 
   voiceBtn.innerHTML = "🎙️";
 
@@ -518,24 +617,20 @@ function startVoice(){
     talk();
   };
 
-  recognition.onend = function(){
-    voiceBtn.innerHTML = "🎤";
-  };
-
-  recognition.onerror = function(){
-    voiceBtn.innerHTML = "🎤";
-  };
+  recognition.onend = () => voiceBtn.innerHTML = "🎤";
+  recognition.onerror = () => voiceBtn.innerHTML = "🎤";
 
   recognition.start();
 }
 
-input.addEventListener('keydown', function(e){
+input.addEventListener('keydown', e => {
   if(e.key === 'Enter'){
     lastInputWasVoice = false;
     talk();
   }
 });
 
+// ================== MODAL EVENTS ==================
 closeTokenModal.addEventListener('click', closeModal);
 
 tokenModal.addEventListener('click', (e) => {
@@ -554,6 +649,5 @@ subscribeBtn.addEventListener('click', () => {
   window.location.href = 'subscribe.html';
 });
 </script>
-
 </body>
 </html>
