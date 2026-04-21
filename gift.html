@@ -94,8 +94,17 @@
 </div>
 
 <script>
-  function closePage(){
+function closePage(){
+  const returnTo = localStorage.getItem('chatReturnTo');
+
+  if(returnTo){
+    localStorage.removeItem('chatReturnTo');
+    window.location.href = returnTo;
+    return;
+  }
+
   const from = localStorage.getItem('funnelFrom');
+
   if (from === 'result') {
     window.location.href = 'result.html';
   } else {
