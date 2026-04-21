@@ -5,8 +5,6 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-let memoryStore = {};
-
 async function getAuthedUserId(req) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return null;
@@ -119,18 +117,8 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .getPublicUrl(fileName);
 
       const imageUrl = publicUrlData.publicUrl;
-      if (characterId) {
-  await supabase
-    .from('characters')
-    .update({
-      image_url: imageUrl
-    })
-    .eq('id', characterId)
-    .eq('user_id', USER_ID);
 
-  return res.status(200).json({ imageUrl, balance: updatedImageBalance, characterId });
-}
-const { data: insertedCharacter } = await supabase
+const { data: insertedCharacter, error: insertCharacterError } = await supabase
   .from('characters')
   .insert([
     {
@@ -149,6 +137,10 @@ const { data: insertedCharacter } = await supabase
   .select('id')
   .single();
 
+if (insertCharacterError || !insertedCharacter?.id) {
+  return res.status(500).json({ error: 'Character save failed' });
+}
+
 const CHARACTER_ID = insertedCharacter.id;
       return res.status(200).json({
   imageUrl,
@@ -161,23 +153,11 @@ const CHARACTER_ID = insertedCharacter.id;
       return res.status(200).json({ reply: "No tokens left 🔒" });
     }
 
-    const memoryKey = `${USER_ID}:${name || 'AI'}`;
-
-    if (!memoryStore[memoryKey]) {
-      memoryStore[memoryKey] = {
-        profile: profile || {},
-        history: []
-      };
-    }
-
-    memoryStore[memoryKey].profile = profile || memoryStore[memoryKey].profile || {};
-
-    const savedProfile = memoryStore[memoryKey]?.profile || profile || {};
+    const savedProfile = profile || {};
     const normalizedHistory = Array.isArray(history)
       ? history.slice(-8).filter(item => item?.role && item?.parts?.[0]?.text)
       : [];
-    const memoryHistory = memoryStore[memoryKey].history || [];
-    const limitedHistory = normalizedHistory.length ? normalizedHistory : memoryHistory.slice(-8);
+    const limitedHistory = normalizedHistory;
 
     const contents = [
       {
@@ -255,7 +235,20 @@ Interaction style:
     if (updatedChatBalance === null) {
       return res.status(200).json({ reply: "No tokens left 🔒" });
     }
-const CHARACTER_ID = characterId || null;
+let CHARACTER_ID = characterId || null;
+
+if (!CHARACTER_ID) {
+  const { data: latestCharacter } = await supabase
+    .from('characters')
+    .select('id')
+    .eq('user_id', USER_ID)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  CHARACTER_ID = latestCharacter?.id || null;
+}
+
 await supabase.from('chat_history').insert([
   {
     user_id: USER_ID,
@@ -270,12 +263,6 @@ await supabase.from('chat_history').insert([
     character_id: CHARACTER_ID
   }
 ]);
-
-    memoryStore[memoryKey].history = [
-      ...limitedHistory,
-      { role: "user", parts: [{ text: msg }] },
-      { role: "model", parts: [{ text: reply }] }
-    ].slice(-10);
 
     return res.status(200).json({ reply, balance: updatedChatBalance });
 
