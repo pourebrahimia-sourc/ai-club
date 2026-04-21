@@ -402,7 +402,6 @@ const chatKey = 'chatHistory_' + (localStorage.getItem('selectedCharacterId') ||
 const lastChatCharacter = localStorage.getItem('lastChatCharacter');
 
 if(lastChatCharacter !== chatKey){
-  localStorage.removeItem(chatKey);
   chat.innerHTML = '';
 }
 
