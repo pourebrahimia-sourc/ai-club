@@ -362,14 +362,15 @@ cursor:wait;
 <script>
 let isLoggedIn = false;
 
-async function checkSession(){
-  const token = localStorage.getItem('accessToken');
+const RESULT_STATE_KEY = 'resultCharacterState';
+const ACTIVE_CHAT_CONTEXT_KEY = 'activeChatContext';
+const RESULT_AI_NAME_KEY = 'aiName';
 
-  if(!token){
-    isLoggedIn = false;
-    return;
-  }
+function checkSession(){
+  const token = localStorage.getItem('accessToken');
+  isLoggedIn = !!token;
 }
+
 function formatText(text) {
   if (!text) return '-';
   return text.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -377,13 +378,13 @@ function formatText(text) {
 
 function getProfile() {
   return {
-    age: localStorage.getItem('age'),
-    ethnicity: localStorage.getItem('ethnicity'),
-    body: localStorage.getItem('body'),
-    bodyDetails: localStorage.getItem('bodyDetails'),
-    hair: localStorage.getItem('hair'),
-    appearanceDetails: localStorage.getItem('appearanceDetails'),
-    personality: localStorage.getItem('personality')
+    age: localStorage.getItem('age') || '',
+    ethnicity: localStorage.getItem('ethnicity') || '',
+    body: localStorage.getItem('body') || '',
+    bodyDetails: localStorage.getItem('bodyDetails') || '',
+    hair: localStorage.getItem('hair') || '',
+    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
+    personality: localStorage.getItem('personality') || ''
   };
 }
 
@@ -409,12 +410,12 @@ function clearCharacterState(){
     'hair',
     'appearanceDetails',
     'personality',
-    'aiImage',
-    'imageUnlocked',
     'lastProfileKey',
-    'aiName',
     'recentChats'
   ].forEach(key => localStorage.removeItem(key));
+
+  localStorage.removeItem(RESULT_STATE_KEY);
+  localStorage.removeItem(ACTIVE_CHAT_CONTEXT_KEY);
 }
 
 function resetStateIfUserChanged(nextUserId){
@@ -500,6 +501,61 @@ function goLoginFromResult() {
   window.location.href = 'login.html';
 }
 
+function readResultState() {
+  try {
+    return JSON.parse(localStorage.getItem(RESULT_STATE_KEY) || 'null') || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function writeResultState(nextState) {
+  localStorage.setItem(RESULT_STATE_KEY, JSON.stringify(nextState || {}));
+}
+
+function getOrCreateResultAiName() {
+  const names = ['Luna','Mia','Nora','Eva','Zara'];
+  let name = localStorage.getItem(RESULT_AI_NAME_KEY);
+
+  if (!name) {
+    name = names[Math.floor(Math.random() * names.length)];
+    localStorage.setItem(RESULT_AI_NAME_KEY, name);
+  }
+
+  return name;
+}
+
+function syncResultStateWithProfile() {
+  const profile = getProfile();
+  const profileKey = getCurrentProfileKey();
+  const state = readResultState();
+
+  if (state.profileKey && state.profileKey !== profileKey) {
+    const freshState = {
+      profile,
+      profileKey,
+      imageUrl: '',
+      imageUnlocked: false,
+      characterId: null,
+      aiName: getOrCreateResultAiName()
+    };
+    writeResultState(freshState);
+    return freshState;
+  }
+
+  const mergedState = {
+    profile,
+    profileKey,
+    imageUrl: state.imageUrl || '',
+    imageUnlocked: state.imageUnlocked === true,
+    characterId: state.characterId || null,
+    aiName: state.aiName || getOrCreateResultAiName()
+  };
+
+  writeResultState(mergedState);
+  return mergedState;
+}
+
 async function startChat() {
   const token = getAccessToken();
   if (!token) {
@@ -512,6 +568,17 @@ async function startChat() {
     openTokenModalWithAmount(5);
     return;
   }
+
+  const state = syncResultStateWithProfile();
+
+  localStorage.setItem(ACTIVE_CHAT_CONTEXT_KEY, JSON.stringify({
+    source: 'result',
+    characterId: state.characterId || null,
+    name: state.aiName || getOrCreateResultAiName(),
+    imageUrl: state.imageUrl || '',
+    imageUnlocked: state.imageUnlocked === true,
+    profile: state.profile || getProfile()
+  }));
 
   window.location.href = 'chat.html';
 }
@@ -558,13 +625,15 @@ function startVideoChat() {
 const img = document.getElementById('aiImage');
 const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
 const imageLock = document.getElementById('imageLock');
-  function showPageLoading(){
+
+function showPageLoading(){
   pageLoadingOverlay.style.display = 'flex';
 }
 
 function hidePageLoading(){
   pageLoadingOverlay.style.display = 'none';
 }
+
 const tokenEl = document.getElementById('tokenBalance');
 const tokenModal = document.getElementById('tokenModal');
 const closeTokenModal = document.getElementById('closeTokenModal');
@@ -579,6 +648,7 @@ const infoModalTitle = document.getElementById('infoModalTitle');
 const infoModalText = document.getElementById('infoModalText');
 const infoModalOkBtn = document.getElementById('infoModalOkBtn');
 const infoModalCloseBtn = document.getElementById('infoModalCloseBtn');
+
 function openTokenModal() {
   tokenModal.style.display = 'flex';
 }
@@ -643,21 +713,16 @@ function applyProfileToSummary() {
 }
 
 function applyImageState() {
-  const savedImage = localStorage.getItem('aiImage');
-  const imageUnlocked = localStorage.getItem('imageUnlocked') === 'true';
-  const sameProfile = getCurrentProfileKey() === localStorage.getItem('lastProfileKey');
+  const state = syncResultStateWithProfile();
 
-  if (sameProfile && imageUnlocked && savedImage) {
-    img.src = savedImage;
+  if (state.imageUnlocked && state.imageUrl) {
+    img.src = state.imageUrl;
     img.style.filter = 'blur(0px)';
     img.style.opacity = '1';
     imageLock.style.display = 'none';
     editBtn.style.display = 'flex';
     regenerateBtn.style.display = 'flex';
   } else {
-    localStorage.removeItem('aiImage');
-    localStorage.removeItem('imageUnlocked');
-
     img.src = 'images/locked-preview.png';
     img.style.filter = 'blur(20px)';
     img.style.opacity = '1';
@@ -665,8 +730,6 @@ function applyImageState() {
     editBtn.style.display = 'flex';
     regenerateBtn.style.display = 'none';
   }
-
-  localStorage.setItem('lastProfileKey', getCurrentProfileKey());
 }
 
 async function generateImage() {
@@ -676,12 +739,13 @@ async function generateImage() {
     return;
   }
 
-showPageLoading();
-imageLock.style.pointerEvents = 'none';
+  showPageLoading();
+  imageLock.style.pointerEvents = 'none';
 
   try {
-    const profile = getProfile();
-    const aiName = localStorage.getItem('aiName') || 'Luna';
+    const state = syncResultStateWithProfile();
+    const profile = state.profile || getProfile();
+    const aiName = state.aiName || getOrCreateResultAiName();
 
     const res = await fetch('/api', {
       method: 'POST',
@@ -689,15 +753,13 @@ imageLock.style.pointerEvents = 'none';
       body: JSON.stringify({
         msg: 'generate image',
         name: aiName,
-        profile
+        profile,
+        characterId: state.characterId || null
       })
     });
 
     const data = await res.json();
-if (data.characterId) {
-  console.log('NEW CHARACTER ID:', data.characterId);
-  localStorage.setItem('selectedCharacterId', data.characterId);
-}
+
     if (data.error) {
       hidePageLoading();
       imageLock.style.pointerEvents = 'auto';
@@ -712,6 +774,17 @@ if (data.characterId) {
     }
 
     if (data.imageUrl) {
+      const nextState = {
+        profile,
+        profileKey: getCurrentProfileKey(),
+        imageUrl: data.imageUrl,
+        imageUnlocked: true,
+        characterId: data.characterId || state.characterId || null,
+        aiName
+      };
+
+      writeResultState(nextState);
+
       img.style.opacity = '0';
 
       img.onload = async () => {
@@ -725,10 +798,6 @@ if (data.characterId) {
       };
 
       img.src = data.imageUrl;
-
-      localStorage.setItem('aiImage', data.imageUrl);
-      localStorage.setItem('imageUnlocked', 'true');
-      localStorage.setItem('lastProfileKey', getCurrentProfileKey());
 
       if (data.balance !== undefined) {
         tokenEl.innerText = '💰 ' + data.balance;
@@ -750,7 +819,8 @@ if (data.characterId) {
 }
 
 function editCharacter() {
-  const hasImage = localStorage.getItem('imageUnlocked') === 'true';
+  const state = syncResultStateWithProfile();
+  const hasImage = state.imageUnlocked === true;
 
   if (hasImage) {
     openInfoModal(
@@ -805,7 +875,9 @@ function goSubscribe() {
 }
 
 async function initResultPage() {
+  checkSession();
   await syncSessionFromUrl();
+  await syncStoredSession();
   applyProfileToSummary();
   await refreshBalance();
   applyImageState();
@@ -837,11 +909,12 @@ infoModalOkBtn.addEventListener('click', () => {
   closeInfoModal();
   if (action) action();
 });
+
 infoModalCloseBtn.addEventListener('click', closeInfoModal);
+
 infoModal.addEventListener('click', (e) => {
   if (e.target === infoModal) closeInfoModal();
 });
- 
 </script>
 </body>
 </html>
