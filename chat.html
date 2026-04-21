@@ -680,6 +680,7 @@ getTokensBtn.addEventListener('click', () => {
 
 subscribeBtn.addEventListener('click', () => {
   closeModal();
+  localStorage.setItem('chatReturnTo', 'chat.html');
   window.location.href = 'subscribe.html';
 });
 </script>
