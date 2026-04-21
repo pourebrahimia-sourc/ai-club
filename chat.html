@@ -2,300 +2,347 @@
 <html>
 <head>
   <title>AI Club ChatTop</title>
-<style>
-body{
-  margin:0;
-  min-height:100vh;
-  padding:18px 14px 16px;
-  box-sizing:border-box;
-  color:#fff;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#111;
-  position:relative;
-  overflow:hidden;
-}
-  html, body{
-  width:100%;
-}
-
-.bg{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  overflow:hidden;
-  background:#111;
-}
-
-.bg video{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter:blur(10px);
-  transform:scale(1.1);
-}
-
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-}
-
-.logo,
-.title,
-#chat,
-#input,
-.action-row{
-  position:relative;
-  z-index:2;
-}
-
-.logo{
-  text-align:center;
-  font-size:20px;
-  font-weight:700;
-  margin:0 0 8px 0;
-}
-
-.title{
-  text-align:center;
-  font-size:26px;
-  line-height:1.25;
-  margin:0 0 12px 0;
-}
-
-#chat{
-  height:20vh;
-  margin-top:auto;
-  overflow:auto;
-  padding:14px 12px;
-  margin-bottom:10px;
-  border-radius:18px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.10);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-}
-#chat::-webkit-scrollbar{
-  width:6px;
-}
-
-#chat::-webkit-scrollbar-track{
-  background:transparent;
-}
-
-#chat::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,0.28);
-  border-radius:999px;
-}
-
-#chat::-webkit-scrollbar-thumb:hover{
-  background:rgba(255,255,255,0.42);
-}
-#chat p{
-  margin:0 0 10px 0;
-  line-height:1.45;
-  word-break:break-word;
-}
-
-#input{
-  width:100%;
-  box-sizing:border-box;
-  padding:14px 14px;
-  border:none;
-  outline:none;
-  border-radius:16px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.12);
-  color:#fff;
-  font-size:16px;
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-}
-
-#input::placeholder{
-  color:rgba(255,255,255,0.65);
-}
-
-.action-row{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-
-.btn{
-  height:52px;
-  border:none;
-  border-radius:16px;
-  color:#fff;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  background:rgba(255,79,163,0.72);
-  border:1px solid rgba(255,79,163,0.45);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  box-shadow:0 8px 24px rgba(255,79,163,0.18);
-}
-
-.talk-btn{
-  flex:1;
-}
-
-.voice-btn{
-  width:64px;
-  flex:0 0 64px;
-}
-
-@media (min-width:768px){
-  body{
-    width:420px;
-    margin:0 auto;
-    padding:24px 16px 20px;
-  }
-
-.bg video{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:420px;
-  height:760px;
-  transform: translate(-50%, -50%) scale(1.05);
-  object-fit:cover;
-  border-radius:28px;
-  border:1px solid rgba(255,79,163,0.45);
-  box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
-}
-
-  #chat{
-    max-height:500px;
-  }
-}
-  .top-area{
-  position:relative;
-  z-index:2;
-}
-
-.bottom-area{
-  position:fixed;
-  left:14px;
-  right:14px;
-  bottom:16px;
-  z-index:2;
-}
-  @media (min-width:768px){
-  .bottom-area{
-    width:420px;
-    left:50%;
-    right:auto;
-    transform:translateX(-50%);
-  }
-}
-  .character-header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:10px;
-  padding:8px 10px;
-  border-radius:16px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  backdrop-filter:blur(12px);
-}
-
-.avatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background-position:center 3px;
-  background-size:120%;
-}
-
-.char-info{
-  display:flex;
-  flex-direction:column;
-}
-
-.char-name{
-  font-size:15px;
-  font-weight:700;
-}
-
-.char-status{
-  font-size:12px;
-  color:rgba(255,255,255,0.6);
-}
-</style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:18px 14px 16px;
+      box-sizing:border-box;
+      color:#fff;
+      font-family:Arial, Helvetica, sans-serif;
+      background:#111;
+      position:relative;
+      overflow:hidden;
+    }
 
+    html, body{
+      width:100%;
+    }
+
+    .bg{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      overflow:hidden;
+      background:#111;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:rgba(0,0,0,0.42);
+    }
+
+    .top-nav,
+    .top-area,
+    .character-header,
+    .bottom-area{
+      position:relative;
+      z-index:2;
+    }
+
+    .top-nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:8px;
+    }
+
+    .close-btn{
+      width:38px;
+      height:38px;
+      border:none;
+      border-radius:12px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.10);
+      color:#fff;
+      font-size:18px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .chat-token{
+      min-width:58px;
+      height:38px;
+      padding:0 12px;
+      border-radius:12px;
+      background:rgba(0,0,0,0.52);
+      border:1px solid rgba(255,255,255,0.12);
+      color:#fff;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .logo{
+      text-align:center;
+      font-size:20px;
+      font-weight:700;
+      margin:0 0 8px 0;
+    }
+
+    .title{
+      text-align:center;
+      font-size:26px;
+      line-height:1.25;
+      margin:0 0 12px 0;
+    }
+
+    .character-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+      padding:8px 10px;
+      border-radius:16px;
+      background:rgba(0,0,0,0.48);
+      border:1px solid rgba(255,255,255,0.10);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .avatar{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background-position:center 3px;
+      background-size:120%;
+      flex-shrink:0;
+    }
+
+    .char-info{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .char-name{
+      font-size:15px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .char-status{
+      font-size:12px;
+      color:rgba(255,255,255,0.65);
+    }
+
+    #chat{
+      height:20vh;
+      margin-top:auto;
+      overflow:auto;
+      padding:14px 12px;
+      margin-bottom:10px;
+      border-radius:18px;
+      background:rgba(0,0,0,0.58);
+      border:1px solid rgba(255,255,255,0.10);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    #chat::-webkit-scrollbar{
+      width:6px;
+    }
+
+    #chat::-webkit-scrollbar-track{
+      background:transparent;
+    }
+
+    #chat::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,0.28);
+      border-radius:999px;
+    }
+
+    #chat::-webkit-scrollbar-thumb:hover{
+      background:rgba(255,255,255,0.42);
+    }
+
+    #chat p{
+      margin:0 0 10px 0;
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    #input{
+      width:100%;
+      box-sizing:border-box;
+      padding:14px 14px;
+      border:none;
+      outline:none;
+      border-radius:16px;
+      background:rgba(0,0,0,0.68);
+      border:1px solid rgba(255,255,255,0.12);
+      color:#fff;
+      font-size:16px;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+    }
+
+    #input::placeholder{
+      color:rgba(255,255,255,0.65);
+    }
+
+    .action-row{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .btn{
+      height:52px;
+      border:none;
+      border-radius:16px;
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      background:rgba(255,79,163,0.78);
+      border:1px solid rgba(255,79,163,0.45);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(255,79,163,0.18);
+    }
+
+    .talk-btn{
+      flex:1;
+    }
+
+    .voice-btn{
+      width:64px;
+      flex:0 0 64px;
+    }
+
+    .top-area{
+      position:relative;
+      z-index:2;
+    }
+
+    .bottom-area{
+      position:fixed;
+      left:14px;
+      right:14px;
+      bottom:16px;
+      z-index:2;
+    }
+
+    #pageLoadingOverlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:rgba(0,0,0,0.55);
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      align-items:center;
+      justify-content:center;
+      cursor:wait;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @media (min-width:768px){
+      body{
+        width:420px;
+        margin:0 auto;
+        padding:24px 16px 20px;
+      }
+
+      .bottom-area{
+        width:420px;
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
+      }
+
+      #chat{
+        max-height:500px;
+      }
+    }
+  </style>
 </head>
 <body>
+
 <div class="bg">
-  <img id="bgImage" style="position:absolute;top:50%;left:50%;width:420px;height:760px;transform:translate(-50%,-50%) scale(1.05);object-fit:cover;filter:blur(12px);border-radius:28px;border:1px solid rgba(255,79,163,0.45);box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);">
-<div id="imageLoading" style="
-display:none;
-position:absolute;
-inset:0;
-z-index:7;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,0.28);
-border-radius:18px;
-backdrop-filter:blur(3px);
--webkit-backdrop-filter:blur(3px);
-">
-  <div style="
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  border:3px solid rgba(255,255,255,0.18);
-  border-top:3px solid #ff4fa3;
-  animation:spin 0.9s linear infinite;
-  box-shadow:0 0 24px rgba(255,79,163,0.35);
-  "></div>
+  <img id="bgImage" style="
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:420px;
+    height:760px;
+    transform:translate(-50%,-50%) scale(1.05);
+    object-fit:cover;
+    filter:blur(12px);
+    border-radius:28px;
+    border:1px solid rgba(255,79,163,0.45);
+    box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
+  ">
 </div>
-  <div id="lockOverlay" style="
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%, -50%);
-z-index:6;
-width:110px;
-height:110px;
-border-radius:50%;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:6px;
-background:rgba(0,0,0,0.52);
-border:1.5px solid rgba(255,255,255,0.7);
-backdrop-filter:blur(4px);
--webkit-backdrop-filter:blur(4px);
-color:#fff;
-cursor:pointer;
-">
-  <div style="font-size:34px;line-height:1;">🔒</div>
-  <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
-  <div style="font-size:11px;opacity:0.9;line-height:1;">10 tokens</div>
-</div>
+
+<div class="top-nav">
+  <button class="close-btn" onclick="goBack()">✕</button>
+  <div id="chatTokenBalance" class="chat-token">💰 0</div>
 </div>
 
 <div class="top-area">
   <div class="logo">AI Club</div>
   <h2 class="title">Your AI Girlfriend 💖</h2>
 </div>
-  <div class="character-header">
-  <div class="avatar"></div>
 
+<div class="character-header">
+  <div class="avatar"></div>
   <div class="char-info">
     <div id="charName" class="char-name">Zara</div>
     <div id="charStatus" class="char-status">Online</div>
   </div>
 </div>
+
+<div id="lockOverlay" style="
+  position:fixed;
+  inset:0;
+  z-index:6;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.32);
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
+">
+  <div style="
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    background:rgba(0,0,0,0.56);
+    border:1.5px solid rgba(255,255,255,0.7);
+    color:#fff;
+    cursor:pointer;
+  ">
+    <div style="font-size:34px;line-height:1;">🔒</div>
+    <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
+    <div style="font-size:11px;opacity:0.9;line-height:1;">10 tokens</div>
+  </div>
+</div>
+
 <div class="bottom-area">
   <div id="chat" class="chat-box"></div>
   <input id="input" class="chat-input" placeholder="Say something...">
@@ -305,122 +352,89 @@ cursor:pointer;
   </div>
 </div>
 
+<div id="tokenModal" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:20;
+background:rgba(0,0,0,0.6);
+align-items:center;
+justify-content:center;
+padding:20px;
+">
+  <div style="
+  width:100%;
+  max-width:320px;
+  background:#1a1a1a;
+  border:1px solid #2b2b2b;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.45);
+  ">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
+      Not enough tokens
+    </div>
+
+    <div id="tokenModalText" style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
+      You need 10 tokens.
+    </div>
+
+    <button id="getTokensBtn" class="btn" style="margin-bottom:10px;">
+      Get Tokens
+    </button>
+
+    <button id="subscribeBtn" class="btn" style="
+    background:#2a2a2a;
+    border:1px solid #3a3a3a;
+    box-shadow:none;
+    ">
+      Subscribe
+    </button>
+
+    <div id="closeTokenModal" style="
+    margin-top:14px;
+    font-size:12px;
+    opacity:0.7;
+    cursor:pointer;
+    ">
+      Close
+    </div>
+  </div>
+</div>
+
+<div id="pageLoadingOverlay">
+  <div style="
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,0.18);
+  border-top:4px solid #ff4fa3;
+  animation:spin 0.9s linear infinite;
+  box-shadow:0 0 28px rgba(255,79,163,0.35);
+  "></div>
+</div>
+
 <script>
 const savedImage = localStorage.getItem('aiImage');
 const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
 const lockOverlay = document.getElementById('lockOverlay');
-
-function getAccessToken() {
-  return localStorage.getItem('accessToken') || '';
-}
-
-function authHeaders(extra = {}) {
-  const token = getAccessToken();
-  return token
-    ? { ...extra, Authorization: 'Bearer ' + token }
-    : extra;
-}
-
-if (!getAccessToken()) {
-  window.location.href = 'login.html';
-}
-
-function openTokenModal() {
-  const tokenModal = document.getElementById('tokenModal');
-  if (tokenModal) tokenModal.style.display = "flex";
-}
-
-function closeModal() {
-  const tokenModal = document.getElementById('tokenModal');
-  if (tokenModal) tokenModal.style.display = "none";
-}
-
-document.addEventListener('click', (e) => {
-  if (e.target && e.target.id === 'closeTokenModal') closeModal();
-  if (e.target && e.target.id === 'tokenModal') closeModal();
-});
-
-lockOverlay.addEventListener('click', async () => {
-  if (imageUnlocked) return;
-  const loading = document.getElementById('imageLoading');
-  loading.style.display = "flex";
-
-  try {
-    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        msg: "generate image",
-        name: aiName,
-          profile: getCharacterProfile(),
-  characterId: selectedCharacterId
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.error === "Not enough tokens") {
-      openTokenModal();
-      loading.style.display = "none";
-      return;
-    }
-
-if (data.imageUrl) {
-  localStorage.setItem('aiImage', data.imageUrl);
-  localStorage.setItem('imageUnlocked', "true");
-
-  if (data.characterId) {
-    localStorage.setItem('selectedCharacterId', data.characterId);
-  }
-
-  bgImage.src = data.imageUrl;
-  bgImage.style.filter = "blur(0px)";
-
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = `url(${data.imageUrl})`;
-  avatar.style.backgroundColor = "transparent";
-
-  lockOverlay.style.display = "none";
-  loading.style.display = "none";
-  return;
-}
-
-    loading.style.display = "none";
-  } catch (e) {
-    loading.style.display = "none";
-    alert("Error generating image");
-  }
-});
-
-if (imageUnlocked) {
-  lockOverlay.style.display = "none";
-} else {
-  lockOverlay.style.display = "flex";
-}
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+const voiceBtn = document.getElementById('voiceBtn');
+const tokenModal = document.getElementById('tokenModal');
+const tokenModalText = document.getElementById('tokenModalText');
+const closeTokenModal = document.getElementById('closeTokenModal');
+const getTokensBtn = document.getElementById('getTokensBtn');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
+const tokenBalanceEl = document.getElementById('chatTokenBalance');
 
-if (imageUnlocked && savedImage) {
-  bgImage.src = savedImage;
-  bgImage.style.filter = "blur(0px)";
-} else {
-  bgImage.src = "images/locked-preview.png";
-  bgImage.style.filter = "blur(12px)";
-}
-if (imageUnlocked && savedImage) {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = `url(${savedImage})`;
-  avatar.style.backgroundColor = "transparent";
-  lockOverlay.style.display = "none";
-} else {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = "none";
-  avatar.style.backgroundColor = "#2a2a2a";
-  lockOverlay.style.display = "flex";
-}
 let history = [];
 let lastInputWasVoice = false;
+let imageGenerationBusy = false;
 
 const names = ['Luna','Mia','Nora','Eva','Zara'];
 let aiName = localStorage.getItem('aiName');
@@ -430,12 +444,88 @@ if(!aiName){
   localStorage.setItem('aiName', aiName);
 }
 
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
 document.getElementById('charName').innerText = aiName;
-const voiceBtn = document.getElementById('voiceBtn');
-
 speechSynthesis.getVoices();
+
+function getAccessToken() {
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}) {
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+}
+
+if (!getAccessToken()) {
+  localStorage.setItem('loginReturnTo', 'chat.html');
+  window.location.href = 'login.html';
+}
+
+(function inferChatFrom(){
+  const ref = document.referrer || '';
+  if (ref.includes('profile.html')) {
+    sessionStorage.setItem('chatFrom', 'profile');
+  } else if (ref.includes('result.html')) {
+    sessionStorage.setItem('chatFrom', 'result');
+  }
+})();
+
+function goBack(){
+  const from = sessionStorage.getItem('chatFrom') || localStorage.getItem('chatFrom') || '';
+
+  if (from === 'profile') {
+    window.location.href = 'profile.html';
+  } else {
+    window.location.href = 'result.html';
+  }
+}
+
+function openTokenModalWithAmount(amount, message){
+  tokenModalText.innerText = message || `You need ${amount} tokens.`;
+  tokenModal.style.display = 'flex';
+}
+
+function closeModal() {
+  tokenModal.style.display = 'none';
+}
+
+function showPageLoading(){
+  pageLoadingOverlay.style.display = 'flex';
+}
+
+function hidePageLoading(){
+  pageLoadingOverlay.style.display = 'none';
+}
+
+async function refreshBalance() {
+  const token = getAccessToken();
+
+  if (!token) {
+    tokenBalanceEl.innerText = '💰 0';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+
+    if (data.balance !== undefined) {
+      tokenBalanceEl.innerText = '💰 ' + data.balance;
+      localStorage.setItem('cachedBalance', data.balance);
+      if (data.userId) {
+        localStorage.setItem('userId', data.userId);
+      }
+    } else {
+      tokenBalanceEl.innerText = '💰 0';
+    }
+  } catch (e) {
+    const cached = localStorage.getItem('cachedBalance');
+    tokenBalanceEl.innerText = cached ? '💰 ' + cached : '💰 0';
+  }
+}
 
 function getCharacterProfile(){
   return {
@@ -466,6 +556,90 @@ function addMessage(sender, text, color){
   }
 }
 
+lockOverlay.addEventListener('click', async () => {
+  if (imageUnlocked || imageGenerationBusy) return;
+
+  imageGenerationBusy = true;
+  showPageLoading();
+
+  try {
+    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
+
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        msg: "generate image",
+        name: aiName,
+        profile: getCharacterProfile(),
+        characterId: selectedCharacterId
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error === "Not enough tokens") {
+      hidePageLoading();
+      imageGenerationBusy = false;
+      openTokenModalWithAmount(10, 'You need 10 tokens to unlock this image.');
+      return;
+    }
+
+    if (data.imageUrl) {
+      localStorage.setItem('aiImage', data.imageUrl);
+      localStorage.setItem('imageUnlocked', "true");
+
+      if (data.characterId) {
+        localStorage.setItem('selectedCharacterId', data.characterId);
+      }
+
+      bgImage.src = data.imageUrl;
+      bgImage.style.filter = "blur(0px)";
+
+      avatar.style.display = "block";
+      avatar.style.backgroundImage = `url(${data.imageUrl})`;
+      avatar.style.backgroundColor = "transparent";
+
+      lockOverlay.style.display = "none";
+      hidePageLoading();
+      imageGenerationBusy = false;
+
+      if (data.balance !== undefined) {
+        tokenBalanceEl.innerText = '💰 ' + data.balance;
+        localStorage.setItem('cachedBalance', data.balance);
+      } else {
+        await refreshBalance();
+      }
+
+      return;
+    }
+
+    hidePageLoading();
+    imageGenerationBusy = false;
+    openTokenModalWithAmount(10, 'Something went wrong. Please try again.');
+  } catch (e) {
+    hidePageLoading();
+    imageGenerationBusy = false;
+    openTokenModalWithAmount(10, 'Connection error. Please try again.');
+  }
+});
+
+if (imageUnlocked && savedImage) {
+  bgImage.src = savedImage;
+  bgImage.style.filter = "blur(0px)";
+  avatar.style.display = "block";
+  avatar.style.backgroundImage = `url(${savedImage})`;
+  avatar.style.backgroundColor = "transparent";
+  lockOverlay.style.display = "none";
+} else {
+  bgImage.src = "images/locked-preview.png";
+  bgImage.style.filter = "blur(12px)";
+  avatar.style.display = "block";
+  avatar.style.backgroundImage = "none";
+  avatar.style.backgroundColor = "#2a2a2a";
+  lockOverlay.style.display = "flex";
+}
+
 async function talk(){
   const msg = input.value.trim();
   if(!msg) return;
@@ -475,27 +649,27 @@ async function talk(){
 
   try{
     document.getElementById('charStatus').innerText = "Typing...";
-const selectedCharacterId = localStorage.getItem('selectedCharacterId');
+    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
 
-const res = await fetch('/api', {
-  method: 'POST',
-  headers: authHeaders({ 'Content-Type': 'application/json' }),
-  body: JSON.stringify({
-    msg,
-    history,
-    name: aiName,
-    profile: getCharacterProfile(),
-    characterId: selectedCharacterId
-  })
-});
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        msg,
+        history,
+        name: aiName,
+        profile: getCharacterProfile(),
+        characterId: selectedCharacterId
+      })
+    });
 
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
 
     if (reply.includes("No tokens left")) {
-      addMessage(aiName, reply, '#ff4fa3');
-      document.getElementById('lockOverlay').style.display = "flex";
       document.getElementById('charStatus').innerText = "Online";
+      openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
+      await refreshBalance();
       return;
     }
 
@@ -504,6 +678,14 @@ const res = await fetch('/api', {
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
+
+    if (data.balance !== undefined) {
+      tokenBalanceEl.innerText = '💰 ' + data.balance;
+      localStorage.setItem('cachedBalance', data.balance);
+    } else {
+      await refreshBalance();
+    }
+
   }catch(e){
     document.getElementById('charStatus').innerText = "Online";
     addMessage(aiName, 'Error', '#ff4fa3');
@@ -549,54 +731,25 @@ input.addEventListener('keydown', function(e){
     talk();
   }
 });
+
+closeTokenModal.addEventListener('click', closeModal);
+
+tokenModal.addEventListener('click', (e) => {
+  if (e.target === tokenModal) closeModal();
+});
+
+getTokensBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'gift.html';
+});
+
+subscribeBtn.addEventListener('click', () => {
+  closeModal();
+  window.location.href = 'subscribe.html';
+});
+
+refreshBalance();
 </script>
-  <div id="tokenModal" style="
-display:none;
-position:fixed;
-inset:0;
-z-index:20;
-background:rgba(0,0,0,0.6);
-align-items:center;
-justify-content:center;
-padding:20px;
-">
-  <div style="
-  width:100%;
-  max-width:320px;
-  background:#1a1a1a;
-  border:1px solid #2b2b2b;
-  border-radius:18px;
-  padding:18px;
-  text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.45);
-  ">
-    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">
-      Not enough tokens
-    </div>
-    <div style="font-size:13px;opacity:0.82;line-height:1.5;margin-bottom:16px;">
-      You need 10 tokens to unlock this image.
-    </div>
 
-    <button id="getTokensBtn" class="btn" style="margin-bottom:10px;">
-      Get Tokens
-    </button>
-
-    <button id="subscribeBtn" class="btn" style="
-    background:#2a2a2a;
-    border:1px solid #3a3a3a;
-    ">
-      Subscribe
-    </button>
-
-    <div id="closeTokenModal" style="
-    margin-top:14px;
-    font-size:12px;
-    opacity:0.7;
-    cursor:pointer;
-    ">
-      Close
-    </div>
-  </div>
-</div>
 </body>
 </html>
