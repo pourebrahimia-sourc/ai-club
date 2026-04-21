@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Club ChatTop</title>
+  <title>AI Club Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body{
@@ -34,7 +34,7 @@
       inset:0;
       z-index:1;
       pointer-events:none;
-      background:rgba(0,0,0,0.42);
+      background:rgba(0,0,0,0.18);
     }
 
     .top-nav,
@@ -57,46 +57,28 @@
       height:38px;
       border:none;
       border-radius:12px;
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.10);
+      background:rgba(0,0,0,0.30);
+      border:1px solid rgba(255,255,255,0.12);
       color:#fff;
       font-size:18px;
       cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:center;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
     }
 
-    .chat-token{
-      min-width:58px;
+    .top-spacer{
+      width:38px;
       height:38px;
-      padding:0 12px;
-      border-radius:12px;
-      background:rgba(0,0,0,0.52);
-      border:1px solid rgba(255,255,255,0.12);
-      color:#fff;
-      font-size:13px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
     }
 
     .logo{
       text-align:center;
       font-size:20px;
       font-weight:700;
-      margin:0 0 8px 0;
-    }
-
-    .title{
-      text-align:center;
-      font-size:26px;
-      line-height:1.25;
-      margin:0 0 12px 0;
+      margin:0 0 10px 0;
     }
 
     .character-header{
@@ -106,7 +88,7 @@
       margin-bottom:10px;
       padding:8px 10px;
       border-radius:16px;
-      background:rgba(0,0,0,0.48);
+      background:rgba(0,0,0,0.26);
       border:1px solid rgba(255,255,255,0.10);
       backdrop-filter:blur(12px);
       -webkit-backdrop-filter:blur(12px);
@@ -137,7 +119,7 @@
 
     .char-status{
       font-size:12px;
-      color:rgba(255,255,255,0.65);
+      color:rgba(255,255,255,0.66);
     }
 
     #chat{
@@ -147,7 +129,7 @@
       padding:14px 12px;
       margin-bottom:10px;
       border-radius:18px;
-      background:rgba(0,0,0,0.58);
+      background:rgba(0,0,0,0.34);
       border:1px solid rgba(255,255,255,0.10);
       backdrop-filter:blur(14px);
       -webkit-backdrop-filter:blur(14px);
@@ -183,7 +165,7 @@
       border:none;
       outline:none;
       border-radius:16px;
-      background:rgba(0,0,0,0.68);
+      background:rgba(0,0,0,0.42);
       border:1px solid rgba(255,255,255,0.12);
       color:#fff;
       font-size:16px;
@@ -209,7 +191,7 @@
       font-size:16px;
       font-weight:700;
       cursor:pointer;
-      background:rgba(255,79,163,0.78);
+      background:rgba(255,79,163,0.74);
       border:1px solid rgba(255,79,163,0.45);
       backdrop-filter:blur(14px);
       -webkit-backdrop-filter:blur(14px);
@@ -236,19 +218,6 @@
       right:14px;
       bottom:16px;
       z-index:2;
-    }
-
-    #pageLoadingOverlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      background:rgba(0,0,0,0.55);
-      backdrop-filter:blur(4px);
-      -webkit-backdrop-filter:blur(4px);
-      align-items:center;
-      justify-content:center;
-      cursor:wait;
     }
 
     @keyframes spin {
@@ -292,54 +261,46 @@
     border:1px solid rgba(255,79,163,0.45);
     box-shadow:0 0 0 1px rgba(255,79,163,0.12), 0 20px 80px rgba(0,0,0,0.45);
   ">
-</div>
 
-<div class="top-nav">
-  <button class="close-btn" onclick="goBack()">✕</button>
-  <div id="chatTokenBalance" class="chat-token">💰 0</div>
-</div>
-
-<div class="top-area">
-  <div class="logo">AI Club</div>
-  <h2 class="title">Your AI Girlfriend 💖</h2>
-</div>
-
-<div class="character-header">
-  <div class="avatar"></div>
-  <div class="char-info">
-    <div id="charName" class="char-name">Zara</div>
-    <div id="charStatus" class="char-status">Online</div>
-  </div>
-</div>
-
-<div id="lockOverlay" style="
-  position:fixed;
-  inset:0;
-  z-index:6;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,0.32);
-  backdrop-filter:blur(2px);
-  -webkit-backdrop-filter:blur(2px);
-">
-  <div style="
+  <div id="lockOverlay" style="
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:6;
     width:110px;
     height:110px;
     border-radius:50%;
-    display:flex;
+    display:none;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     gap:6px;
-    background:rgba(0,0,0,0.56);
+    background:rgba(0,0,0,0.46);
     border:1.5px solid rgba(255,255,255,0.7);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
     color:#fff;
     cursor:pointer;
   ">
     <div style="font-size:34px;line-height:1;">🔒</div>
     <div style="font-size:12px;font-weight:700;line-height:1.2;">Unlock</div>
     <div style="font-size:11px;opacity:0.9;line-height:1;">10 tokens</div>
+  </div>
+</div>
+
+<div class="top-nav">
+  <button class="close-btn" onclick="goBack()">✕</button>
+  <div class="logo">AI Club</div>
+  <div class="top-spacer"></div>
+</div>
+
+<div class="character-header">
+  <div class="avatar"></div>
+
+  <div class="char-info">
+    <div id="charName" class="char-name">Zara</div>
+    <div id="charStatus" class="char-status">Online</div>
   </div>
 </div>
 
@@ -403,7 +364,18 @@ padding:20px;
   </div>
 </div>
 
-<div id="pageLoadingOverlay">
+<div id="pageLoadingOverlay" style="
+display:none;
+position:fixed;
+inset:0;
+z-index:9999;
+background:rgba(0,0,0,0.55);
+backdrop-filter:blur(4px);
+-webkit-backdrop-filter:blur(4px);
+align-items:center;
+justify-content:center;
+cursor:wait;
+">
   <div style="
   width:72px;
   height:72px;
@@ -430,7 +402,6 @@ const closeTokenModal = document.getElementById('closeTokenModal');
 const getTokensBtn = document.getElementById('getTokensBtn');
 const subscribeBtn = document.getElementById('subscribeBtn');
 const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
-const tokenBalanceEl = document.getElementById('chatTokenBalance');
 
 let history = [];
 let lastInputWasVoice = false;
@@ -453,7 +424,9 @@ function getAccessToken() {
 
 function authHeaders(extra = {}) {
   const token = getAccessToken();
-  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+  return token
+    ? { ...extra, Authorization: 'Bearer ' + token }
+    : extra;
 }
 
 if (!getAccessToken()) {
@@ -472,7 +445,6 @@ if (!getAccessToken()) {
 
 function goBack(){
   const from = sessionStorage.getItem('chatFrom') || localStorage.getItem('chatFrom') || '';
-
   if (from === 'profile') {
     window.location.href = 'profile.html';
   } else {
@@ -480,7 +452,7 @@ function goBack(){
   }
 }
 
-function openTokenModalWithAmount(amount, message){
+function openTokenModalWithAmount(amount, message) {
   tokenModalText.innerText = message || `You need ${amount} tokens.`;
   tokenModal.style.display = 'flex';
 }
@@ -495,36 +467,6 @@ function showPageLoading(){
 
 function hidePageLoading(){
   pageLoadingOverlay.style.display = 'none';
-}
-
-async function refreshBalance() {
-  const token = getAccessToken();
-
-  if (!token) {
-    tokenBalanceEl.innerText = '💰 0';
-    return;
-  }
-
-  try {
-    const res = await fetch('/api/wallet', {
-      headers: authHeaders()
-    });
-
-    const data = await res.json();
-
-    if (data.balance !== undefined) {
-      tokenBalanceEl.innerText = '💰 ' + data.balance;
-      localStorage.setItem('cachedBalance', data.balance);
-      if (data.userId) {
-        localStorage.setItem('userId', data.userId);
-      }
-    } else {
-      tokenBalanceEl.innerText = '💰 0';
-    }
-  } catch (e) {
-    const cached = localStorage.getItem('cachedBalance');
-    tokenBalanceEl.innerText = cached ? '💰 ' + cached : '💰 0';
-  }
 }
 
 function getCharacterProfile(){
@@ -561,6 +503,7 @@ lockOverlay.addEventListener('click', async () => {
 
   imageGenerationBusy = true;
   showPageLoading();
+  lockOverlay.style.pointerEvents = 'none';
 
   try {
     const selectedCharacterId = localStorage.getItem('selectedCharacterId');
@@ -580,6 +523,7 @@ lockOverlay.addEventListener('click', async () => {
 
     if (data.error === "Not enough tokens") {
       hidePageLoading();
+      lockOverlay.style.pointerEvents = 'auto';
       imageGenerationBusy = false;
       openTokenModalWithAmount(10, 'You need 10 tokens to unlock this image.');
       return;
@@ -602,23 +546,18 @@ lockOverlay.addEventListener('click', async () => {
 
       lockOverlay.style.display = "none";
       hidePageLoading();
+      lockOverlay.style.pointerEvents = 'auto';
       imageGenerationBusy = false;
-
-      if (data.balance !== undefined) {
-        tokenBalanceEl.innerText = '💰 ' + data.balance;
-        localStorage.setItem('cachedBalance', data.balance);
-      } else {
-        await refreshBalance();
-      }
-
       return;
     }
 
     hidePageLoading();
+    lockOverlay.style.pointerEvents = 'auto';
     imageGenerationBusy = false;
     openTokenModalWithAmount(10, 'Something went wrong. Please try again.');
   } catch (e) {
     hidePageLoading();
+    lockOverlay.style.pointerEvents = 'auto';
     imageGenerationBusy = false;
     openTokenModalWithAmount(10, 'Connection error. Please try again.');
   }
@@ -627,13 +566,17 @@ lockOverlay.addEventListener('click', async () => {
 if (imageUnlocked && savedImage) {
   bgImage.src = savedImage;
   bgImage.style.filter = "blur(0px)";
+} else {
+  bgImage.src = "images/locked-preview.png";
+  bgImage.style.filter = "blur(12px)";
+}
+
+if (imageUnlocked && savedImage) {
   avatar.style.display = "block";
   avatar.style.backgroundImage = `url(${savedImage})`;
   avatar.style.backgroundColor = "transparent";
   lockOverlay.style.display = "none";
 } else {
-  bgImage.src = "images/locked-preview.png";
-  bgImage.style.filter = "blur(12px)";
   avatar.style.display = "block";
   avatar.style.backgroundImage = "none";
   avatar.style.backgroundColor = "#2a2a2a";
@@ -669,7 +612,6 @@ async function talk(){
     if (reply.includes("No tokens left")) {
       document.getElementById('charStatus').innerText = "Online";
       openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
-      await refreshBalance();
       return;
     }
 
@@ -678,14 +620,6 @@ async function talk(){
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
-
-    if (data.balance !== undefined) {
-      tokenBalanceEl.innerText = '💰 ' + data.balance;
-      localStorage.setItem('cachedBalance', data.balance);
-    } else {
-      await refreshBalance();
-    }
-
   }catch(e){
     document.getElementById('charStatus').innerText = "Online";
     addMessage(aiName, 'Error', '#ff4fa3');
@@ -747,8 +681,6 @@ subscribeBtn.addEventListener('click', () => {
   closeModal();
   window.location.href = 'subscribe.html';
 });
-
-refreshBalance();
 </script>
 
 </body>
