@@ -615,11 +615,12 @@ async function talk(){
     const data = await res.json();
     const reply = data.reply || data.error || 'Error';
 
-    if (reply.includes("No tokens left")) {
-      document.getElementById('charStatus').innerText = "Online";
-      openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
-      return;
-    }
+if (reply.includes("No tokens left")) {
+  addMessage(aiName, reply, '#ff4fa3'); // 👈 اضافه کن
+  document.getElementById('charStatus').innerText = "Online";
+  openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
+  return;
+}
 
     addMessage(aiName, reply, '#ff4fa3');
     document.getElementById('charStatus').innerText = "Online";
