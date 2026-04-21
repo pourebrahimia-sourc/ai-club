@@ -394,7 +394,8 @@ const lockOverlay = document.getElementById('lockOverlay');
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
 const chat = document.getElementById('chat');
-  const savedChat = localStorage.getItem('chatHistory');
+const chatKey = 'chatHistory_' + (localStorage.getItem('selectedCharacterId') || 'default');
+const savedChat = localStorage.getItem(chatKey);
 
 if(savedChat){
   chat.innerHTML = savedChat;
@@ -488,7 +489,7 @@ function getCharacterProfile(){
 
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
-  localStorage.setItem('chatHistory', chat.innerHTML);
+  localStorage.setItem(chatKey, chat.innerHTML);
   chat.scrollTop = chat.scrollHeight;
 
   if(sender === aiName && lastInputWasVoice){
