@@ -388,8 +388,9 @@ cursor:wait;
 </div>
 
 <script>
-const savedImage = localStorage.getItem('aiImage');
-const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+const ACTIVE_CHAT_CONTEXT_KEY = 'activeChatContext';
+const RESULT_STATE_KEY = 'resultCharacterState';
+
 const lockOverlay = document.getElementById('lockOverlay');
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
@@ -402,21 +403,13 @@ const closeTokenModal = document.getElementById('closeTokenModal');
 const getTokensBtn = document.getElementById('getTokensBtn');
 const subscribeBtn = document.getElementById('subscribeBtn');
 const pageLoadingOverlay = document.getElementById('pageLoadingOverlay');
+const charNameEl = document.getElementById('charName');
+const charStatusEl = document.getElementById('charStatus');
 
 let history = [];
 let lastInputWasVoice = false;
 let imageGenerationBusy = false;
-
-const names = ['Luna','Mia','Nora','Eva','Zara'];
-let aiName = localStorage.getItem('aiName');
-
-if(!aiName){
-  aiName = names[Math.floor(Math.random() * names.length)];
-  localStorage.setItem('aiName', aiName);
-}
-
-document.getElementById('charName').innerText = aiName;
-speechSynthesis.getVoices();
+let activeChatContext = null;
 
 function getAccessToken() {
   return localStorage.getItem('accessToken') || '';
@@ -434,18 +427,183 @@ if (!getAccessToken()) {
   window.location.href = 'login.html';
 }
 
-(function inferChatFrom(){
-  const ref = document.referrer || '';
-  if (ref.includes('profile.html')) {
-    sessionStorage.setItem('chatFrom', 'profile');
-  } else if (ref.includes('result.html')) {
-    sessionStorage.setItem('chatFrom', 'result');
+function safeJsonParse(value, fallback = null){
+  try{
+    return JSON.parse(value);
+  }catch(e){
+    return fallback;
   }
-})();
+}
+
+function readResultState(){
+  return safeJsonParse(localStorage.getItem(RESULT_STATE_KEY), {}) || {};
+}
+
+function getFallbackProfile(){
+  return {
+    age: localStorage.getItem('age') || '',
+    ethnicity: localStorage.getItem('ethnicity') || '',
+    body: localStorage.getItem('body') || '',
+    bodyDetails: localStorage.getItem('bodyDetails') || '',
+    hair: localStorage.getItem('hair') || '',
+    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
+    personality: localStorage.getItem('personality') || ''
+  };
+}
+
+function getOrCreateFallbackName(){
+  const names = ['Luna','Mia','Nora','Eva','Zara'];
+  let name = localStorage.getItem('aiName');
+  if(!name){
+    name = names[Math.floor(Math.random() * names.length)];
+    localStorage.setItem('aiName', name);
+  }
+  return name;
+}
+
+function readActiveChatContext(){
+  const saved = safeJsonParse(localStorage.getItem(ACTIVE_CHAT_CONTEXT_KEY), null);
+  if(saved && typeof saved === 'object'){
+    return saved;
+  }
+
+  const resultState = readResultState();
+
+  return {
+    source: 'result',
+    characterId: resultState.characterId || null,
+    name: resultState.aiName || getOrCreateFallbackName(),
+    imageUrl: resultState.imageUrl || '',
+    imageUnlocked: resultState.imageUnlocked === true,
+    profile: resultState.profile || getFallbackProfile()
+  };
+}
+
+function writeActiveChatContext(ctx){
+  localStorage.setItem(ACTIVE_CHAT_CONTEXT_KEY, JSON.stringify(ctx || {}));
+}
+
+function getChatHistoryKey(ctx){
+  const profile = ctx?.profile || {};
+  const profileKey = JSON.stringify(profile);
+
+  if(ctx?.characterId){
+    return `chatHistory:${ctx.characterId}`;
+  }
+
+  return `chatHistory:result:${ctx?.name || 'AI'}:${profileKey}`;
+}
+
+function loadStoredHistory(){
+  const key = getChatHistoryKey(activeChatContext);
+  return safeJsonParse(localStorage.getItem(key), []) || [];
+}
+
+function saveStoredHistory(){
+  const key = getChatHistoryKey(activeChatContext);
+  localStorage.setItem(key, JSON.stringify(history || []));
+}
+
+function showPageLoading(){
+  pageLoadingOverlay.style.display = 'flex';
+}
+
+function hidePageLoading(){
+  pageLoadingOverlay.style.display = 'none';
+}
+
+function getCharacterProfile(){
+  return activeChatContext?.profile || getFallbackProfile();
+}
+
+function escapeHtml(text){
+  return String(text || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function addMessage(sender, text, color, shouldSpeak = false){
+  chat.innerHTML += `<p><b style="color:${color};">${escapeHtml(sender)}:</b> ${escapeHtml(text)}</p>`;
+  chat.scrollTop = chat.scrollHeight;
+
+  if(shouldSpeak && sender === (activeChatContext?.name || 'AI') && lastInputWasVoice){
+    const voices = speechSynthesis.getVoices();
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = 'en-US';
+    speech.pitch = 1.4;
+    speech.rate = 0.95;
+    speech.volume = 1;
+    speech.voice = voices.find(v => v.name.toLowerCase().includes('female')) || voices[0] || null;
+    speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+    lastInputWasVoice = false;
+  }
+}
+
+function renderHistory(){
+  chat.innerHTML = '';
+
+  history.forEach(item => {
+    const text = item?.parts?.[0]?.text || '';
+    if(!text) return;
+
+    if(item.role === 'user'){
+      addMessage('You', text, '#66b3ff', false);
+    }else if(item.role === 'model'){
+      addMessage(activeChatContext?.name || 'AI', text, '#ff4fa3', false);
+    }
+  });
+}
+
+function syncResultStateFromChatIfNeeded(){
+  if(activeChatContext?.source !== 'result') return;
+
+  const resultState = readResultState();
+
+  localStorage.setItem(RESULT_STATE_KEY, JSON.stringify({
+    profile: activeChatContext.profile || resultState.profile || getFallbackProfile(),
+    profileKey: JSON.stringify(activeChatContext.profile || resultState.profile || getFallbackProfile()),
+    imageUrl: activeChatContext.imageUrl || '',
+    imageUnlocked: activeChatContext.imageUnlocked === true,
+    characterId: activeChatContext.characterId || null,
+    aiName: activeChatContext.name || resultState.aiName || getOrCreateFallbackName()
+  }));
+}
+
+function applyVisualState(){
+  charNameEl.innerText = activeChatContext?.name || 'AI';
+
+  const savedImage = activeChatContext?.imageUrl || '';
+  const imageUnlocked = activeChatContext?.imageUnlocked === true;
+
+  if (imageUnlocked && savedImage) {
+    bgImage.src = savedImage;
+    bgImage.style.filter = "blur(0px)";
+
+    avatar.style.display = "block";
+    avatar.style.backgroundImage = `url(${savedImage})`;
+    avatar.style.backgroundColor = "transparent";
+
+    lockOverlay.style.display = "none";
+  } else {
+    bgImage.src = "images/locked-preview.png";
+    bgImage.style.filter = "blur(12px)";
+
+    avatar.style.display = "block";
+    avatar.style.backgroundImage = "none";
+    avatar.style.backgroundColor = "#2a2a2a";
+
+    lockOverlay.style.display = "flex";
+  }
+}
 
 function goBack(){
-  const from = sessionStorage.getItem('chatFrom') || localStorage.getItem('chatFrom') || '';
-  if (from === 'profile') {
+  saveStoredHistory();
+
+  if ((activeChatContext?.source || '') === 'profile') {
     window.location.href = 'profile.html';
   } else {
     window.location.href = 'result.html';
@@ -461,61 +619,22 @@ function closeModal() {
   tokenModal.style.display = 'none';
 }
 
-function showPageLoading(){
-  pageLoadingOverlay.style.display = 'flex';
-}
-
-function hidePageLoading(){
-  pageLoadingOverlay.style.display = 'none';
-}
-
-function getCharacterProfile(){
-  return {
-    age: localStorage.getItem('age') || '',
-    ethnicity: localStorage.getItem('ethnicity') || '',
-    body: localStorage.getItem('body') || '',
-    bodyDetails: localStorage.getItem('bodyDetails') || '',
-    hair: localStorage.getItem('hair') || '',
-    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
-    personality: localStorage.getItem('personality') || ''
-  };
-}
-
-function addMessage(sender, text, color){
-  chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
-  chat.scrollTop = chat.scrollHeight;
-
-  if(sender === aiName && lastInputWasVoice){
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = 'en-US';
-    speech.pitch = 1.4;
-    speech.rate = 0.95;
-    speech.volume = 1;
-    speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
-    speechSynthesis.cancel();
-    window.speechSynthesis.speak(speech);
-    lastInputWasVoice = false;
-  }
-}
-
 lockOverlay.addEventListener('click', async () => {
-  if (imageUnlocked || imageGenerationBusy) return;
+  if (activeChatContext?.imageUnlocked || imageGenerationBusy) return;
 
   imageGenerationBusy = true;
   showPageLoading();
   lockOverlay.style.pointerEvents = 'none';
 
   try {
-    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
-
     const res = await fetch('/api', {
       method: 'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         msg: "generate image",
-        name: aiName,
+        name: activeChatContext?.name || 'AI',
         profile: getCharacterProfile(),
-        characterId: selectedCharacterId
+        characterId: activeChatContext?.characterId || null
       })
     });
 
@@ -530,12 +649,15 @@ lockOverlay.addEventListener('click', async () => {
     }
 
     if (data.imageUrl) {
-      localStorage.setItem('aiImage', data.imageUrl);
-      localStorage.setItem('imageUnlocked', "true");
+      activeChatContext = {
+        ...activeChatContext,
+        imageUrl: data.imageUrl,
+        imageUnlocked: true,
+        characterId: data.characterId || activeChatContext.characterId || null
+      };
 
-      if (data.characterId) {
-        localStorage.setItem('selectedCharacterId', data.characterId);
-      }
+      writeActiveChatContext(activeChatContext);
+      syncResultStateFromChatIfNeeded();
 
       bgImage.src = data.imageUrl;
       bgImage.style.filter = "blur(0px)";
@@ -563,36 +685,18 @@ lockOverlay.addEventListener('click', async () => {
   }
 });
 
-if (imageUnlocked && savedImage) {
-  bgImage.src = savedImage;
-  bgImage.style.filter = "blur(0px)";
-} else {
-  bgImage.src = "images/locked-preview.png";
-  bgImage.style.filter = "blur(12px)";
-}
-
-if (imageUnlocked && savedImage) {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = `url(${savedImage})`;
-  avatar.style.backgroundColor = "transparent";
-  lockOverlay.style.display = "none";
-} else {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = "none";
-  avatar.style.backgroundColor = "#2a2a2a";
-  lockOverlay.style.display = "flex";
-}
-
 async function talk(){
   const msg = input.value.trim();
   if(!msg) return;
 
-  addMessage('You', msg, '#66b3ff');
+  addMessage('You', msg, '#66b3ff', false);
   input.value = '';
 
+  history.push({ role:'user', parts:[{ text: msg }] });
+  saveStoredHistory();
+
   try{
-    document.getElementById('charStatus').innerText = "Typing...";
-    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
+    charStatusEl.innerText = "Typing...";
 
     const res = await fetch('/api', {
       method: 'POST',
@@ -600,9 +704,9 @@ async function talk(){
       body: JSON.stringify({
         msg,
         history,
-        name: aiName,
+        name: activeChatContext?.name || 'AI',
         profile: getCharacterProfile(),
-        characterId: selectedCharacterId
+        characterId: activeChatContext?.characterId || null
       })
     });
 
@@ -610,19 +714,23 @@ async function talk(){
     const reply = data.reply || data.error || 'Error';
 
     if (reply.includes("No tokens left")) {
-      document.getElementById('charStatus').innerText = "Online";
+      charStatusEl.innerText = "Online";
       openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
+      history.pop();
+      saveStoredHistory();
+      chat.innerHTML = '';
+      renderHistory();
       return;
     }
 
-    addMessage(aiName, reply, '#ff4fa3');
-    document.getElementById('charStatus').innerText = "Online";
+    addMessage(activeChatContext?.name || 'AI', reply, '#ff4fa3', true);
+    charStatusEl.innerText = "Online";
 
-    history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
+    saveStoredHistory();
   }catch(e){
-    document.getElementById('charStatus').innerText = "Online";
-    addMessage(aiName, 'Error', '#ff4fa3');
+    charStatusEl.innerText = "Online";
+    addMessage(activeChatContext?.name || 'AI', 'Error', '#ff4fa3', false);
   }
 }
 
@@ -659,6 +767,18 @@ function startVoice(){
   recognition.start();
 }
 
+function initChatPage(){
+  activeChatContext = readActiveChatContext();
+  writeActiveChatContext(activeChatContext);
+  syncResultStateFromChatIfNeeded();
+  applyVisualState();
+
+  history = loadStoredHistory();
+  renderHistory();
+
+  speechSynthesis.getVoices();
+}
+
 input.addEventListener('keydown', function(e){
   if(e.key === 'Enter'){
     lastInputWasVoice = false;
@@ -673,17 +793,21 @@ tokenModal.addEventListener('click', (e) => {
 });
 
 getTokensBtn.addEventListener('click', () => {
+  saveStoredHistory();
   closeModal();
   localStorage.setItem('chatReturnTo', 'chat.html');
   window.location.href = 'gift.html';
 });
 
 subscribeBtn.addEventListener('click', () => {
+  saveStoredHistory();
   closeModal();
   localStorage.setItem('chatReturnTo', 'chat.html');
   window.location.href = 'subscribe.html';
 });
-</script>
 
+window.addEventListener('beforeunload', saveStoredHistory);
+document.addEventListener('DOMContentLoaded', initChatPage);
+</script>
 </body>
 </html>
