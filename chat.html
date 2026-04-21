@@ -389,17 +389,31 @@ cursor:wait;
 
 <script>
 const savedImage = localStorage.getItem('aiImage');
-const imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+let imageUnlocked = localStorage.getItem('imageUnlocked') === "true";
+
 const lockOverlay = document.getElementById('lockOverlay');
 const bgImage = document.getElementById('bgImage');
 const avatar = document.querySelector('.avatar');
 const chat = document.getElementById('chat');
-const chatKey = 'chatHistory_' + (localStorage.getItem('selectedCharacterId') || 'default');
-const savedChat = localStorage.getItem(chatKey);
 
+const chatKey = 'chatHistory_' + (localStorage.getItem('selectedCharacterId') || 'default');
+
+// ✅ جلوگیری از قاطی شدن چت
+const lastChatCharacter = localStorage.getItem('lastChatCharacter');
+
+if(lastChatCharacter !== chatKey){
+  localStorage.removeItem(chatKey);
+  chat.innerHTML = '';
+}
+
+localStorage.setItem('lastChatCharacter', chatKey);
+
+// ✅ لود چت
+const savedChat = localStorage.getItem(chatKey);
 if(savedChat){
   chat.innerHTML = savedChat;
 }
+
 const input = document.getElementById('input');
 const voiceBtn = document.getElementById('voiceBtn');
 const tokenModal = document.getElementById('tokenModal');
@@ -422,70 +436,6 @@ if(!aiName){
 }
 
 document.getElementById('charName').innerText = aiName;
-speechSynthesis.getVoices();
-
-function getAccessToken() {
-  return localStorage.getItem('accessToken') || '';
-}
-
-function authHeaders(extra = {}) {
-  const token = getAccessToken();
-  return token
-    ? { ...extra, Authorization: 'Bearer ' + token }
-    : extra;
-}
-
-if (!getAccessToken()) {
-  localStorage.setItem('loginReturnTo', 'chat.html');
-  window.location.href = 'login.html';
-}
-
-(function inferChatFrom(){
-  const ref = document.referrer || '';
-  if (ref.includes('profile.html')) {
-    sessionStorage.setItem('chatFrom', 'profile');
-  } else if (ref.includes('result.html')) {
-    sessionStorage.setItem('chatFrom', 'result');
-  }
-})();
-
-function goBack(){
-  const from = sessionStorage.getItem('chatFrom') || localStorage.getItem('chatFrom') || '';
-  if (from === 'profile') {
-    window.location.href = 'profile.html';
-  } else {
-    window.location.href = 'result.html';
-  }
-}
-
-function openTokenModalWithAmount(amount, message) {
-  tokenModalText.innerText = message || `You need ${amount} tokens.`;
-  tokenModal.style.display = 'flex';
-}
-
-function closeModal() {
-  tokenModal.style.display = 'none';
-}
-
-function showPageLoading(){
-  pageLoadingOverlay.style.display = 'flex';
-}
-
-function hidePageLoading(){
-  pageLoadingOverlay.style.display = 'none';
-}
-
-function getCharacterProfile(){
-  return {
-    age: localStorage.getItem('age') || '',
-    ethnicity: localStorage.getItem('ethnicity') || '',
-    body: localStorage.getItem('body') || '',
-    bodyDetails: localStorage.getItem('bodyDetails') || '',
-    hair: localStorage.getItem('hair') || '',
-    appearanceDetails: localStorage.getItem('appearanceDetails') || '',
-    personality: localStorage.getItem('personality') || ''
-  };
-}
 
 function addMessage(sender, text, color){
   chat.innerHTML += `<p><b style="color:${color};">${sender}:</b> ${text}</p>`;
@@ -497,97 +447,11 @@ function addMessage(sender, text, color){
     speech.lang = 'en-US';
     speech.pitch = 1.4;
     speech.rate = 0.95;
-    speech.volume = 1;
-    speech.voice = speechSynthesis.getVoices().find(v => v.name.includes('Female')) || speechSynthesis.getVoices()[0];
+    speech.voice = speechSynthesis.getVoices()[0];
     speechSynthesis.cancel();
-    window.speechSynthesis.speak(speech);
+    speechSynthesis.speak(speech);
     lastInputWasVoice = false;
   }
-}
-
-lockOverlay.addEventListener('click', async () => {
-  if (imageUnlocked || imageGenerationBusy) return;
-
-  imageGenerationBusy = true;
-  showPageLoading();
-  lockOverlay.style.pointerEvents = 'none';
-
-  try {
-    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
-
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        msg: "generate image",
-        name: aiName,
-        profile: getCharacterProfile(),
-        characterId: selectedCharacterId
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.error === "Not enough tokens") {
-      hidePageLoading();
-      lockOverlay.style.pointerEvents = 'auto';
-      imageGenerationBusy = false;
-      openTokenModalWithAmount(10, 'You need 10 tokens to unlock this image.');
-      return;
-    }
-
-    if (data.imageUrl) {
-      localStorage.setItem('aiImage', data.imageUrl);
-      localStorage.setItem('imageUnlocked', "true");
-
-      if (data.characterId) {
-        localStorage.setItem('selectedCharacterId', data.characterId);
-      }
-
-      bgImage.src = data.imageUrl;
-      bgImage.style.filter = "blur(0px)";
-
-      avatar.style.display = "block";
-      avatar.style.backgroundImage = `url(${data.imageUrl})`;
-      avatar.style.backgroundColor = "transparent";
-
-      lockOverlay.style.display = "none";
-      hidePageLoading();
-      lockOverlay.style.pointerEvents = 'auto';
-      imageGenerationBusy = false;
-      return;
-    }
-
-    hidePageLoading();
-    lockOverlay.style.pointerEvents = 'auto';
-    imageGenerationBusy = false;
-    openTokenModalWithAmount(10, 'Something went wrong. Please try again.');
-  } catch (e) {
-    hidePageLoading();
-    lockOverlay.style.pointerEvents = 'auto';
-    imageGenerationBusy = false;
-    openTokenModalWithAmount(10, 'Connection error. Please try again.');
-  }
-});
-
-if (imageUnlocked && savedImage) {
-  bgImage.src = savedImage;
-  bgImage.style.filter = "blur(0px)";
-} else {
-  bgImage.src = "images/locked-preview.png";
-  bgImage.style.filter = "blur(12px)";
-}
-
-if (imageUnlocked && savedImage) {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = `url(${savedImage})`;
-  avatar.style.backgroundColor = "transparent";
-  lockOverlay.style.display = "none";
-} else {
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = "none";
-  avatar.style.backgroundColor = "#2a2a2a";
-  lockOverlay.style.display = "flex";
 }
 
 async function talk(){
@@ -599,35 +463,34 @@ async function talk(){
 
   try{
     document.getElementById('charStatus').innerText = "Typing...";
-    const selectedCharacterId = localStorage.getItem('selectedCharacterId');
 
     const res = await fetch('/api', {
       method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        msg,
-        history,
-        name: aiName,
-        profile: getCharacterProfile(),
-        characterId: selectedCharacterId
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ msg, history, name: aiName })
     });
 
     const data = await res.json();
-    const reply = data.reply || data.error || 'Error';
 
-if (reply.includes("No tokens left")) {
-  addMessage(aiName, reply, '#ff4fa3'); // 👈 اضافه کن
-  document.getElementById('charStatus').innerText = "Online";
-  openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
-  return;
-}
+    const reply = data.reply || '';
+    const error = data.error || '';
 
-    addMessage(aiName, reply, '#ff4fa3');
+    // ✅ جواب AI همیشه نمایش داده میشه
+    if(reply){
+      addMessage(aiName, reply, '#ff4fa3');
+    }
+
     document.getElementById('charStatus').innerText = "Online";
+
+    // ✅ بعدش اگر توکن تموم شد
+    if (error.includes("No tokens left")) {
+      openTokenModalWithAmount(1, 'You need 1 token to continue chatting.');
+      return;
+    }
 
     history.push({ role:'user', parts:[{ text: msg }] });
     history.push({ role:'model', parts:[{ text: reply }] });
+
   }catch(e){
     document.getElementById('charStatus').innerText = "Online";
     addMessage(aiName, 'Error', '#ff4fa3');
