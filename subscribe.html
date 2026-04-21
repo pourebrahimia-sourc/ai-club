@@ -111,8 +111,22 @@
   function closePage(){
   const from = localStorage.getItem('funnelFrom');
   if (from === 'result') {
+    const returnTo = localStorage.getItem('chatReturnTo');
+
+function closePage(){
+  const returnTo = localStorage.getItem('chatReturnTo');
+
+  if(returnTo){
+    localStorage.removeItem('chatReturnTo');
+    window.location.href = returnTo;
+    return;
+  }
+
+  const from = localStorage.getItem('funnelFrom');
+
+  if(from === 'result'){
     window.location.href = 'result.html';
-  } else {
+  }else{
     window.location.href = 'index.html';
   }
 }
