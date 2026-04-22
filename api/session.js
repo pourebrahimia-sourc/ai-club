@@ -4,7 +4,10 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
-
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 export default async function handler(req, res) {
   const authHeader = req.headers.authorization;
 
@@ -21,7 +24,17 @@ const { data, error } = await supabase.auth.getUser(token);
     }
 
     const user = data.user;
-
+if (user?.id) {
+  await supabaseAdmin
+    .from('users')
+    .upsert(
+      {
+        id: user.id,
+        name: user.user_metadata?.name || 'User'
+      },
+      { onConflict: 'id' }
+    );
+}
     // ۱. گرفتن نام از جدول کاربران
     const { data: profile } = await supabase
       .from('users')
