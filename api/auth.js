@@ -180,16 +180,20 @@ if (type === 'google') {
   const safeReturnTo =
     returnTo === 'result.html' ? 'result.html' : 'index.html';
 
-  const redirectUrl =
-    `https://ai-club-one-iota.vercel.app/${safeReturnTo}`;
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers.host;
+
+  const redirectUrl = `${protocol}://${host}/${safeReturnTo}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: redirectUrl
+      redirectTo: redirectUrl,
+      queryParams: {
+        prompt: 'select_account'
+      }
     }
   });
-
 
   if (error) return res.status(400).json({ error: error.message });
 
