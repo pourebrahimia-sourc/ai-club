@@ -36,7 +36,7 @@ await supabaseAdmin
     {
       id: user.id,
       name: user.user_metadata?.name || 'User',
-      referral_code: user.id.slice(0,6)
+      referral_code: crypto.randomUUID().slice(0,8)
     }
   ]);
 }
