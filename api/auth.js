@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { type, email, password, name, returnTo } = req.body || {};
+  const { type, email, password, name, returnTo, referral_code } = req.body || {};
 
   if ((type === 'signup' || type === 'login') && (!email || !password)) {
     return res.status(400).json({ error: 'Missing email or password' });
