@@ -508,8 +508,13 @@ function showPageLoading(){
   pageLoadingOverlay.style.display = 'flex';
 }
 
-function hidePageLoading(){
-  pageLoadingOverlay.style.display = 'none';
+function preloadImage(src) {
+  return new Promise((resolve, reject) => {
+    const preloader = new Image();
+    preloader.onload = () => resolve(src);
+    preloader.onerror = reject;
+    preloader.src = src;
+  });
 }
 
 function getCharacterProfile(){
@@ -648,30 +653,32 @@ lockOverlay.addEventListener('click', async () => {
       return;
     }
 
-    if (data.imageUrl) {
-      activeChatContext = {
-        ...activeChatContext,
-        imageUrl: data.imageUrl,
-        imageUnlocked: true,
-        characterId: data.characterId || activeChatContext.characterId || null
-      };
+if (data.imageUrl) {
+  await preloadImage(data.imageUrl);
 
-      writeActiveChatContext(activeChatContext);
-      syncResultStateFromChatIfNeeded();
+  activeChatContext = {
+    ...activeChatContext,
+    imageUrl: data.imageUrl,
+    imageUnlocked: true,
+    characterId: data.characterId || activeChatContext.characterId || null
+  };
 
-      bgImage.src = data.imageUrl;
-      bgImage.style.filter = "blur(0px)";
+  writeActiveChatContext(activeChatContext);
+  syncResultStateFromChatIfNeeded();
 
-      avatar.style.display = "block";
-      avatar.style.backgroundImage = `url(${data.imageUrl})`;
-      avatar.style.backgroundColor = "transparent";
+  bgImage.src = data.imageUrl;
+  bgImage.style.filter = "blur(0px)";
 
-      lockOverlay.style.display = "none";
-      hidePageLoading();
-      lockOverlay.style.pointerEvents = 'auto';
-      imageGenerationBusy = false;
-      return;
-    }
+  avatar.style.display = "block";
+  avatar.style.backgroundImage = `url(${data.imageUrl})`;
+  avatar.style.backgroundColor = "transparent";
+
+  lockOverlay.style.display = "none";
+  hidePageLoading();
+  lockOverlay.style.pointerEvents = 'auto';
+  imageGenerationBusy = false;
+  return;
+}
 
     hidePageLoading();
     lockOverlay.style.pointerEvents = 'auto';
