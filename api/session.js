@@ -15,20 +15,7 @@ export default async function handler(req, res) {
   try {
     const token = authHeader.replace('Bearer ', '');
 const { data, error } = await supabase.auth.getUser(token);
-const user = data.user;
 
-if (user?.id) {
-  await supabase
-    .from('users')
-    .upsert(
-      {
-        id: user.id,
-        name: user.user_metadata?.name || 'User',
-        referral_code: user.id.slice(0,6)
-      },
-      { onConflict: 'id' }
-    );
-}
     if (error || !data.user) {
       return res.json({ data: { session: null } });
     }
