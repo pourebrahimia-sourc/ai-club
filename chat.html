@@ -654,29 +654,36 @@ lockOverlay.addEventListener('click', async () => {
     }
 
 if (data.imageUrl) {
-  await preloadImage(data.imageUrl);
 
-  activeChatContext = {
-    ...activeChatContext,
-    imageUrl: data.imageUrl,
-    imageUnlocked: true,
-    characterId: data.characterId || activeChatContext.characterId || null
+  const imgPre = new Image();
+
+  imgPre.onload = () => {
+
+    activeChatContext = {
+      ...activeChatContext,
+      imageUrl: data.imageUrl,
+      imageUnlocked: true,
+      characterId: data.characterId || activeChatContext.characterId || null
+    };
+
+    writeActiveChatContext(activeChatContext);
+    syncResultStateFromChatIfNeeded();
+
+    bgImage.src = data.imageUrl;
+    bgImage.style.filter = "blur(0px)";
+
+    avatar.style.display = "block";
+    avatar.style.backgroundImage = `url(${data.imageUrl})`;
+    avatar.style.backgroundColor = "transparent";
+
+    lockOverlay.style.display = "none";
+    hidePageLoading();
+    lockOverlay.style.pointerEvents = 'auto';
+    imageGenerationBusy = false;
   };
 
-  writeActiveChatContext(activeChatContext);
-  syncResultStateFromChatIfNeeded();
+  imgPre.src = data.imageUrl;
 
-  bgImage.src = data.imageUrl;
-  bgImage.style.filter = "blur(0px)";
-
-  avatar.style.display = "block";
-  avatar.style.backgroundImage = `url(${data.imageUrl})`;
-  avatar.style.backgroundColor = "transparent";
-
-  lockOverlay.style.display = "none";
-  hidePageLoading();
-  lockOverlay.style.pointerEvents = 'auto';
-  imageGenerationBusy = false;
   return;
 }
 
