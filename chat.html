@@ -658,7 +658,7 @@ if (data.imageUrl) {
   const imgPre = new Image();
 
   imgPre.onload = () => {
-
+bgImage.style.opacity = '0';
     activeChatContext = {
       ...activeChatContext,
       imageUrl: data.imageUrl,
