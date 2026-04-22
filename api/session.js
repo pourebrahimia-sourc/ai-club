@@ -30,15 +30,15 @@ const { data: existingUser } = await supabaseAdmin
   .eq('id', user.id)
   .maybeSingle();
 
-if (!existingUser) {
-  await supabaseAdmin
-    .from('users')
-    .insert([
-      {
-        id: user.id,
-        name: user.user_metadata?.name || 'User'
-      }
-    ]);
+await supabaseAdmin
+  .from('users')
+  .insert([
+    {
+      id: user.id,
+      name: user.user_metadata?.name || 'User',
+      referral_code: user.id.slice(0,6)
+    }
+  ]);
 }
     // ۱. گرفتن نام از جدول کاربران
     const { data: profile } = await supabase
