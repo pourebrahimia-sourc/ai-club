@@ -23,7 +23,7 @@ const { data, error } = await supabase.auth.getUser(token);
       return res.json({ data: { session: null } });
     }
 
-    const user = data.user;
+    const user = data?.user || null;
 if (user?.id) {
   await supabaseAdmin
     .from('users')
