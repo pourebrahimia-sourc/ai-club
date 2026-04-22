@@ -17,7 +17,14 @@ export default async function handler(req, res) {
 
   try {
     const token = authHeader.replace('Bearer ', '');
+const token = authHeader.replace('Bearer ', '');
 const { data, error } = await supabase.auth.getUser(token);
+
+if (error || !data?.user) {
+  return res.json({ data: { session: null } });
+}
+
+const user = data.user;
 if (error) {
   return res.status(401).json({ error: 'Unauthorized' });
 }
