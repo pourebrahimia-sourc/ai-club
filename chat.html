@@ -646,7 +646,6 @@ lockOverlay.addEventListener('click', async () => {
     const data = await res.json();
 
     if (data.error === "Not enough tokens") {
-      hidePageLoading();
       lockOverlay.style.pointerEvents = 'auto';
       imageGenerationBusy = false;
       openTokenModalWithAmount(10, 'You need 10 tokens to unlock this image.');
@@ -658,7 +657,6 @@ if (data.imageUrl) {
   const imgPre = new Image();
 
   imgPre.onload = () => {
-bgImage.style.opacity = '0';
     activeChatContext = {
       ...activeChatContext,
       imageUrl: data.imageUrl,
