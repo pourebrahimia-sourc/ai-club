@@ -675,7 +675,7 @@ if (data.imageUrl) {
     avatar.style.backgroundColor = "transparent";
 
     lockOverlay.style.display = "none";
-    hidePageLoading();
+    pageLoadingOverlay.style.display = 'none';
     lockOverlay.style.pointerEvents = 'auto';
     imageGenerationBusy = false;
   };
