@@ -9,7 +9,16 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+function generateReferralCode(length = 6) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
 
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return code;
+}
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -27,7 +36,7 @@ export default async function handler(req, res) {
     }
 
     const trimmedName = name.trim();
-
+let code = null;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -35,7 +44,22 @@ export default async function handler(req, res) {
         data: { name: trimmedName }
       }
     });
+if (data?.user?.id) {
+  let exists = true;
 
+  while (exists) {
+    code = generateReferralCode();
+
+    const { data: existing } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('referral_code', code)
+      .maybeSingle();
+
+    if (!existing) exists = false;
+  }
+
+}
     if (error) return res.status(400).json({ error: error.message });
     if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
 
@@ -57,14 +81,15 @@ export default async function handler(req, res) {
       .eq('id', data.user.id)
       .maybeSingle();
 
-    if (!existingUser) {
-      await supabaseAdmin.from('users').insert([
-        {
-          id: data.user.id,
-          name: trimmedName
-        }
-      ]);
+if (!existingUser) {
+  await supabaseAdmin.from('users').insert([
+    {
+      id: data.user.id,
+      name: trimmedName,
+      referral_code: code
     }
+  ]);
+}
 
     return res.json({
       user: data.user,
