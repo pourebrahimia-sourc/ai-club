@@ -24,16 +24,21 @@ const { data, error } = await supabase.auth.getUser(token);
     }
 
     const user = data?.user || null;
-if (user?.id) {
+const { data: existingUser } = await supabaseAdmin
+  .from('users')
+  .select('id')
+  .eq('id', user.id)
+  .maybeSingle();
+
+if (!existingUser) {
   await supabaseAdmin
     .from('users')
-    .upsert(
+    .insert([
       {
         id: user.id,
         name: user.user_metadata?.name || 'User'
-      },
-      { onConflict: 'id' }
-    );
+      }
+    ]);
 }
     // ۱. گرفتن نام از جدول کاربران
     const { data: profile } = await supabase
