@@ -21,105 +21,98 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing email or password' });
   }
 
-  if (type === 'signup') {
-    console.log('SIGNUP HIT');
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Missing name' });
+if (type === 'signup') {
+  console.log('SIGNUP HIT');
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Missing name' });
+  }
+
+  const trimmedName = name.trim();
+  const referralCode = req.body.referralCode || null;
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name: trimmedName }
     }
+  });
 
-    const trimmedName = name.trim();
-const referralCode = req.body.referralCode || null;
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name: trimmedName }
-      }
-    });
+  if (error) return res.status(400).json({ error: error.message });
+  if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
 
-    if (error) return res.status(400).json({ error: error.message });
-    if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
-
-    const { data: existingWallet } = await supabaseAdmin
-      .from('wallets')
-      .select('id')
-      .eq('user_id', data.user.id)
-      .maybeSingle();
-
-    if (!existingWallet) {
-      await supabaseAdmin.from('wallets').insert([
-        { user_id: data.user.id, balance: 10 }
-      ]);
-    }
-
-    const { data: existingUser } = await supabaseAdmin
-      .from('users')
-      .select('id')
-      .eq('id', data.user.id)
-      .maybeSingle();
-
-await supabaseAdmin
-  .from('users')
-  .upsert(
-    {
-      id: data.user.id,
-      name: trimmedName,
-      referral_code: crypto.randomUUID().slice(0,8),
-      referred_by: referralCode
-    },
-    { onConflict: 'id' }
-  );
-
-if (referralCode) {
-  const { data: refUser } = await supabaseAdmin
-    .from('users')
+  const { data: existingWallet } = await supabaseAdmin
+    .from('wallets')
     .select('id')
-    .eq('referral_code', referralCode)
+    .eq('user_id', data.user.id)
     .maybeSingle();
 
-  if (refUser && refUser.id !== data.user.id) {
-await supabaseAdmin.from('referrals').insert([
-  {
-    referrer_id: refUser.id,
-    referred_id: data.user.id
-  }
-]).catch(() => {});      {
-        referrer_id: refUser.id,
-        referred_id: data.user.id
-      }
+  if (!existingWallet) {
+    await supabaseAdmin.from('wallets').insert([
+      { user_id: data.user.id, balance: 10 }
     ]);
+  }
 
-    const { count } = await supabaseAdmin
-      .from('referrals')
-      .select('*', { count: 'exact', head: true })
-      .eq('referrer_id', refUser.id);
+  await supabaseAdmin
+    .from('users')
+    .upsert(
+      {
+        id: data.user.id,
+        name: trimmedName,
+        referral_code: crypto.randomUUID().slice(0, 8),
+        referred_by: referralCode
+      },
+      { onConflict: 'id' }
+    );
 
-    if (count >= 2) {
-      const { data: owner } = await supabaseAdmin
-        .from('users')
-        .select('referral_reward_a')
-        .eq('id', refUser.id)
-        .maybeSingle();
+  if (referralCode) {
+    const { data: refUser } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .maybeSingle();
 
-      if (owner && !owner.referral_reward_a) {
-        await supabaseAdmin.rpc('add_tokens', {
-          user_id_input: refUser.id,
-          amount_input: 50
-        });
+    if (refUser && refUser.id !== data.user.id) {
+      await supabaseAdmin.from('referrals').insert([
+        {
+          referrer_id: refUser.id,
+          referred_id: data.user.id
+        }
+      ]).catch(() => {});
 
-        await supabaseAdmin
+      const { count } = await supabaseAdmin
+        .from('referrals')
+        .select('*', { count: 'exact', head: true })
+        .eq('referrer_id', refUser.id);
+
+      if (count >= 2) {
+        const { data: owner } = await supabaseAdmin
           .from('users')
-          .update({ referral_reward_a: true })
-          .eq('id', refUser.id);
+          .select('referral_reward_a')
+          .eq('id', refUser.id)
+          .maybeSingle();
+
+        if (owner && !owner.referral_reward_a) {
+          await supabaseAdmin.rpc('add_tokens', {
+            user_id_input: refUser.id,
+            amount_input: 50
+          });
+
+          await supabaseAdmin
+            .from('users')
+            .update({ referral_reward_a: true })
+            .eq('id', refUser.id);
+        }
       }
     }
   }
-}
 
-return res.json({
-  user: data.user,
-  session: data.session || null
-});
+  return res.json({
+    user: data.user,
+    session: data.session || null
+  });
+}
 
   if (type === 'login') {
     const { data, error } = await supabase.auth.signInWithPassword({
