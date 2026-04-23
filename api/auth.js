@@ -57,16 +57,16 @@ export default async function handler(req, res) {
       .eq('id', data.user.id)
       .maybeSingle();
 
-    if (!existingUser) {
-      await supabaseAdmin.from('users').insert([
-{
-  id: data.user.id,
-  name: trimmedName,
-  referral_code: crypto.randomUUID().slice(0,8)
-}
-      ]);
-    }
-
+await supabaseAdmin
+  .from('users')
+  .upsert(
+    {
+      id: data.user.id,
+      name: trimmedName,
+      referral_code: crypto.randomUUID().slice(0,8)
+    },
+    { onConflict: 'id' }
+  );
     return res.json({
       user: data.user,
       session: data.session || null
