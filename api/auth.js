@@ -65,7 +65,22 @@ if (type === 'signup') {
       { onConflict: 'id' }
     );
 
+if (referralCode) {
+  const { data: refUser } = await supabaseAdmin
+    .from('users')
+    .select('id')
+    .eq('referral_code', referralCode)
+    .maybeSingle();
 
+  if (refUser && refUser.id !== data.user.id) {
+    await supabaseAdmin.from('referrals').insert([
+      {
+        referrer_id: refUser.id,
+        referred_id: data.user.id
+      }
+    ]).catch(() => {});
+  }
+}
 
   return res.json({
     user: data.user,
