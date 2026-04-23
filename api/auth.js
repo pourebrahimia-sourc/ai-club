@@ -15,78 +15,81 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { type, email, password, name, returnTo } = req.body || {};
+  const { type, email, password, name, returnTo, referralCode } = req.body || {};
 
   if ((type === 'signup' || type === 'login') && (!email || !password)) {
     return res.status(400).json({ error: 'Missing email or password' });
   }
 
-if (type === 'signup') {
-  console.log('SIGNUP HIT');
+  if (type === 'signup') {
+    console.log('SIGNUP HIT');
 
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: 'Missing name' });
-  }
-
-  const trimmedName = name.trim();
-  const referralCode = req.body.referralCode || null;
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { name: trimmedName }
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Missing name' });
     }
-  });
 
-  if (error) return res.status(400).json({ error: error.message });
-  if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
+    const trimmedName = name.trim();
 
-  const { data: existingWallet } = await supabaseAdmin
-    .from('wallets')
-    .select('id')
-    .eq('user_id', data.user.id)
-    .maybeSingle();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name: trimmedName }
+      }
+    });
 
-  if (!existingWallet) {
-    await supabaseAdmin.from('wallets').insert([
-      { user_id: data.user.id, balance: 10 }
-    ]);
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data?.user?.id) return res.status(400).json({ error: 'Signup failed' });
+
+    const { data: existingWallet } = await supabaseAdmin
+      .from('wallets')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
+
+    if (!existingWallet) {
+      await supabaseAdmin.from('wallets').insert([
+        { user_id: data.user.id, balance: 10 }
+      ]);
+    }
+
+    await supabaseAdmin
+      .from('users')
+      .upsert(
+        {
+          id: data.user.id,
+          name: trimmedName,
+          referral_code: crypto.randomUUID().slice(0, 8)
+        },
+        { onConflict: 'id' }
+      );
+
+    if (referralCode) {
+      console.log('REF START', referralCode, data.user.id);
+
+      const { data: refUser } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('referral_code', referralCode)
+        .maybeSingle();
+
+      console.log('REF USER', refUser);
+
+      if (refUser && refUser.id !== data.user.id) {
+        await supabaseAdmin.from('referrals').insert([
+          {
+            referrer_id: refUser.id,
+            referred_id: data.user.id
+          }
+        ]);
+      }
+    }
+
+    return res.json({
+      user: data.user,
+      session: data.session || null
+    });
   }
-
-  await supabaseAdmin
-    .from('users')
-    .upsert(
-      {
-        id: data.user.id,
-        name: trimmedName,
-        referral_code: crypto.randomUUID().slice(0, 8),
-      },
-      { onConflict: 'id' }
-    );
-
-if (referralCode) {
-  console.log('REF START', referralCode, data.user.id);
-
-  const { data: refUser } = await supabaseAdmin
-    .from('users')
-    .select('id')
-    .eq('referral_code', referralCode)
-    .maybeSingle();
-console.log('REF USER', refUser);
-  if (refUser && refUser.id !== data.user.id) {
-await supabaseAdmin.from('referrals').insert([
-  {
-    referrer_id: refUser.id,
-    referred_id: data.user.id
-  }
-]);
-
-  return res.json({
-    user: data.user,
-    session: data.session || null
-  });
-}
 
   if (type === 'login') {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -126,15 +129,15 @@ await supabaseAdmin.from('referrals').insert([
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-const { error: updateError } = await supabaseAdmin
-  .from('users')
-  .upsert(
-    {
-      id: user.id,
-      name: trimmedName
-    },
-    { onConflict: 'id' }
-  );
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .upsert(
+        {
+          id: user.id,
+          name: trimmedName
+        },
+        { onConflict: 'id' }
+      );
 
     if (updateError) {
       return res.status(400).json({ error: updateError.message });
@@ -192,27 +195,26 @@ const { error: updateError } = await supabaseAdmin
     return res.json({ success: true });
   }
 
-if (type === 'google') {
-  const safeReturnTo =
-    returnTo === 'result.html' ? 'result.html' : 'index.html';
+  if (type === 'google') {
+    const safeReturnTo =
+      returnTo === 'result.html' ? 'result.html' : 'index.html';
 
-  const protocol = req.headers['x-forwarded-proto'] || 'https';
-  const host = req.headers.host;
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers.host;
 
-  const redirectUrl = `${protocol}://${host}/${safeReturnTo}`;
+    const redirectUrl = `${protocol}://${host}/${safeReturnTo}`;
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: redirectUrl,
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl
+      }
+    });
 
-    }
-  });
+    if (error) return res.status(400).json({ error: error.message });
 
-  if (error) return res.status(400).json({ error: error.message });
-
-  return res.json({ url: data.url });
-}
+    return res.json({ url: data.url });
+  }
 
   return res.status(400).json({ error: 'Invalid type' });
 }
