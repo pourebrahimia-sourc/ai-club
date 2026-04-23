@@ -256,7 +256,12 @@ function goWithFade(url) {
     window.location.href = url;
   }, 180);
 }
+const urlParams = new URLSearchParams(window.location.search);
+const refCode = urlParams.get('ref');
 
+if (refCode) {
+  localStorage.setItem('referralCode', refCode);
+}
 function start() {
   setIndexFlowTarget();
   goWithFade('age.html');
