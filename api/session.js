@@ -17,17 +17,8 @@ export default async function handler(req, res) {
 
   try {
     const token = authHeader.replace('Bearer ', '');
-const token = authHeader.replace('Bearer ', '');
 const { data, error } = await supabase.auth.getUser(token);
 
-if (error || !data?.user) {
-  return res.json({ data: { session: null } });
-}
-
-const user = data.user;
-if (error) {
-  return res.status(401).json({ error: 'Unauthorized' });
-}
     if (error || !data.user) {
       return res.json({ data: { session: null } });
     }
@@ -39,15 +30,15 @@ const { data: existingUser } = await supabaseAdmin
   .eq('id', user.id)
   .maybeSingle();
 
-await supabaseAdmin
-  .from('users')
-  .insert([
-    {
-      id: user.id,
-      name: user.user_metadata?.name || 'User',
-      referral_code: crypto.randomUUID().slice(0,8)
-    }
-  ]);
+if (!existingUser) {
+  await supabaseAdmin
+    .from('users')
+    .insert([
+      {
+        id: user.id,
+        name: user.user_metadata?.name || 'User'
+      }
+    ]);
 }
     // ۱. گرفتن نام از جدول کاربران
     const { data: profile } = await supabase
