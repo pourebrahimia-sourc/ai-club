@@ -61,7 +61,6 @@ if (type === 'signup') {
         id: data.user.id,
         name: trimmedName,
         referral_code: crypto.randomUUID().slice(0, 8),
-        referred_by: referralCode
       },
       { onConflict: 'id' }
     );
