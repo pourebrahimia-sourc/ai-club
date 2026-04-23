@@ -59,10 +59,11 @@ export default async function handler(req, res) {
 
     if (!existingUser) {
       await supabaseAdmin.from('users').insert([
-        {
-          id: data.user.id,
-          name: trimmedName
-        }
+{
+  id: data.user.id,
+  name: trimmedName,
+  referral_code: crypto.randomUUID().slice(0,8)
+}
       ]);
     }
 
