@@ -85,7 +85,7 @@ if (type === 'signup') {
         .select('*', { count: 'exact', head: true })
         .eq('referrer_id', refUser.id);
 
-      if (count >= 2) {
+      if ((count || 0) >= 2) {
         const { data: owner } = await supabaseAdmin
           .from('users')
           .select('referral_reward_a')
