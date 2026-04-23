@@ -66,12 +66,14 @@ if (type === 'signup') {
     );
 
 if (referralCode) {
+  console.log('REF START', referralCode, data.user.id);
+
   const { data: refUser } = await supabaseAdmin
     .from('users')
     .select('id')
     .eq('referral_code', referralCode)
     .maybeSingle();
-
+console.log('REF USER', refUser);
   if (refUser && refUser.id !== data.user.id) {
     await supabaseAdmin.from('referrals').insert([
       {
