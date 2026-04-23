@@ -69,6 +69,27 @@ await supabaseAdmin
     },
     { onConflict: 'id' }
   );
+    if (referralCode) {
+  const { data: refUser } = await supabaseAdmin
+    .from('users')
+    .select('id')
+    .eq('referral_code', referralCode)
+    .maybeSingle();
+
+  if (refUser && refUser.id !== data.user.id) {
+    await supabaseAdmin.from('referrals').insert([
+      {
+        referrer_id: refUser.id,
+        referred_id: data.user.id
+      }
+    ]);
+
+    await supabaseAdmin.rpc('add_tokens', {
+      user_id_input: refUser.id,
+      amount_input: 10
+    });
+  }
+}
     return res.json({
       user: data.user,
       session: data.session || null
