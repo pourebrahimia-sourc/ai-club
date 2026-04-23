@@ -78,8 +78,12 @@ if (referralCode) {
     .maybeSingle();
 
   if (refUser && refUser.id !== data.user.id) {
-    await supabaseAdmin.from('referrals').insert([
-      {
+await supabaseAdmin.from('referrals').insert([
+  {
+    referrer_id: refUser.id,
+    referred_id: data.user.id
+  }
+]).catch(() => {});      {
         referrer_id: refUser.id,
         referred_id: data.user.id
       }
