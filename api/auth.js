@@ -65,47 +65,7 @@ if (type === 'signup') {
       { onConflict: 'id' }
     );
 
-  if (referralCode) {
-    const { data: refUser } = await supabaseAdmin
-      .from('users')
-      .select('id')
-      .eq('referral_code', referralCode)
-      .maybeSingle();
 
-    if (refUser && refUser.id !== data.user.id) {
-      await supabaseAdmin.from('referrals').insert([
-        {
-          referrer_id: refUser.id,
-          referred_id: data.user.id
-        }
-      ]).catch(() => {});
-
-      const { count } = await supabaseAdmin
-        .from('referrals')
-        .select('*', { count: 'exact', head: true })
-        .eq('referrer_id', refUser.id);
-
-      if ((count || 0) >= 2) {
-        const { data: owner } = await supabaseAdmin
-          .from('users')
-          .select('referral_reward_a')
-          .eq('id', refUser.id)
-          .maybeSingle();
-
-        if (owner && !owner.referral_reward_a) {
-          await supabaseAdmin.rpc('add_tokens', {
-            user_id_input: refUser.id,
-            amount_input: 50
-          });
-
-          await supabaseAdmin
-            .from('users')
-            .update({ referral_reward_a: true })
-            .eq('id', refUser.id);
-        }
-      }
-    }
-  }
 
   return res.json({
     user: data.user,
