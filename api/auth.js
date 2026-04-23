@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     const trimmedName = name.trim();
-
+const referralCode = req.body.referralCode || null;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -64,7 +64,8 @@ await supabaseAdmin
     {
       id: data.user.id,
       name: trimmedName,
-      referral_code: crypto.randomUUID().slice(0,8)
+      referral_code: crypto.randomUUID().slice(0,8),
+      referred_by: referralCode
     },
     { onConflict: 'id' }
   );
