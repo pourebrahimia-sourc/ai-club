@@ -75,14 +75,12 @@ if (referralCode) {
     .maybeSingle();
 console.log('REF USER', refUser);
   if (refUser && refUser.id !== data.user.id) {
-    await supabaseAdmin.from('referrals').insert([
-      {
-        referrer_id: refUser.id,
-        referred_id: data.user.id
-      }
-    ]).catch(() => {});
+await supabaseAdmin.from('referrals').insert([
+  {
+    referrer_id: refUser.id,
+    referred_id: data.user.id
   }
-}
+]);
 
   return res.json({
     user: data.user,
