@@ -374,12 +374,13 @@
         const res = await fetch('/api/auth', {
           method:'POST',
           headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({
-            type:'signup',
-            email,
-            password,
-            name
-          })
+body: JSON.stringify({
+  type:'signup',
+  email,
+  password,
+  name,
+  referralCode: localStorage.getItem('referralCode')
+})
         });
 
         const data = await res.json();
