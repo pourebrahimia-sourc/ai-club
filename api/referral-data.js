@@ -79,33 +79,29 @@ export default async function handler(req, res) {
       .map(r => r.referred_id)
       .filter(Boolean);
 
-    let avatars = [];
+let avatars = [];
 
-    if (referredIds.length) {
-      const { data: chars, error: charsError } = await supabaseAdmin
-        .from('characters')
-        .select('user_id, image_url, created_at')
-        .in('user_id', referredIds)
-        .order('created_at', { ascending: false });
+if (referredIds.length) {
+  const { data: usersData, error: usersError } = await supabaseAdmin
+    .from('users')
+    .select('id')
+    .in('id', referredIds);
 
-      if (charsError) {
-        return res.status(400).json({ error: charsError.message });
-      }
+  if (usersError) {
+    return res.status(400).json({ error: usersError.message });
+  }
 
-      const seen = new Set();
+  const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
 
-      avatars = (chars || [])
-        .filter(c => {
-          if (seen.has(c.user_id)) return false;
-          seen.add(c.user_id);
-          return true;
-        })
-        .map(c => ({
-          userId: c.user_id,
-          imageUrl: c.image_url || ''
-        }))
-        .slice(0, 5);
-    }
+  avatars = referredIds.map(id => {
+    const authUser = authUsers.users.find(u => u.id === id);
+
+    return {
+      userId: id,
+      avatarUrl: authUser?.user_metadata?.avatar_url || null
+    };
+  }).slice(0, 5);
+}
 
     return res.status(200).json({
       referralCode,
