@@ -266,6 +266,30 @@ function start() {
   setIndexFlowTarget();
   goWithFade('age.html');
 }
+  document.addEventListener('DOMContentLoaded', () => {
+    const ref = localStorage.getItem('referralCode');
+    const token = localStorage.getItem('accessToken');
+
+    if (!ref || !token) return;
+
+    setTimeout(async () => {
+      try {
+        await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            type: 'finalize-referral',
+            referralCode: ref
+          })
+        });
+
+        localStorage.removeItem('referralCode');
+      } catch (e) {}
+    }, 2000);
+  });
 
 async function goProfile() {
   setIndexFlowTarget();
@@ -461,28 +485,7 @@ async function initIndexPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
-document.addEventListener('DOMContentLoaded', async () => {
-  const ref = localStorage.getItem('referralCode');
-  const token = localStorage.getItem('accessToken');
 
-  if (!ref || !token) return;
-
-  try {
-    await fetch('/api/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({
-        type: 'finalize-referral',
-        referralCode: ref
-      })
-    });
-
-    localStorage.removeItem('referralCode');
-  } catch (e) {}
-});
 </script>
 
 </body>
