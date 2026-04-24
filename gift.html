@@ -52,17 +52,18 @@
 <div class="section-title">Invite Friends</div>
 <div class="gift-card">
   <div class="gift-title">Earn tokens by inviting friends</div>
+
   <div class="referral-box">
     <div class="ref-circle ref-active">5<br>+50</div>
     <div class="ref-circle">10<br>+100</div>
     <div class="ref-circle">20<br>+250</div>
-    <div id="refAvatars" style="
-  display:flex;
-  gap:6px;
-  margin-top:10px;
-">
-</div>
   </div>
+
+  <div id="refAvatars" style="
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+  "></div>
   <input id="refLinkInput" readonly style="
   width:100%;
   height:42px;
@@ -211,7 +212,7 @@ avatarsBox.innerHTML = '';
   div.style.height = '32px';
   div.style.borderRadius = '50%';
   div.style.background = '#2a2a2a';
-  div.style.backgroundImage = a.imageUrl ? `url(${a.imageUrl})` : 'none';
+  div.style.backgroundImage = a.avatarUrl ? `url(${a.avatarUrl})` : 'none';
   div.style.backgroundSize = 'cover';
   div.style.backgroundPosition = 'center';
 
