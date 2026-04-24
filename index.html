@@ -234,7 +234,6 @@
 </div>
 
 <script>
-
 let navigating = false;
 
 function getAccessToken() {
@@ -256,12 +255,14 @@ function goWithFade(url) {
     window.location.href = url;
   }, 180);
 }
+
 const urlParams = new URLSearchParams(window.location.search);
 const refCode = urlParams.get('ref');
 
 if (refCode) {
   localStorage.setItem('referralCode', refCode);
 }
+
 function start() {
   setIndexFlowTarget();
   goWithFade('age.html');
@@ -392,6 +393,31 @@ function syncSessionFromUrl() {
   history.replaceState({}, document.title, window.location.pathname);
 }
 
+async function finalizeReferralIfNeeded(token) {
+  const ref = localStorage.getItem('referralCode');
+
+  if (!ref || !token) return;
+
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        type: 'finalize-referral',
+        referralCode: ref
+      })
+    });
+
+    if (res.ok) {
+      localStorage.removeItem('referralCode');
+      localStorage.removeItem('cachedBalance');
+    }
+  } catch (e) {}
+}
+
 async function loadBalance() {
   const token = getAccessToken();
   const balanceEl = document.getElementById('tokenBalance');
@@ -439,7 +465,9 @@ async function initIndexPage() {
       const json = await res.json();
       const user = json.data?.session?.user;
 
-      if (!user) {
+      if (user) {
+        await finalizeReferralIfNeeded(token);
+      } else {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('userId');
@@ -461,7 +489,6 @@ async function initIndexPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initIndexPage);
-
 </script>
 
 </body>
