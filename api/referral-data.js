@@ -102,12 +102,18 @@ if (referredIds.length) {
     };
   }).slice(0, 5);
 }
+const { data: usedReferralRow } = await supabaseAdmin
+  .from('referrals')
+  .select('id')
+  .eq('referred_id', user.id)
+  .maybeSingle();
 
-    return res.status(200).json({
-      referralCode,
-      referralCount: referrals?.length || 0,
-      avatars
-    });
+return res.status(200).json({
+  referralCode,
+  referralCount: referrals?.length || 0,
+  avatars,
+  usedReferral: !!usedReferralRow
+});
 
   } catch (e) {
     return res.status(500).json({ error: String(e) });
