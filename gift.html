@@ -15,9 +15,61 @@
     
     .gift-btn:disabled { background: #333 !important; color: #777; cursor: not-allowed; }
 
-    .referral-box{ display:flex; justify-content:space-between; gap:8px; margin-top:12px; }
-    .ref-circle{ flex:1; height:50px; border-radius:12px; background:#111; border:1px solid #2b2b2b; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:12px; }
-    .ref-active{ border:1px solid #ff4fa3; color:#ff4fa3; }
+.ref-progress {
+  position: relative;
+  margin-top: 16px;
+  padding-top: 20px;
+}
+
+.ref-line {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #2b2b2b;
+}
+
+.ref-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.ref-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  gap: 6px;
+}
+
+.ref-circle-new {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid #2b2b2b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.ref-step.active .ref-circle-new {
+  border-color: #ff4fa3;
+  color: #ff4fa3;
+}
+
+.ref-step.done .ref-circle-new {
+  background: #ff4fa3;
+  border-color: #ff4fa3;
+  color: #fff;
+}
+
+.ref-label {
+  opacity: 0.7;
+}
 
     #toast {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -53,11 +105,26 @@
 <div class="gift-card">
   <div class="gift-title">Earn tokens by inviting friends</div>
 
-  <div class="referral-box">
-    <div class="ref-circle ref-active">5<br>+50</div>
-    <div class="ref-circle">10<br>+100</div>
-    <div class="ref-circle">20<br>+250</div>
+<div class="ref-progress">
+  <div class="ref-line"></div>
+
+  <div class="ref-steps">
+    <div class="ref-step done">
+      <div class="ref-circle-new">✔</div>
+      <div class="ref-label">2</div>
+    </div>
+
+    <div class="ref-step active">
+      <div class="ref-circle-new">⚡</div>
+      <div class="ref-label">5</div>
+    </div>
+
+    <div class="ref-step">
+      <div class="ref-circle-new">🔒</div>
+      <div class="ref-label">10</div>
+    </div>
   </div>
+</div>
 
   <div id="refAvatars" style="
     display:flex;
