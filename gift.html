@@ -211,7 +211,24 @@
     <button class="gift-btn" onclick="claimGift('share', this)">Share</button>
   </div>
 </div>
-
+<div class="gift-card">
+  <div class="gift-row">
+    <div>
+      <div class="gift-title">Rate App</div>
+      <div class="gift-desc">Rate us and get tokens</div>
+    </div>
+    <button class="gift-btn" onclick="claimGift('rate', this)">Rate</button>
+  </div>
+</div>
+  <div style="margin-top:20px;">
+  <button onclick="window.location.href='subscribe.html'" class="gift-btn" style="
+    width:100%;
+    height:48px;
+    font-size:14px;
+  ">
+    Get More Tokens
+  </button>
+</div>
 <script>
 function closePage(){
   const returnTo = localStorage.getItem('chatReturnTo');
@@ -257,6 +274,43 @@ async function refreshHeaderBalance() {
 }
 
 async function claimGift(type, btn) {
+  if (type === 'rate') {
+  const alreadyRated = localStorage.getItem('rated');
+
+  if (alreadyRated) {
+    showNotification('Already rated');
+    btn.disabled = true;
+    btn.style.background = '#333';
+    btn.style.color = '#777';
+    return;
+  }
+
+  localStorage.setItem('rated', '1');
+
+  showNotification('Thanks for rating! +5 tokens');
+  btn.innerText = 'Rated';
+  btn.disabled = true;
+  btn.style.background = '#333';
+  btn.style.color = '#777';
+
+  return;
+}
+  if (type === 'ad') {
+  showNotification('Available in app only');
+  btn.disabled = true;
+  btn.style.background = '#333';
+  btn.style.color = '#777';
+  return;
+}
+  if (type === 'share') {
+  if (referralLink) {
+    navigator.clipboard.writeText(referralLink);
+    showNotification('Link copied! Share it with friends');
+  } else {
+    showNotification('Referral link not ready');
+  }
+  return;
+}
   const originalText = btn.innerText;
   btn.innerText = '...';
   btn.disabled = true;
