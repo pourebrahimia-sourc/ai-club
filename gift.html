@@ -56,7 +56,24 @@
     <div class="ref-circle ref-active">5<br>+50</div>
     <div class="ref-circle">10<br>+100</div>
     <div class="ref-circle">20<br>+250</div>
+    <div id="refAvatars" style="
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+">
+</div>
   </div>
+  <input id="refLinkInput" readonly style="
+  width:100%;
+  height:42px;
+  border-radius:10px;
+  border:1px solid #2b2b2b;
+  background:#111;
+  color:#fff;
+  padding:0 10px;
+  font-size:12px;
+  margin-top:12px;
+" />
   <button id="copyBtn" class="gift-btn" style="margin-top:12px;width:100%;">
     Copy Referral Link
   </button>
@@ -171,11 +188,48 @@ async function claimGift(type, btn) {
   }
 }
 
+let referralLink = '';
+async function loadReferralData() {
+  try {
+    const res = await fetch('/api/referral-data', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+
+if (data.referralCode) {
+  referralLink = window.location.origin + '/age.html?ref=' + data.referralCode;
+  document.getElementById('refLinkInput').value = referralLink;
+}
+const avatarsBox = document.getElementById('refAvatars');
+avatarsBox.innerHTML = '';
+
+(data.avatars || []).forEach(a => {
+  const div = document.createElement('div');
+
+  div.style.width = '32px';
+  div.style.height = '32px';
+  div.style.borderRadius = '50%';
+  div.style.background = '#2a2a2a';
+  div.style.backgroundImage = a.imageUrl ? `url(${a.imageUrl})` : 'none';
+  div.style.backgroundSize = 'cover';
+  div.style.backgroundPosition = 'center';
+
+  avatarsBox.appendChild(div);
+});
+  } catch (e) {
+    console.log('Referral load error');
+  }
+}
+
 function copyReferral() {
-  const userId = localStorage.getItem('userId');
-  if (!userId) { showNotification('Please login first'); return; }
-  const refLink = window.location.origin + '/age.html?ref=' + userId;
-  navigator.clipboard.writeText(refLink).then(() => {
+function copyReferral() {
+  if (!referralLink) {
+    showNotification('Referral link is loading');
+    return;
+  }
+document.getElementById('refLinkInput').select();
+  navigator.clipboard.writeText(referralLink).then(() => {
     showNotification('Referral link copied!');
   });
 }
@@ -189,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   refreshHeaderBalance();
+    loadReferralData();
+
   document.getElementById('copyBtn').onclick = copyReferral;
 });
 </script>
