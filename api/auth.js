@@ -381,63 +381,7 @@ export default async function handler(req, res) {
 
     return res.json({ success: true });
   }
-if (type === 'finalize-referral') {
-  const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-
-  const {
-    data: { user },
-    error: userError
-  } = await supabase.auth.getUser(token);
-
-  if (userError || !user?.id) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const referralCode = req.body.referralCode;
-
-if (referralCode) {
-  const { data: refUser } = await supabaseAdmin
-    .from('users')
-    .select('id')
-    .eq('referral_code', referralCode)
-    .maybeSingle();
-
-  if (refUser && refUser.id !== user.id) {
-    const { data: existingReferral } = await supabaseAdmin
-      .from('referrals')
-      .select('id')
-      .eq('referred_id', user.id)
-      .maybeSingle();
-
-    if (!existingReferral) {
-      await supabaseAdmin.from('referrals').insert([
-        {
-          referrer_id: refUser.id,
-          referred_id: user.id
-        }
-      ]);
-
-      await supabaseAdmin.rpc('add_tokens', {
-        user_id_input: user.id,
-        amount_input: 10
-      });
-
-      await supabaseAdmin.rpc('add_tokens', {
-        user_id_input: refUser.id,
-        amount_input: 10
-      });
-    }
-  }
-}
-
-return res.json({ success: true });
-}
   if (type === 'google') {
     const safeReturnTo =
       returnTo === 'result.html' ? 'result.html' : 'index.html';
