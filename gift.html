@@ -212,9 +212,18 @@ avatarsBox.innerHTML = '';
   div.style.height = '32px';
   div.style.borderRadius = '50%';
   div.style.background = '#2a2a2a';
-  div.style.backgroundImage = a.avatarUrl ? `url(${a.avatarUrl})` : 'none';
-  div.style.backgroundSize = 'cover';
-  div.style.backgroundPosition = 'center';
+
+  if (a.avatarUrl) {
+    div.style.backgroundImage = `url(${a.avatarUrl})`;
+    div.style.backgroundSize = 'cover';
+    div.style.backgroundPosition = 'center';
+  } else {
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.style.fontSize = '14px';
+    div.innerText = '👤';
+  }
 
   avatarsBox.appendChild(div);
 });
