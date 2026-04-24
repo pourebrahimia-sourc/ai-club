@@ -10,6 +10,104 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// ===== Referral settings =====
+const NEW_USER_REFERRAL_BONUS = 10;
+const REFERRER_DIRECT_BONUS = 10;
+
+const REFERRAL_A_COUNT = 2;
+const REFERRAL_A_REWARD = 50;
+
+const REFERRAL_B_COUNT = 5;
+const REFERRAL_B_REWARD = 100;
+
+const REFERRAL_C_COUNT = 10;
+const REFERRAL_C_REWARD = 250;
+
+async function applyReferralMilestones(referrerId) {
+  const { count, error: countError } = await supabaseAdmin
+    .from('referrals')
+    .select('*', { count: 'exact', head: true })
+    .eq('referrer_id', referrerId);
+
+  if (countError) {
+    throw new Error(countError.message);
+  }
+
+  const totalReferrals = count || 0;
+
+  const { data: owner, error: ownerError } = await supabaseAdmin
+    .from('users')
+    .select('referral_reward_a, referral_reward_b, referral_reward_c')
+    .eq('id', referrerId)
+    .maybeSingle();
+
+  if (ownerError) {
+    throw new Error(ownerError.message);
+  }
+
+  if (!owner) return;
+
+  if (totalReferrals >= REFERRAL_A_COUNT && !owner.referral_reward_a) {
+    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+      user_id_input: referrerId,
+      amount_input: REFERRAL_A_REWARD
+    });
+
+    if (rewardError) {
+      throw new Error(rewardError.message);
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ referral_reward_a: true })
+      .eq('id', referrerId);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+  }
+
+  if (totalReferrals >= REFERRAL_B_COUNT && !owner.referral_reward_b) {
+    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+      user_id_input: referrerId,
+      amount_input: REFERRAL_B_REWARD
+    });
+
+    if (rewardError) {
+      throw new Error(rewardError.message);
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ referral_reward_b: true })
+      .eq('id', referrerId);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+  }
+
+  if (totalReferrals >= REFERRAL_C_COUNT && !owner.referral_reward_c) {
+    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+      user_id_input: referrerId,
+      amount_input: REFERRAL_C_REWARD
+    });
+
+    if (rewardError) {
+      throw new Error(rewardError.message);
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ referral_reward_c: true })
+      .eq('id', referrerId);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -53,25 +151,35 @@ export default async function handler(req, res) {
 
     const userId = data.user.id;
 
-    // wallet اولیه اگر به هر دلیل توسط trigger ساخته نشده بود
-    const { data: existingWallet } = await supabaseAdmin
+    const { data: existingWallet, error: walletCheckError } = await supabaseAdmin
       .from('wallets')
       .select('id')
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (!existingWallet) {
-      await supabaseAdmin
-        .from('wallets')
-        .insert([{ user_id: userId, balance: 10 }]);
+    if (walletCheckError) {
+      return res.status(400).json({ error: walletCheckError.message });
     }
 
-    // user row را می‌خوانیم تا referral_code قبلی trigger را خراب نکنیم
-    const { data: existingUser } = await supabaseAdmin
+    if (!existingWallet) {
+      const { error: walletInsertError } = await supabaseAdmin
+        .from('wallets')
+        .insert([{ user_id: userId, balance: 10 }]);
+
+      if (walletInsertError) {
+        return res.status(400).json({ error: walletInsertError.message });
+      }
+    }
+
+    const { data: existingUser, error: existingUserError } = await supabaseAdmin
       .from('users')
       .select('id, referral_code')
       .eq('id', userId)
       .maybeSingle();
+
+    if (existingUserError) {
+      return res.status(400).json({ error: existingUserError.message });
+    }
 
     const finalReferralCode =
       existingUser?.referral_code || crypto.randomUUID().slice(0, 8);
@@ -91,23 +199,29 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: upsertUserError.message });
     }
 
-    // referral logic
     if (referralCode) {
       const cleanReferralCode = String(referralCode).trim();
 
-      const { data: refUser } = await supabaseAdmin
+      const { data: refUser, error: refUserError } = await supabaseAdmin
         .from('users')
         .select('id')
         .eq('referral_code', cleanReferralCode)
         .maybeSingle();
 
+      if (refUserError) {
+        return res.status(400).json({ error: refUserError.message });
+      }
+
       if (refUser && refUser.id !== userId) {
-        // فقط یک بار برای هر referred user
-        const { data: existingReferral } = await supabaseAdmin
+        const { data: existingReferral, error: existingReferralError } = await supabaseAdmin
           .from('referrals')
           .select('id')
           .eq('referred_id', userId)
           .maybeSingle();
+
+        if (existingReferralError) {
+          return res.status(400).json({ error: existingReferralError.message });
+        }
 
         if (!existingReferral) {
           const { error: insertReferralError } = await supabaseAdmin
@@ -123,24 +237,28 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: insertReferralError.message });
           }
 
-          // +10 به یوزر جدید
           const { error: newUserRewardError } = await supabaseAdmin.rpc('add_tokens', {
             user_id_input: userId,
-            amount_input: 10
+            amount_input: NEW_USER_REFERRAL_BONUS
           });
 
           if (newUserRewardError) {
             return res.status(400).json({ error: newUserRewardError.message });
           }
 
-          // +10 به صاحب کد
-          const { error: referrerRewardError } = await supabaseAdmin.rpc('add_tokens', {
+          const { error: referrerDirectRewardError } = await supabaseAdmin.rpc('add_tokens', {
             user_id_input: refUser.id,
-            amount_input: 10
+            amount_input: REFERRER_DIRECT_BONUS
           });
 
-          if (referrerRewardError) {
-            return res.status(400).json({ error: referrerRewardError.message });
+          if (referrerDirectRewardError) {
+            return res.status(400).json({ error: referrerDirectRewardError.message });
+          }
+
+          try {
+            await applyReferralMilestones(refUser.id);
+          } catch (milestoneError) {
+            return res.status(400).json({ error: milestoneError.message });
           }
         }
       }
