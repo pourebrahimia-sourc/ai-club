@@ -48,10 +48,10 @@ async function applyReferralMilestones(referrerId) {
   if (!owner) return;
 
   if (totalReferrals >= REFERRAL_A_COUNT && !owner.referral_reward_a) {
-    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
-      user_id_input: referrerId,
-      amount_input: REFERRAL_A_REWARD
-    });
+const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+  user_id_input: referrerId,
+  amount_input: REFERRAL_B_REWARD
+});
 
     if (rewardError) {
       throw new Error(rewardError.message);
@@ -68,10 +68,10 @@ async function applyReferralMilestones(referrerId) {
   }
 
   if (totalReferrals >= REFERRAL_B_COUNT && !owner.referral_reward_b) {
-    const { error: rewardError } = 
-      user_id_input: referrerId,
-      amount_input: REFERRAL_B_REWARD
-    });
+const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+  user_id_input: referrerId,
+  amount_input: REFERRAL_C_REWARD
+});
 
     if (rewardError) {
       throw new Error(rewardError.message);
