@@ -475,6 +475,20 @@ document.getElementById('closeInvite').onclick = () => {
 };
 
 });
+  document.getElementById('shareBtn').onclick = async () => {
+  if (!referralLink) return;
+
+  if (navigator.share) {
+    await navigator.share({
+      title: 'AI Club 💖',
+      text: 'Create your perfect AI girlfriend 🔥',
+      url: referralLink
+    });
+  } else {
+    navigator.clipboard.writeText(referralLink);
+    showNotification('Link copied!');
+  }
+};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <div id="inviteModal" style="
