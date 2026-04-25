@@ -412,11 +412,15 @@ steps.forEach(step => {
 
   step.classList.remove('done', 'active');
 
-  if (data.referralCount >= value) {
-    step.classList.add('done');
-  } else if (data.referralCount >= value / 2) {
+if (data.referralCount >= value) {
+  step.classList.add('done');
+} else if (data.referralCount < value) {
+  const prev = value === 5 ? 0 : value === 10 ? 5 : value === 20 ? 10 : 20;
+
+  if (data.referralCount >= prev) {
     step.classList.add('active');
   }
+}
 });
   } catch (e) {
     console.log('Referral load error');
