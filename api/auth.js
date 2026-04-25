@@ -88,10 +88,10 @@ const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
   }
 
   if (totalReferrals >= REFERRAL_C_COUNT && !owner.referral_reward_c) {
-    const { error: rewardError } = 
-      user_id_input: referrerId,
-      amount_input: REFERRAL_C_REWARD
-    });
+const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+  user_id_input: referrerId,
+  amount_input: REFERRAL_C_REWARD
+});
 
     if (rewardError) {
       throw new Error(rewardError.message);
