@@ -463,7 +463,9 @@ document.getElementById('inviteBtn').onclick = () => {
   modal.style.display = 'flex';
 
   if (referralLink) {
-    QRCode.toCanvas(canvas, referralLink);
+    QRCode.toCanvas(canvas, referralLink, {
+  width: 110
+});
   }
 };
 
@@ -508,11 +510,11 @@ document.getElementById('closeInvite').onclick = () => {
       margin-top:12px;
     " />
 
-    <canvas id="qrCanvas" style="
-      margin:10px auto;
-      width:120px;
-      height:120px;
-    "></canvas>
+<canvas id="qrCanvas" style="
+  margin:8px auto;
+  width:110px;
+  height:110px;
+"></canvas>
 
     <div style="font-size:12px; opacity:0.7;">
       Scan & start chatting 🔥
