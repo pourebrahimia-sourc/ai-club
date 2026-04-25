@@ -405,15 +405,6 @@ if (type === 'finalize-referral') {
           }
         ]);
 
-        await supabaseAdmin.rpc('add_tokens', {
-          user_id_input: user.id,
-          amount_input: 10
-        });
-
-        await supabaseAdmin.rpc('add_tokens', {
-          user_id_input: refUser.id,
-          amount_input: 10
-        });
       }
     }
   }
