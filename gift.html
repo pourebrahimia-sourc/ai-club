@@ -393,7 +393,7 @@ avatarsBox.appendChild(div);
     const checkBox = document.getElementById('refBonusCheck');
 
 // فعلاً ساده: اگر referralCount > 0 یعنی با رفرال اومده
-if (data.referralCount > 0) {
+if (data.usedReferral) {
   checkBox.innerText = '✔';
   checkBox.style.borderColor = '#ff4fa3';
   checkBox.style.color = '#ff4fa3';
