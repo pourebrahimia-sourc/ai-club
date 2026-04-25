@@ -68,7 +68,7 @@ async function applyReferralMilestones(referrerId) {
   }
 
   if (totalReferrals >= REFERRAL_B_COUNT && !owner.referral_reward_b) {
-    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+    const { error: rewardError } = 
       user_id_input: referrerId,
       amount_input: REFERRAL_B_REWARD
     });
@@ -88,7 +88,7 @@ async function applyReferralMilestones(referrerId) {
   }
 
   if (totalReferrals >= REFERRAL_C_COUNT && !owner.referral_reward_c) {
-    const { error: rewardError } = await supabaseAdmin.rpc('add_tokens', {
+    const { error: rewardError } = 
       user_id_input: referrerId,
       amount_input: REFERRAL_C_REWARD
     });
@@ -237,26 +237,8 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: insertReferralError.message });
           }
 
-          const { error: newUserRewardError } = await supabaseAdmin.rpc('add_tokens', {
-            user_id_input: userId,
-            amount_input: NEW_USER_REFERRAL_BONUS
-          });
-
-          if (newUserRewardError) {
-            return res.status(400).json({ error: newUserRewardError.message });
-          }
-
-          const { error: referrerDirectRewardError } = await supabaseAdmin.rpc('add_tokens', {
-            user_id_input: refUser.id,
-            amount_input: REFERRER_DIRECT_BONUS
-          });
-
-          if (referrerDirectRewardError) {
-            return res.status(400).json({ error: referrerDirectRewardError.message });
-          }
 
           try {
-            await applyReferralMilestones(refUser.id);
           } catch (milestoneError) {
             return res.status(400).json({ error: milestoneError.message });
           }
