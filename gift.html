@@ -475,30 +475,37 @@ document.getElementById('closeInvite').onclick = () => {
 };
 
 });
-document.getElementById('shareBtn').onclick = async () => {
-  const card = document.getElementById('inviteCard');
-  if (!card) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('shareBtn');
+  if (!btn) return;
 
-  const canvas = await html2canvas(card);
-  
-  canvas.toBlob(async (blob) => {
-    const file = new File([blob], 'invite.png', { type: 'image/png' });
+  btn.onclick = async () => {
+    const card = document.getElementById('inviteCard');
+    if (!card) return;
 
-    if (navigator.share && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: 'AI Club 💖',
-        text: 'Create your perfect AI girlfriend 🔥'
-      });
-    } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'invite.png';
-      a.click();
-    }
-  });
-};
+    const canvas = await html2canvas(card);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      const file = new File([blob], 'invite.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'AI Club 💖',
+          text: 'Create your perfect AI girlfriend 🔥'
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'invite.png';
+        a.click();
+      }
+    });
+  };
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
