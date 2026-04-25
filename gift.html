@@ -414,10 +414,10 @@ steps.forEach(step => {
 
 if (data.referralCount >= value) {
   step.classList.add('done');
-} else if (data.referralCount < value) {
+} else if (data.referralCount > 0) {
   const prev = value === 5 ? 0 : value === 10 ? 5 : value === 20 ? 10 : 20;
 
-  if (data.referralCount >= prev) {
+  if (data.referralCount >= prev && data.referralCount < value) {
     step.classList.add('active');
   }
 }
