@@ -264,37 +264,33 @@ await supabase.from('chat_history').insert([
   }
 ]);
 // 🔥 finalize referral after first chat
-const { data: existingReferral } = await supabase
-  .from('referrals')
-  .select('id, rewarded')
-  .eq('referred_id', USER_ID)
-  .maybeSingle();
-
-if (existingReferral && !existingReferral.rewarded) {
-    // give tokens to both users
-    await supabase.rpc('add_tokens', {
-      user_id_input: USER_ID,
-      amount_input: 10
-    });
-
-    const { data: refRow } = await supabase
-      .from('referrals')
-      .select('referrer_id')
-      .eq('referred_id', USER_ID)
-      .maybeSingle();
-
-    if (refRow?.referrer_id) {
-      await supabase.rpc('add_tokens', {
-        user_id_input: refRow.referrer_id,
-        amount_input: 10
-      });
-    }
-
-await supabase
-  .from('referrals')
-  .update({ rewarded: true })
-  .eq('referred_id', USER_ID);
-  }
+// const { data: existingReferral } = await supabase
+//   .from('referrals')
+//   .select('id, rewarded')
+//   .eq('referred_id', USER_ID)
+//   .maybeSingle();
+//
+// if (existingReferral && !existingReferral.rewarded) {
+//   await supabase.rpc('add_tokens', { user_id_input: USER_ID, amount_input: 10 });
+//
+//   const { data: refRow } = await supabase
+//     .from('referrals')
+//     .select('referrer_id')
+//     .eq('referred_id', USER_ID)
+//     .maybeSingle();
+//
+//   if (refRow?.referrer_id) {
+//     await supabase.rpc('add_tokens', {
+//       user_id_input: refRow.referrer_id,
+//       amount_input: 10
+//     });
+//   }
+//
+//   await supabase
+//     .from('referrals')
+//     .update({ rewarded: true })
+//     .eq('referred_id', USER_ID);
+// }
 
     return res.status(200).json({ reply, balance: updatedChatBalance });
 
