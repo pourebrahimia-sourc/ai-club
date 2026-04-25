@@ -266,18 +266,11 @@ await supabase.from('chat_history').insert([
 // 🔥 finalize referral after first chat
 const { data: existingReferral } = await supabase
   .from('referrals')
-  .select('id')
+  .select('id, rewarded')
   .eq('referred_id', USER_ID)
   .maybeSingle();
 
-if (existingReferral) {
-  const { data: alreadyRewarded } = await supabase
-    .from('users')
-    .select('referral_reward_a')
-    .eq('id', USER_ID)
-    .maybeSingle();
-
-  if (!alreadyRewarded?.referral_reward_a) {
+if (existingReferral && !existingReferral.rewarded) {
     // give tokens to both users
     await supabase.rpc('add_tokens', {
       user_id_input: USER_ID,
@@ -297,12 +290,12 @@ if (existingReferral) {
       });
     }
 
-    await supabase
-      .from('users')
-      .update({ referral_reward_a: true })
-      .eq('id', USER_ID);
+await supabase
+  .from('referrals')
+  .update({ rewarded: true })
+  .eq('referred_id', USER_ID);
   }
-}
+
     return res.status(200).json({ reply, balance: updatedChatBalance });
 
   } catch (e) {
