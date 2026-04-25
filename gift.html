@@ -456,12 +456,53 @@ document.addEventListener('DOMContentLoaded', () => {
     loadReferralData();
 
   document.getElementById('copyBtn').onclick = copyReferral;
-  document.getElementById('inviteBtn').onclick = () => {
-  showNotification('Invite flow coming soon');
+document.getElementById('inviteBtn').onclick = () => {
+  const modal = document.getElementById('inviteModal');
+  const canvas = document.getElementById('qrCanvas');
+
+  modal.style.display = 'flex';
+
+  if (referralLink) {
+    QRCode.toCanvas(canvas, referralLink);
+  }
+};
+
+document.getElementById('closeInvite').onclick = () => {
+  document.getElementById('inviteModal').style.display = 'none';
 };
 
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <div id="inviteModal" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+">
+  <div style="
+    width:90%;
+    max-width:320px;
+    background:#1a1a1a;
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+  ">
+    
+    <div style="font-weight:700; margin-bottom:10px;">
+      Invite Friends
+    </div>
 
+    <canvas id="qrCanvas" style="margin:10px auto;"></canvas>
+
+    <button id="closeInvite" class="gift-btn" style="margin-top:10px; width:100%;">
+      Close
+    </button>
+
+  </div>
+</div>
 </body>
 </html>
