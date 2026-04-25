@@ -470,9 +470,47 @@ QRCode.toCanvas(canvas, referralLink, {
   }
 };
 
-document.getElementById('closeInvite').onclick = () => {
-  document.getElementById('inviteModal').style.display = 'none';
-};
+  document.getElementById('copyBtn').onclick = copyReferral;
+
+  document.getElementById('inviteBtn').onclick = () => {
+    const modal = document.getElementById('inviteModal');
+    const canvas = document.getElementById('qrCanvas');
+
+    modal.style.display = 'flex';
+
+    if (referralLink) {
+      QRCode.toCanvas(canvas, referralLink, {
+        width: 86,
+        margin: 1
+      });
+    }
+  };
+
+  document.getElementById('closeInvite').onclick = () => {
+    document.getElementById('inviteModal').style.display = 'none';
+  };
+
+  document.getElementById('shareBtn').onclick = async () => {
+    const card = document.getElementById('inviteCard');
+    if (!card || !referralLink) return;
+
+    const canvas = await html2canvas(card);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) return;
+
+    const file = new File([blob], 'ai-club-invite.png', { type: 'image/png' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'AI Club 💖',
+        text: referralLink
+      });
+    } else {
+      await navigator.clipboard.writeText(referralLink);
+      showNotification('Referral link copied!');
+    }
+  };
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
