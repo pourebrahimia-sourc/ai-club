@@ -130,7 +130,7 @@
   <div class="ref-steps">
 <div class="ref-step" data-step="5">
   <div class="ref-circle-new">5</div>
-  <div class="ref-label">5</div>
+  <div class="ref-label">0</div>
 </div>
 
 <div class="ref-step" data-step="10">
@@ -421,6 +421,12 @@ if (data.referralCount >= value) {
     step.classList.add('active');
   }
 }
+});
+    document.querySelectorAll('.ref-step').forEach(step => {
+  const label = step.querySelector('.ref-label');
+  if (label) {
+    label.innerText = data.referralCount;
+  }
 });
   } catch (e) {
     console.log('Referral load error');
