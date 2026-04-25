@@ -128,20 +128,25 @@
   <div class="ref-line"></div>
 
   <div class="ref-steps">
-    <div class="ref-step done">
-      <div class="ref-circle-new">✔</div>
-      <div class="ref-label">2</div>
-    </div>
+<div class="ref-step" data-step="5">
+  <div class="ref-circle-new">5</div>
+  <div class="ref-label">5</div>
+</div>
 
-    <div class="ref-step active">
-      <div class="ref-circle-new">⚡</div>
-      <div class="ref-label">5</div>
-    </div>
+<div class="ref-step" data-step="10">
+  <div class="ref-circle-new">10</div>
+  <div class="ref-label">10</div>
+</div>
 
-    <div class="ref-step">
-      <div class="ref-circle-new">🔒</div>
-      <div class="ref-label">10</div>
-    </div>
+<div class="ref-step" data-step="20">
+  <div class="ref-circle-new">20</div>
+  <div class="ref-label">20</div>
+</div>
+
+<div class="ref-step" data-step="50">
+  <div class="ref-circle-new">50</div>
+  <div class="ref-label">50</div>
+</div>
   </div>
 </div>
 
@@ -400,6 +405,19 @@ if (data.usedReferral) {
 } else {
   checkBox.innerText = '';
 }
+    const steps = document.querySelectorAll('.ref-step');
+
+steps.forEach(step => {
+  const value = parseInt(step.dataset.step);
+
+  step.classList.remove('done', 'active');
+
+  if (data.referralCount >= value) {
+    step.classList.add('done');
+  } else if (data.referralCount >= value / 2) {
+    step.classList.add('active');
+  }
+});
   } catch (e) {
     console.log('Referral load error');
   }
