@@ -475,32 +475,38 @@ document.getElementById('closeInvite').onclick = () => {
 };
 
 });
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('shareBtn');
-  if (!btn) return;
+document.getElementById('shareBtn').onclick = async () => {
+  const card = document.getElementById('inviteCard');
+  if (!card) return;
 
-  btn.onclick = async () => {
-    if (!referralLink) return;
+  const canvas = await html2canvas(card);
+  
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], 'invite.png', { type: 'image/png' });
 
-    if (navigator.share) {
+    if (navigator.share && navigator.canShare({ files: [file] })) {
       await navigator.share({
+        files: [file],
         title: 'AI Club 💖',
-        text: 'Create your perfect AI girlfriend 🔥',
-        url: referralLink
+        text: 'Create your perfect AI girlfriend 🔥'
       });
     } else {
-      navigator.clipboard.writeText(referralLink);
-      showNotification('Link copied!');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'invite.png';
+      a.click();
     }
-  };
-});
+  });
+};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <div id="inviteModal" style="
   position:fixed; inset:0; background:rgba(0,0,0,0.7);
   display:none; align-items:center; justify-content:center; z-index:999;
 ">
-  <div style="
+  <div id="inviteCard" style="
     width:90%; max-width:330px; background:#1a1a1a;
     border-radius:18px; padding:14px; text-align:center;
     border:1px solid #2b2b2b;
