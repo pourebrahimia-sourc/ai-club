@@ -357,7 +357,7 @@ async function loadReferralData() {
     const data = await res.json();
 
 if (data.referralCode) {
-  referralLink = window.location.origin + '/age.html?ref=' + data.referralCode;
+  referralLink = window.location.origin + '/index.html?ref=' + data.referralCode;
   document.getElementById('refLinkInput').value = referralLink;
 }
 const avatarsBox = document.getElementById('refAvatars');
