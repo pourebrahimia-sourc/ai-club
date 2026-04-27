@@ -17,6 +17,19 @@ export default async function handler(req, res) {
   const { type } = req.body;
 
   try {
+    if (type === 'check-daily') {
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data: wallet } = await supabase
+    .from('wallets')
+    .select('last_claim_date')
+    .eq('user_id', user.id)
+    .single();
+
+  return res.json({
+    claimed: wallet?.last_claim_date === today
+  });
+}
     // الف) جایزه روزانه (۱۰ توکن)
     if (type === 'daily') {
       const today = new Date().toISOString().split('T')[0];
