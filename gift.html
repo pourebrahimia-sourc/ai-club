@@ -276,7 +276,27 @@ async function refreshHeaderBalance() {
     document.getElementById('tokenBalance').innerText = "💰 0";
   }
 }
+async function checkDailyClaimStatus() {
+  try {
+    const res = await fetch('/api/gifts', {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ type: 'check-daily' })
+    });
 
+    const data = await res.json();
+
+    if (data.claimed) {
+      const btn = document.querySelector('[onclick="claimGift(\'daily\', this)"]');
+      if (btn) {
+        btn.innerText = 'Claimed';
+        btn.disabled = true;
+        btn.style.background = '#333';
+        btn.style.color = '#777';
+      }
+    }
+  } catch (e) {}
+}
 async function claimGift(type, btn) {
   if (type === 'rate') {
   const alreadyRated = localStorage.getItem('rated');
@@ -328,6 +348,13 @@ async function claimGift(type, btn) {
     const data = await res.json();
     
     if (data.error) {
+      if (type === 'daily' && data.error === 'Already claimed today') {
+  btn.innerText = 'Claimed';
+  btn.disabled = true;
+  btn.style.background = '#333';
+  btn.style.color = '#777';
+  return;
+}
       showNotification(data.error === 'Already claimed today' ? 'Already claimed today!' : data.error);
       if (data.error !== 'Already claimed today') {
         btn.disabled = false;
@@ -453,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   refreshHeaderBalance();
+  checkDailyClaimStatus();
     loadReferralData();
 
   document.getElementById('copyBtn').onclick = copyReferral;
