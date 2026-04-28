@@ -31,11 +31,17 @@ const user = data.user;
     // ۲. چک کردن کیف پول
     const { data: wallet } = await supabase
       .from('wallets')
-      .select('balance')
+      .select('balance, daily_tokens, daily_token_date')
       .eq('user_id', user.id)
       .maybeSingle();
 
-    const balance = wallet?.balance || 0;
+    const today = new Date().toISOString().split('T')[0];
+
+let balance = wallet?.balance || 0;
+
+if (wallet?.daily_token_date === today) {
+  balance += wallet?.daily_tokens || 0;
+}
     return res.json({
       data: {
         session: {
