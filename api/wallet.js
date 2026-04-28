@@ -22,16 +22,22 @@ export default async function handler(req, res) {
 
   const { data: wallet, error } = await supabase
     .from('wallets')
-    .select('balance')
+    .select('balance, daily_tokens, daily_token_date')
     .eq('user_id', userData.user.id)
     .single();
 
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+const today = new Date().toISOString().split('T')[0];
 
+let finalBalance = wallet?.balance || 0;
+
+if (wallet?.daily_token_date === today) {
+  finalBalance += wallet?.daily_tokens || 0;
+}
   return res.status(200).json({
-    balance: wallet?.balance || 0,
+    balance: finalBalance,
     userId: userData.user.id
   });
 }
