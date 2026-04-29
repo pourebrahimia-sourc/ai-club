@@ -515,27 +515,35 @@ function writeResultState(nextState) {
 
 function getOrCreateResultAiName() {
   const names = [
-'Luna','Mia','Nora','Eva','Zara','Aria','Lily','Chloe','Scarlett','Ivy',
-'Aurora','Nova','Hazel','Bella','Layla','Sofia','Elena','Ruby','Violet','Stella',
-'Naomi','Alice','Freya','Isla','Daisy','Clara','Iris','Rose','Jade','Amelia',
-'Zoe','Maya','Ava','Olivia','Emma','Charlotte','Grace','Hannah','Leah','Nina'
-];
+    'Luna','Mia','Nora','Eva','Zara','Aria','Lily','Chloe','Scarlett','Ivy',
+    'Aurora','Nova','Hazel','Bella','Layla','Sofia','Elena','Ruby','Violet','Stella',
+    'Naomi','Alice','Freya','Isla','Daisy','Clara','Iris','Rose','Jade','Amelia',
+    'Zoe','Maya','Ava','Olivia','Emma','Charlotte','Grace','Hannah','Leah','Nina'
+  ];
+
   let name = localStorage.getItem(RESULT_AI_NAME_KEY);
 
   if (!name) {
-    name = names[Math.floor(Math.random() * names.length)];
+    let lastName = localStorage.getItem('lastAiName');
+
+    do {
+      name = names[Math.floor(Math.random() * names.length)];
+    } while (name === lastName);
+
+    localStorage.setItem('lastAiName', name);
     localStorage.setItem(RESULT_AI_NAME_KEY, name);
   }
 
   return name;
 }
-
 function syncResultStateWithProfile() {
   const profile = getProfile();
   const profileKey = getCurrentProfileKey();
   const state = readResultState();
 
   if (state.profileKey && state.profileKey !== profileKey) {
+    localStorage.removeItem(RESULT_AI_NAME_KEY);
+localStorage.removeItem('lastAiName');
     const freshState = {
       profile,
       profileKey,
