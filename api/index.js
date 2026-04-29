@@ -238,15 +238,30 @@ Interaction style:
 let CHARACTER_ID = characterId || null;
 
 if (!CHARACTER_ID) {
-  const { data: latestCharacter } = await supabase
+  const { data: newCharacter, error: createError } = await supabase
     .from('characters')
+    .insert([
+      {
+        user_id: USER_ID,
+        name: name || 'AI',
+        age: profile?.age || null,
+        ethnicity: profile?.ethnicity || null,
+        body: profile?.body || null,
+        body_details: profile?.bodyDetails || null,
+        hair: profile?.hair || null,
+        appearance_details: profile?.appearanceDetails || null,
+        personality: profile?.personality || null,
+        image_url: null
+      }
+    ])
     .select('id')
-    .eq('user_id', USER_ID)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .single();
 
-  CHARACTER_ID = latestCharacter?.id || null;
+  if (createError || !newCharacter?.id) {
+    return res.status(500).json({ error: 'Character create failed' });
+  }
+
+  CHARACTER_ID = newCharacter.id;
 }
 
 await supabase.from('chat_history').insert([
@@ -294,7 +309,11 @@ if (existingReferral && !existingReferral.rewarded) {
     .update({ rewarded: true })
     .eq('referred_id', USER_ID);
 }
-    return res.status(200).json({ reply, balance: updatedChatBalance });
+    return res.status(200).json({
+  reply,
+  balance: updatedChatBalance,
+  characterId: CHARACTER_ID
+});
 
   } catch (e) {
     return res.status(500).json({ error: String(e) });
