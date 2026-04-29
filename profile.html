@@ -760,7 +760,15 @@ async function loadCharacters(){
       div.className = 'chat-item';
 
       div.innerHTML = `
-        <div class="chat-avatar" style="background-image:url('${c.image_url || ''}')"></div>
+        <div class="chat-avatar" style="
+  background-image:url('${c.image_url || ''}');
+  background-color:${c.image_url ? 'transparent' : '#2a2a2a'};
+  display:flex;
+  align-items:center;
+  justify-content:center;
+">
+  ${c.image_url ? '' : '👤'}
+</div>
 
         <div class="chat-meta">
           <div class="chat-name">${c.name || 'AI'}</div>
