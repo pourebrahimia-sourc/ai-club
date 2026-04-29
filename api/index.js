@@ -117,7 +117,25 @@ high detail skin, ultra realistic, sharp focus, professional photography, 85mm l
         .getPublicUrl(fileName);
 
       const imageUrl = publicUrlData.publicUrl;
+// اگر characterId داریم → update کن
+if (characterId) {
+  const { error: updateError } = await supabase
+    .from('characters')
+    .update({
+      image_url: imageUrl
+    })
+    .eq('id', characterId);
 
+  if (updateError) {
+    return res.status(500).json({ error: updateError.message });
+  }
+
+  return res.status(200).json({
+    imageUrl,
+    balance: updatedImageBalance,
+    characterId
+  });
+}
 const { data: insertedCharacter, error: insertCharacterError } = await supabase
   .from('characters')
   .insert([
