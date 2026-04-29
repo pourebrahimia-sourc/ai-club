@@ -452,7 +452,12 @@ function getFallbackProfile(){
 }
 
 function getOrCreateFallbackName(){
-  const names = ['Luna','Mia','Nora','Eva','Zara'];
+  const names = [
+'Luna','Mia','Nora','Eva','Zara','Aria','Lily','Chloe','Scarlett','Ivy',
+'Aurora','Nova','Hazel','Bella','Layla','Sofia','Elena','Ruby','Violet','Stella',
+'Naomi','Alice','Freya','Isla','Daisy','Clara','Iris','Rose','Jade','Amelia',
+'Zoe','Maya','Ava','Olivia','Emma','Charlotte','Grace','Hannah','Leah','Nina'
+];
   let name = localStorage.getItem('aiName');
   if(!name){
     name = names[Math.floor(Math.random() * names.length)];
