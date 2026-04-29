@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Album - AI Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top, rgba(255,79,163,0.12), transparent 28%),
+        #111;
+      color:#fff;
+      font-family:Arial, Helvetica, sans-serif;
+      padding:14px;
+    }
+
+    .page{
+      max-width:520px;
+      margin:0 auto;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .close{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      color:#ff4fa3;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .title{
+      font-size:18px;
+      font-weight:800;
+    }
+
+    .right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .mini-btn{
+      height:34px;
+      padding:0 10px;
+      border:none;
+      border-radius:10px;
+      background:#ff4fa3;
+      color:#fff;
+      font-size:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .token{
+      height:34px;
+      padding:0 10px;
+      display:flex;
+      align-items:center;
+      border-radius:10px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .gift{
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      cursor:pointer;
+      font-size:17px;
+    }
+
+    .subtitle{
+      font-size:13px;
+      opacity:.68;
+      margin:-8px 0 14px;
+      line-height:1.5;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:8px;
+    }
+
+    .item{
+      position:relative;
+      border-radius:14px;
+      overflow:hidden;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      cursor:pointer;
+      aspect-ratio:1/1.28;
+      box-shadow:0 10px 28px rgba(0,0,0,0.24);
+    }
+
+    .item img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:.25s ease;
+    }
+
+    .item:active img{
+      transform:scale(1.04);
+    }
+
+    .name-tag{
+      position:absolute;
+      left:6px;
+      right:6px;
+      bottom:6px;
+      padding:6px 7px;
+      border-radius:10px;
+      background:rgba(0,0,0,.55);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      font-size:11px;
+      font-weight:800;
+      text-align:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .empty{
+      margin-top:40px;
+      text-align:center;
+      opacity:.72;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .empty button{
+      margin-top:14px;
+      width:100%;
+      height:46px;
+      border:none;
+      border-radius:14px;
+      background:#ff4fa3;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:50;
+      background:rgba(0,0,0,.82);
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+    }
+
+    .modal-card{
+      position:relative;
+      width:100%;
+      max-width:430px;
+      max-height:94vh;
+      overflow:auto;
+      background:#151515;
+      border:1px solid #2b2b2b;
+      border-radius:22px;
+      box-shadow:0 20px 80px rgba(0,0,0,.65);
+    }
+
+    .modal-top{
+      position:absolute;
+      top:10px;
+      left:10px;
+      right:10px;
+      z-index:3;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      pointer-events:none;
+    }
+
+    .icon-btn{
+      width:38px;
+      height:38px;
+      border:none;
+      border-radius:13px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      pointer-events:auto;
+    }
+
+    .big-wrap{
+      position:relative;
+      background:#050505;
+    }
+
+    .big-img{
+      width:100%;
+      max-height:62vh;
+      object-fit:contain;
+      display:block;
+      background:#050505;
+    }
+
+    .nav-btn{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:38px;
+      height:48px;
+      border:none;
+      border-radius:14px;
+      background:rgba(0,0,0,.46);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+    }
+
+    .prev{ left:10px; }
+    .next{ right:10px; }
+
+    .info{
+      padding:14px;
+    }
+
+    .char-name{
+      font-size:20px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .details{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .detail{
+      background:#101010;
+      border:1px solid #252525;
+      border-radius:13px;
+      padding:9px 10px;
+    }
+
+    .label{
+      font-size:10px;
+      opacity:.52;
+      margin-bottom:4px;
+    }
+
+    .value{
+      font-size:12px;
+      font-weight:800;
+      line-height:1.35;
+      word-break:break-word;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .action{
+      height:44px;
+      border:none;
+      border-radius:13px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      color:#fff;
+      background:#ff4fa3;
+    }
+
+    .dark{
+      background:#252525;
+      border:1px solid #353535;
+    }
+
+    .danger{
+      background:#3a151f;
+      border:1px solid rgba(255,79,163,.35);
+      color:#ff8dbc;
+    }
+
+    .token-modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:80;
+      background:rgba(0,0,0,.65);
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .token-box{
+      width:100%;
+      max-width:320px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+
+    .token-title{
+      font-size:18px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .token-text{
+      font-size:13px;
+      opacity:.78;
+      margin-bottom:16px;
+      line-height:1.5;
+    }
+
+    .toast{
+      display:none;
+      position:fixed;
+      left:50%;
+      bottom:20px;
+      transform:translateX(-50%);
+      z-index:100;
+      background:#ff4fa3;
+      color:#fff;
+      padding:11px 18px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      box-shadow:0 12px 34px rgba(255,79,163,.35);
+      max-width:86%;
+      text-align:center;
+    }
+
+    @media(max-width:420px){
+      body{ padding:12px; }
+      .grid{ gap:7px; }
+      .right{ gap:6px; }
+      .mini-btn{ padding:0 8px; }
+      .token{ padding:0 8px; }
+      .details{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="header">
+    <div class="left">
+      <div class="close" onclick="closePage()">✕</div>
+      <div class="title">Album</div>
+    </div>
+
+    <div class="right">
+      <button class="mini-btn" onclick="goSubscribe()">Subscribe</button>
+      <div id="tokenBalance" class="token">💰 ...</div>
+      <div class="gift" onclick="goGift()">🎁</div>
+    </div>
+  </div>
+
+  <div class="subtitle">
+    All generated characters are saved here.
+  </div>
+
+  <div id="albumGrid" class="grid"></div>
+
+  <div id="emptyBox" class="empty" style="display:none;">
+    No generated images yet.<br>
+    Create your first AI girlfriend.
+    <button onclick="window.location.href='age.html'">Create Character</button>
+  </div>
+</div>
+
+<div id="viewerModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-top">
+      <button class="icon-btn" onclick="closeViewer()">✕</button>
+      <button class="icon-btn" onclick="shareCurrent()">↗</button>
+    </div>
+
+    <div class="big-wrap" id="swipeArea">
+      <img id="bigImage" class="big-img" src="">
+      <button class="nav-btn prev" onclick="prevImage()">‹</button>
+      <button class="nav-btn next" onclick="nextImage()">›</button>
+    </div>
+
+    <div class="info">
+      <div id="modalName" class="char-name">AI</div>
+
+      <div class="details">
+        <div class="detail"><div class="label">Age</div><div id="modalAge" class="value">-</div></div>
+        <div class="detail"><div class="label">Ethnicity</div><div id="modalEthnicity" class="value">-</div></div>
+        <div class="detail"><div class="label">Body</div><div id="modalBody" class="value">-</div></div>
+        <div class="detail"><div class="label">Body Details</div><div id="modalBodyDetails" class="value">-</div></div>
+        <div class="detail"><div class="label">Hair</div><div id="modalHair" class="value">-</div></div>
+        <div class="detail"><div class="label">Appearance</div><div id="modalAppearance" class="value">-</div></div>
+        <div class="detail"><div class="label">Personality</div><div id="modalPersonality" class="value">-</div></div>
+      </div>
+
+      <div class="actions">
+        <button class="action" onclick="chatCurrent()">Chat</button>
+        <button class="action dark" onclick="downloadCurrent()">Download</button>
+        <button class="action dark" onclick="shareCurrent()">Share</button>
+        <button class="action danger" onclick="deleteCurrent()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tokenModal" class="token-modal">
+  <div class="token-box">
+    <div class="token-title">Not enough tokens</div>
+    <div class="token-text">You need 5 tokens to chat with this character.</div>
+
+    <button class="action" style="width:100%;margin-bottom:10px;" onclick="goGift()">Get Tokens</button>
+    <button class="action dark" style="width:100%;" onclick="goSubscribe()">Subscribe</button>
+
+    <div style="margin-top:14px;font-size:12px;opacity:.7;cursor:pointer;" onclick="closeTokenModal()">
+      Close
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const ACTIVE_CHAT_CONTEXT_KEY = 'activeChatContext';
+
+let characters = [];
+let currentIndex = 0;
+let touchStartX = 0;
+let touchEndX = 0;
+
+const albumGrid = document.getElementById('albumGrid');
+const emptyBox = document.getElementById('emptyBox');
+const viewerModal = document.getElementById('viewerModal');
+const tokenModal = document.getElementById('tokenModal');
+const tokenBalance = document.getElementById('tokenBalance');
+const toast = document.getElementById('toast');
+const swipeArea = document.getElementById('swipeArea');
+
+function getAccessToken(){
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}){
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization:'Bearer ' + token } : extra;
+}
+
+function formatText(text){
+  if(!text) return '-';
+  return String(text).replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function showToast(text){
+  toast.innerText = text;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 2600);
+}
+
+function closePage(){
+  const from = localStorage.getItem('funnelFrom');
+  if(from === 'result'){
+    window.location.href = 'profile.html';
+  }else{
+    window.location.href = 'profile.html';
+  }
+}
+
+function goGift(){
+  localStorage.setItem('funnelFrom', 'profile');
+  window.location.href = 'gift.html';
+}
+
+function goSubscribe(){
+  localStorage.setItem('funnelFrom', 'profile');
+  window.location.href = 'subscribe.html';
+}
+
+async function refreshBalance(){
+  try{
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+
+    if(data.balance !== undefined){
+      tokenBalance.innerText = '💰 ' + data.balance;
+      return Number(data.balance || 0);
+    }
+
+    tokenBalance.innerText = '💰 0';
+    return 0;
+  }catch(e){
+    tokenBalance.innerText = '💰 0';
+    return 0;
+  }
+}
+
+async function getUserBalance(){
+  try{
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+    return Number(data.balance || 0);
+  }catch(e){
+    return 0;
+  }
+}
+
+async function loadAlbum(){
+  if(!getAccessToken()){
+    localStorage.setItem('loginReturnTo', 'album.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  await refreshBalance();
+
+  try{
+    const res = await fetch('/api/album', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      showToast(data.error);
+      return;
+    }
+
+    characters = data.characters || [];
+    renderGrid();
+
+  }catch(e){
+    showToast('Error loading album');
+  }
+}
+
+function renderGrid(){
+  albumGrid.innerHTML = '';
+
+  if(!characters.length){
+    emptyBox.style.display = 'block';
+    return;
+  }
+
+  emptyBox.style.display = 'none';
+
+  characters.forEach((c, index) => {
+    const item = document.createElement('div');
+    item.className = 'item';
+
+    item.innerHTML = `
+      <img src="${c.image_url}" alt="${c.name || 'AI'}">
+      <div class="name-tag">${c.name || 'AI'}</div>
+    `;
+
+    item.onclick = () => openViewer(index);
+    albumGrid.appendChild(item);
+  });
+}
+
+function openViewer(index){
+  currentIndex = index;
+  updateViewer();
+  viewerModal.style.display = 'flex';
+}
+
+function closeViewer(){
+  viewerModal.style.display = 'none';
+}
+
+function currentCharacter(){
+  return characters[currentIndex] || null;
+}
+
+function updateViewer(){
+  const c = currentCharacter();
+  if(!c) return;
+
+  document.getElementById('bigImage').src = c.image_url || '';
+  document.getElementById('modalName').innerText = c.name || 'AI';
+
+  document.getElementById('modalAge').innerText = formatText(c.age);
+  document.getElementById('modalEthnicity').innerText = formatText(c.ethnicity);
+  document.getElementById('modalBody').innerText = formatText(c.body);
+  document.getElementById('modalBodyDetails').innerText = formatText(c.body_details);
+  document.getElementById('modalHair').innerText = formatText(c.hair);
+  document.getElementById('modalAppearance').innerText = formatText(c.appearance_details);
+  document.getElementById('modalPersonality').innerText = formatText(c.personality);
+}
+
+function nextImage(){
+  if(!characters.length) return;
+  currentIndex = (currentIndex + 1) % characters.length;
+  updateViewer();
+}
+
+function prevImage(){
+  if(!characters.length) return;
+  currentIndex = (currentIndex - 1 + characters.length) % characters.length;
+  updateViewer();
+}
+
+function closeTokenModal(){
+  tokenModal.style.display = 'none';
+}
+
+async function chatCurrent(){
+  const c = currentCharacter();
+  if(!c) return;
+
+  const balance = await getUserBalance();
+
+  if(balance < 5){
+    tokenModal.style.display = 'flex';
+    return;
+  }
+
+  localStorage.setItem(ACTIVE_CHAT_CONTEXT_KEY, JSON.stringify({
+    source:'profile',
+    characterId:c.id || null,
+    name:c.name || 'AI',
+    imageUrl:c.image_url || '',
+    imageUnlocked:!!c.image_url,
+    profile:{
+      age:c.age || '',
+      ethnicity:c.ethnicity || '',
+      body:c.body || '',
+      bodyDetails:c.body_details || '',
+      hair:c.hair || '',
+      appearanceDetails:c.appearance_details || '',
+      personality:c.personality || ''
+    }
+  }));
+
+  window.location.href = 'chat.html';
+}
+
+async function downloadCurrent(){
+  const c = currentCharacter();
+  if(!c?.image_url) return;
+
+  try{
+    const response = await fetch(c.image_url);
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${c.name || 'ai-club'}-${c.id || Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+  }catch(e){
+    window.open(c.image_url, '_blank');
+  }
+}
+
+async function shareCurrent(){
+  const c = currentCharacter();
+  if(!c?.image_url) return;
+
+  const text = `Meet ${c.name || 'my AI girlfriend'} on AI Club 💖`;
+
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:'AI Club',
+        text,
+        url:c.image_url
+      });
+    }else{
+      await navigator.clipboard.writeText(c.image_url);
+      showToast('Image link copied');
+    }
+  }catch(e){}
+}
+
+async function deleteCurrent(){
+  const c = currentCharacter();
+  if(!c?.id) return;
+
+  const ok = confirm('Delete this image from your album?');
+  if(!ok) return;
+
+  try{
+    const res = await fetch('/api/album', {
+      method:'DELETE',
+      headers:authHeaders({ 'Content-Type':'application/json' }),
+      body:JSON.stringify({
+        characterId:c.id
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      showToast(data.error);
+      return;
+    }
+
+    characters.splice(currentIndex, 1);
+
+    if(!characters.length){
+      closeViewer();
+      renderGrid();
+      showToast('Deleted');
+      return;
+    }
+
+    if(currentIndex >= characters.length){
+      currentIndex = 0;
+    }
+
+    updateViewer();
+    renderGrid();
+    showToast('Deleted');
+
+  }catch(e){
+    showToast('Delete failed');
+  }
+}
+
+viewerModal.addEventListener('click', (e) => {
+  if(e.target === viewerModal) closeViewer();
+});
+
+tokenModal.addEventListener('click', (e) => {
+  if(e.target === tokenModal) closeTokenModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if(viewerModal.style.display !== 'flex') return;
+
+  if(e.key === 'Escape') closeViewer();
+  if(e.key === 'ArrowRight') nextImage();
+  if(e.key === 'ArrowLeft') prevImage();
+});
+
+swipeArea.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+swipeArea.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchEndX - touchStartX;
+
+  if(Math.abs(diff) < 45) return;
+
+  if(diff < 0){
+    nextImage();
+  }else{
+    prevImage();
+  }
+});
+
+document.addEventListener('DOMContentLoaded', loadAlbum);
+</script>
+
+</body>
+</html>
