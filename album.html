@@ -27,7 +27,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
 
     .left{
@@ -102,7 +102,7 @@
     .subtitle{
       font-size:13px;
       opacity:.68;
-      margin:-8px 0 14px;
+      margin:-5px 0 12px;
       line-height:1.5;
     }
 
@@ -181,19 +181,32 @@
       background:rgba(0,0,0,.82);
       align-items:center;
       justify-content:center;
-      padding:12px;
+      padding:10px;
     }
 
     .modal-card{
       position:relative;
       width:100%;
       max-width:430px;
-      max-height:94vh;
+      max-height:92vh;
       overflow:auto;
       background:#151515;
       border:1px solid #2b2b2b;
       border-radius:22px;
       box-shadow:0 20px 80px rgba(0,0,0,.65);
+    }
+
+    .modal-card::-webkit-scrollbar{
+      width:4px;
+    }
+
+    .modal-card::-webkit-scrollbar-track{
+      background:transparent;
+    }
+
+    .modal-card::-webkit-scrollbar-thumb{
+      background:#ff4fa3;
+      border-radius:999px;
     }
 
     .modal-top{
@@ -233,7 +246,7 @@
 
     .big-img{
       width:100%;
-      max-height:62vh;
+      max-height:54vh;
       object-fit:contain;
       display:block;
       background:#050505;
@@ -243,8 +256,8 @@
       position:absolute;
       top:50%;
       transform:translateY(-50%);
-      width:38px;
-      height:48px;
+      width:36px;
+      height:46px;
       border:none;
       border-radius:14px;
       background:rgba(0,0,0,.46);
@@ -260,11 +273,11 @@
     .next{ right:10px; }
 
     .info{
-      padding:14px;
+      padding:10px 12px 12px;
     }
 
     .char-name{
-      font-size:20px;
+      font-size:18px;
       font-weight:900;
       margin-bottom:8px;
     }
@@ -272,38 +285,38 @@
     .details{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-bottom:14px;
+      gap:6px;
+      margin-bottom:10px;
     }
 
     .detail{
       background:#101010;
       border:1px solid #252525;
-      border-radius:13px;
-      padding:9px 10px;
+      border-radius:12px;
+      padding:7px 8px;
     }
 
     .label{
       font-size:10px;
       opacity:.52;
-      margin-bottom:4px;
+      margin-bottom:3px;
     }
 
     .value{
       font-size:12px;
       font-weight:800;
-      line-height:1.35;
+      line-height:1.3;
       word-break:break-word;
     }
 
     .actions{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:8px;
+      gap:7px;
     }
 
     .action{
-      height:44px;
+      height:42px;
       border:none;
       border-radius:13px;
       font-size:13px;
@@ -383,7 +396,9 @@
       .right{ gap:6px; }
       .mini-btn{ padding:0 8px; }
       .token{ padding:0 8px; }
-      .details{ grid-template-columns:1fr; }
+      .details{ grid-template-columns:1fr 1fr; }
+      .big-img{ max-height:50vh; }
+      .action{ height:40px; }
     }
   </style>
 </head>
@@ -421,7 +436,15 @@
   <div class="modal-card">
     <div class="modal-top">
       <button class="icon-btn" onclick="closeViewer()">✕</button>
-      <button class="icon-btn" onclick="shareCurrent()">↗</button>
+
+      <button class="icon-btn" onclick="shareCurrent()" aria-label="Share">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M15 8L9 12L15 16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="18" cy="5" r="3" stroke="white" stroke-width="2"/>
+          <circle cx="6" cy="12" r="3" stroke="white" stroke-width="2"/>
+          <circle cx="18" cy="19" r="3" stroke="white" stroke-width="2"/>
+        </svg>
+      </button>
     </div>
 
     <div class="big-wrap" id="swipeArea">
@@ -506,12 +529,7 @@ function showToast(text){
 }
 
 function closePage(){
-  const from = localStorage.getItem('funnelFrom');
-  if(from === 'result'){
-    window.location.href = 'profile.html';
-  }else{
-    window.location.href = 'profile.html';
-  }
+  window.location.href = 'profile.html';
 }
 
 function goGift(){
