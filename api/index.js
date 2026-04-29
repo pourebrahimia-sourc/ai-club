@@ -122,7 +122,8 @@ if (characterId) {
   const { error: updateError } = await supabase
     .from('characters')
     .update({
-      image_url: imageUrl
+      image_url: imageUrl,
+      name: name || 'AI'
     })
     .eq('id', characterId);
 
