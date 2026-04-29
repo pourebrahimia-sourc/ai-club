@@ -799,6 +799,9 @@ function startVoice(){
 
 function initChatPage(){
   activeChatContext = readActiveChatContext();
+  if (!activeChatContext.characterId) {
+  activeChatContext.characterId = null;
+}
   writeActiveChatContext(activeChatContext);
   syncResultStateFromChatIfNeeded();
   applyVisualState();
