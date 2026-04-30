@@ -124,6 +124,15 @@
   </div>
   <div>Referral Bonus (+10 tokens)</div>
 </div>
+  <div id="refCountText" style="
+  margin-top:12px;
+  text-align:center;
+  font-size:13px;
+  font-weight:700;
+  opacity:0.85;
+">
+  0 Friends Invited
+</div>
 <div class="ref-progress">
   <div class="ref-line"></div>
 
@@ -387,7 +396,8 @@ async function loadReferralData() {
     });
 
     const data = await res.json();
-
+document.getElementById('refCountText').innerText =
+  `${data.referralCount || 0} Friends Invited`;
 if (data.referralCode) {
   referralLink = window.location.origin + '/index.html?ref=' + data.referralCode;
   document.getElementById('refLinkInput').value = referralLink;
@@ -449,12 +459,7 @@ if (data.referralCount >= value) {
   }
 }
 });
-    document.querySelectorAll('.ref-step').forEach(step => {
-  const label = step.querySelector('.ref-label');
-  if (label) {
-    label.innerText = data.referralCount;
-  }
-});
+
   } catch (e) {
     console.log('Referral load error');
   }
