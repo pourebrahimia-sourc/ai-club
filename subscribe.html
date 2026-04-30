@@ -6,108 +6,599 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top, rgba(255,79,163,0.16), transparent 28%),
+        #111;
+      color:#fff;
+      font-family:Arial, Helvetica, sans-serif;
+      padding:14px;
+      max-width:none;
+    }
+
+    .page{
+      width:100%;
+      max-width:430px;
+      margin:0 auto;
+      animation:fadeUp .28s ease;
+    }
+
     .header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:20px;
-    }
-
-    .back{
-      cursor:pointer;
-      font-size:14px;
-      color:#ff4fa3;
-    }
-
-    .plan{
-      background:#1a1a1a;
-      border:1px solid #2b2b2b;
-      border-radius:16px;
-      padding:16px;
       margin-bottom:14px;
     }
 
-    .plan.active{
-      border:1px solid #ff4fa3;
-      box-shadow:0 0 0 1px rgba(255,79,163,0.15);
+    .close{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      background:#222;
+      color:#ff4fa3;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:18px;
+      border:1px solid #333;
     }
 
-    .plan-title{
-      font-size:16px;
-      font-weight:700;
+    .header-title{
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .balance-card{
+      background:linear-gradient(180deg,#1d1d1d,#161616);
+      border:1px solid rgba(255,79,163,.28);
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:14px;
+      box-shadow:0 18px 45px rgba(0,0,0,.35);
+    }
+
+    .balance-label{
+      font-size:12px;
+      opacity:.65;
       margin-bottom:6px;
     }
 
-    .plan-price{
-      font-size:20px;
+    .balance-value{
+      font-size:26px;
+      font-weight:900;
       color:#ff4fa3;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:25px;
+      line-height:1.2;
+    }
+
+    .hero p{
+      margin:0;
+      font-size:13px;
+      color:rgba(255,255,255,.66);
+      line-height:1.5;
+    }
+
+    .section-title{
+      font-size:15px;
+      font-weight:800;
+      margin:18px 0 10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .section-title span{
+      font-size:11px;
+      color:rgba(255,255,255,.55);
+      font-weight:500;
+    }
+
+    .plans{
+      display:grid;
+      gap:12px;
+    }
+
+    .plan{
+      position:relative;
+      background:linear-gradient(180deg,#1b1b1b,#151515);
+      border:1px solid #2b2b2b;
+      border-radius:18px;
+      padding:15px;
+      overflow:hidden;
+      box-shadow:0 12px 36px rgba(0,0,0,.25);
+    }
+
+    .plan.featured{
+      border-color:#ff4fa3;
+      box-shadow:
+        0 0 0 1px rgba(255,79,163,.18),
+        0 18px 50px rgba(255,79,163,.12);
+    }
+
+    .badge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      background:#ff4fa3;
+      color:#fff;
+      font-size:10px;
+      font-weight:800;
+      padding:5px 8px;
+      border-radius:999px;
+    }
+
+    .plan-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
       margin-bottom:10px;
     }
 
-    .plan-features{
+    .plan-name{
+      font-size:17px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .plan-sub{
+      font-size:12px;
+      color:rgba(255,255,255,.58);
+    }
+
+    .price{
+      font-size:21px;
+      font-weight:900;
+      color:#ff4fa3;
+      white-space:nowrap;
+      padding-right:0;
+    }
+
+    .features{
+      margin:10px 0 14px;
       font-size:13px;
-      opacity:0.8;
-      line-height:1.6;
-      margin-bottom:12px;
+      line-height:1.7;
+      color:rgba(255,255,255,.78);
     }
 
     .buy-btn{
       width:100%;
-      padding:10px;
-      border-radius:12px;
+      height:46px;
       border:none;
+      border-radius:14px;
       background:#ff4fa3;
       color:#fff;
-      font-weight:700;
+      font-size:14px;
+      font-weight:900;
       cursor:pointer;
+      box-shadow:0 10px 26px rgba(255,79,163,.18);
+    }
+
+    .buy-btn.dark{
+      background:#252525;
+      border:1px solid #383838;
+      box-shadow:none;
+    }
+
+    .token-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .token-pack{
+      background:linear-gradient(180deg,#1a1a1a,#151515);
+      border:1px solid #2b2b2b;
+      border-radius:16px;
+      padding:13px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .token-left{
+      min-width:0;
+    }
+
+    .token-amount{
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .token-desc{
+      font-size:11px;
+      color:rgba(255,255,255,.55);
+    }
+
+    .token-price{
+      color:#ff4fa3;
+      font-weight:900;
+      font-size:16px;
+      white-space:nowrap;
+    }
+
+    .mini-btn{
+      height:36px;
+      padding:0 13px;
+      border:none;
+      border-radius:11px;
+      background:#ff4fa3;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .note{
+      margin-top:14px;
+      font-size:11px;
+      color:rgba(255,255,255,.48);
+      line-height:1.5;
+      text-align:center;
+    }
+
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.66);
+      z-index:50;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .modal-box{
+      width:100%;
+      max-width:330px;
+      background:#1a1a1a;
+      border:1px solid #2b2b2b;
+      border-radius:20px;
+      padding:18px;
+      text-align:center;
+      box-shadow:0 20px 70px rgba(0,0,0,.5);
+    }
+
+    .modal-title{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .modal-text{
+      font-size:13px;
+      opacity:.75;
+      line-height:1.5;
+      margin-bottom:16px;
+    }
+
+    .modal-actions{
+      display:grid;
+      gap:10px;
+    }
+
+    .modal-close{
+      margin-top:12px;
+      font-size:12px;
+      opacity:.65;
+      cursor:pointer;
+    }
+
+    @keyframes fadeUp{
+      from{ opacity:0; transform:translateY(10px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    @media(max-width:380px){
+      body{ padding:12px; }
+      .hero h2{ font-size:23px; }
+      .plan{ padding:14px; }
+      .price{ font-size:19px; }
     }
   </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="back" onclick="closePage()">✕</div>
-  <div>💎 Subscribe</div>
-  <div></div>
+<div class="page">
+
+  <div class="header">
+    <div class="close" onclick="closePage()">✕</div>
+    <div class="header-title">AI Club Premium</div>
+    <div style="width:36px;"></div>
+  </div>
+
+  <div class="balance-card">
+    <div class="balance-label">Your current balance</div>
+    <div id="tokenBalance" class="balance-value">💰 ...</div>
+  </div>
+
+  <div class="hero">
+    <h2>Unlock the full AI Club experience 💎</h2>
+    <p>Choose a subscription or buy extra tokens anytime.</p>
+  </div>
+
+  <div class="section-title">
+    Subscription Plans
+    <span>Monthly recommended</span>
+  </div>
+
+  <div class="plans">
+
+    <div class="plan">
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Weekly</div>
+          <div class="plan-sub">Try AI Club for 7 days</div>
+        </div>
+        <div class="price">$4.99</div>
+      </div>
+
+      <div class="features">
+        ✔️ 200 Tokens<br>
+        ✔️ Chat access<br>
+        ✔️ Image unlock support
+      </div>
+
+      <button class="buy-btn dark" onclick="buyPlan('weekly')">Choose Weekly</button>
+    </div>
+
+    <div class="plan featured">
+      <div class="badge">BEST VALUE</div>
+
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Monthly</div>
+          <div class="plan-sub">Best plan for most users</div>
+        </div>
+        <div class="price">$14.99</div>
+      </div>
+
+      <div class="features">
+        ✔️ 800 Tokens<br>
+        ✔️ Priority AI experience<br>
+        ✔️ Best balance of price & tokens
+      </div>
+
+      <button class="buy-btn" onclick="buyPlan('monthly')">Get Monthly</button>
+    </div>
+
+    <div class="plan">
+      <div class="badge">SAVE 45%</div>
+
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Yearly</div>
+          <div class="plan-sub">For serious AI Club users</div>
+        </div>
+        <div class="price">$99</div>
+      </div>
+
+      <div class="features">
+        ✔️ 6000 Tokens<br>
+        ✔️ Biggest discount<br>
+        ✔️ Long-term premium access
+      </div>
+
+      <button class="buy-btn dark" onclick="buyPlan('yearly')">Choose Yearly</button>
+    </div>
+
+  </div>
+
+  <div class="section-title">
+    Need more tokens?
+    <span>One-time purchase</span>
+  </div>
+
+  <div class="token-grid">
+
+    <div class="token-pack">
+      <div class="token-left">
+        <div class="token-amount">100 Tokens</div>
+        <div class="token-desc">Quick refill</div>
+      </div>
+      <div class="token-price">$1.99</div>
+      <button class="mini-btn" onclick="buyTokens('tokens_100')">Buy</button>
+    </div>
+
+    <div class="token-pack">
+      <div class="token-left">
+        <div class="token-amount">300 Tokens</div>
+        <div class="token-desc">Most flexible</div>
+      </div>
+      <div class="token-price">$4.99</div>
+      <button class="mini-btn" onclick="buyTokens('tokens_300')">Buy</button>
+    </div>
+
+    <div class="token-pack">
+      <div class="token-left">
+        <div class="token-amount">700 Tokens</div>
+        <div class="token-desc">Best refill value</div>
+      </div>
+      <div class="token-price">$9.99</div>
+      <button class="mini-btn" onclick="buyTokens('tokens_700')">Buy</button>
+    </div>
+
+  </div>
+
+  <div class="note">
+    Web payments will use PayPal. Android app payments will use Google Play Billing.
+  </div>
+
 </div>
 
-<!-- Weekly -->
-<div class="plan">
-  <div class="plan-title">Weekly</div>
-  <div class="plan-price">$4.99</div>
-  <div class="plan-features">
-    ✔️ 200 Tokens<br>
-    ✔️ Faster replies<br>
-    ✔️ Basic access
+<div id="payModal" class="modal">
+  <div class="modal-box">
+    <div id="modalTitle" class="modal-title">Payment</div>
+    <div id="modalText" class="modal-text">Choose your payment method.</div>
+
+    <div class="modal-actions">
+      <button class="buy-btn" onclick="continuePayment()">Continue</button>
+      <button class="buy-btn dark" onclick="closeModal()">Cancel</button>
+    </div>
+
+    <div class="modal-close" onclick="closeModal()">Close</div>
   </div>
-  <button class="buy-btn">Buy</button>
 </div>
 
-<!-- Monthly -->
-<div class="plan active">
-  <div class="plan-title">Monthly</div>
-  <div class="plan-price">$14.99</div>
-  <div class="plan-features">
-    ✔️ 800 Tokens<br>
-    ✔️ Priority AI<br>
-    ✔️ All features unlocked
-  </div>
-  <button class="buy-btn">Best Value</button>
-</div>
-
-<!-- VIP -->
-<div class="plan">
-  <div class="plan-title">VIP</div>
-  <div class="plan-price">$29.99</div>
-  <div class="plan-features">
-    ✔️ Unlimited Chat<br>
-    ✔️ Voice + Future Video<br>
-    ✔️ Premium AI experience
-  </div>
-  <button class="buy-btn">Go VIP</button>
-</div>
 <script>
+let selectedProduct = null;
+
+const PAYPAL_LINKS = {
+  weekly: '',
+  monthly: '',
+  yearly: '',
+  tokens_100: '',
+  tokens_300: '',
+  tokens_700: ''
+};
+
+function getAccessToken(){
+  return localStorage.getItem('accessToken') || '';
+}
+
+function authHeaders(extra = {}){
+  const token = getAccessToken();
+  return token ? { ...extra, Authorization: 'Bearer ' + token } : extra;
+}
+
+function detectPlatform(){
+  const ua = navigator.userAgent.toLowerCase();
+
+  if (window.AndroidBilling || ua.includes('wv') || ua.includes('android')) {
+    return 'android';
+  }
+
+  if (/iphone|ipad|ipod/.test(ua)) {
+    return 'ios';
+  }
+
+  return 'web';
+}
+
+function openModal(title, text){
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('modalText').innerText = text;
+  document.getElementById('payModal').style.display = 'flex';
+}
+
+function closeModal(){
+  document.getElementById('payModal').style.display = 'none';
+}
+
+function buyPlan(productId){
+  selectedProduct = productId;
+
+  const platform = detectPlatform();
+
+  if(platform === 'android'){
+    openModal('Google Play Billing', 'This purchase will be completed inside the Android app.');
+    return;
+  }
+
+  if(platform === 'ios'){
+    openModal('iOS Purchase', 'iOS in-app purchase is coming soon.');
+    return;
+  }
+
+  openModal('PayPal Payment', 'Continue to PayPal to complete your purchase.');
+}
+
+function buyTokens(productId){
+  selectedProduct = productId;
+
+  const platform = detectPlatform();
+
+  if(platform === 'android'){
+    openModal('Google Play Billing', 'This token pack will be purchased inside the Android app.');
+    return;
+  }
+
+  if(platform === 'ios'){
+    openModal('iOS Purchase', 'iOS in-app purchase is coming soon.');
+    return;
+  }
+
+  openModal('PayPal Payment', 'Continue to PayPal to buy extra tokens.');
+}
+
+function continuePayment(){
+  if(!selectedProduct) return;
+
+  const platform = detectPlatform();
+
+  if(platform === 'android'){
+    if(window.AndroidBilling && typeof window.AndroidBilling.buy === 'function'){
+      window.AndroidBilling.buy(selectedProduct);
+      closeModal();
+      return;
+    }
+
+    alert('Android billing is not available yet.');
+    closeModal();
+    return;
+  }
+
+  if(platform === 'ios'){
+    alert('iOS purchase coming soon.');
+    closeModal();
+    return;
+  }
+
+  const link = PAYPAL_LINKS[selectedProduct];
+
+  if(!link){
+    alert('PayPal link is not connected yet.');
+    closeModal();
+    return;
+  }
+
+  window.location.href = link;
+}
+
+async function refreshBalance(){
+  const token = getAccessToken();
+  const el = document.getElementById('tokenBalance');
+
+  if(!token){
+    el.innerText = '💰 0';
+    return;
+  }
+
+  try{
+    const res = await fetch('/api/wallet', {
+      headers: authHeaders()
+    });
+
+    const data = await res.json();
+
+    if(data.balance !== undefined){
+      el.innerText = '💰 ' + data.balance;
+    }else{
+      el.innerText = '💰 0';
+    }
+  }catch(e){
+    el.innerText = '💰 0';
+  }
+}
+
 function closePage(){
   const returnTo = localStorage.getItem('chatReturnTo');
 
@@ -125,6 +616,21 @@ function closePage(){
     window.location.href = 'index.html';
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  if(!getAccessToken()){
+    localStorage.setItem('loginReturnTo', 'subscribe.html');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  refreshBalance();
+});
+
+document.getElementById('payModal').addEventListener('click', (e) => {
+  if(e.target.id === 'payModal') closeModal();
+});
 </script>
+
 </body>
 </html>
