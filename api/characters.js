@@ -32,6 +32,7 @@ export default async function handler(req, res) {
       .from('characters')
       .select('*')
       .eq('user_id', user.id)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .limit(5);
 
