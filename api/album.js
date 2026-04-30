@@ -41,6 +41,7 @@ export default async function handler(req, res) {
       .from('characters')
       .select('*')
       .eq('user_id', user.id)
+      .is('deleted_at', null)
       .not('image_url', 'is', null)
       .order('created_at', { ascending: false });
 
@@ -84,10 +85,12 @@ export default async function handler(req, res) {
     }
 
     const { error: deleteError } = await supabaseAdmin
-      .from('characters')
-      .delete()
-      .eq('id', characterId)
-      .eq('user_id', user.id);
+.from('characters')
+.update({
+  deleted_at: new Date().toISOString()
+})
+.eq('id', characterId)
+.eq('user_id', user.id);
 
     if (deleteError) {
       return res.status(400).json({ error: deleteError.message });
