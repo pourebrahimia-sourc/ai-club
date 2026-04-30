@@ -489,7 +489,23 @@
     </div>
   </div>
 </div>
+<div id="deleteModal" class="token-modal">
+  <div class="token-box">
+    <div class="token-title">Delete character?</div>
 
+    <div class="token-text">
+      This character will be removed from your album.
+    </div>
+
+    <button class="action danger" style="width:100%;margin-bottom:10px;" onclick="confirmDelete()">
+      Delete
+    </button>
+
+    <button class="action dark" style="width:100%;" onclick="closeDeleteModal()">
+      Cancel
+    </button>
+  </div>
+</div>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -504,6 +520,8 @@ const albumGrid = document.getElementById('albumGrid');
 const emptyBox = document.getElementById('emptyBox');
 const viewerModal = document.getElementById('viewerModal');
 const tokenModal = document.getElementById('tokenModal');
+  const deleteModal = document.getElementById('deleteModal');
+let pendingDelete = false;
 const tokenBalance = document.getElementById('tokenBalance');
 const toast = document.getElementById('toast');
 const swipeArea = document.getElementById('swipeArea');
@@ -752,8 +770,21 @@ async function deleteCurrent(){
   const c = currentCharacter();
   if(!c?.id) return;
 
-  const ok = confirm('Delete this image from your album?');
-  if(!ok) return;
+  deleteModal.style.display = 'flex';
+  pendingDelete = true;
+}
+function closeDeleteModal(){
+  deleteModal.style.display = 'none';
+  pendingDelete = false;
+}
+
+async function confirmDelete(){
+  if(!pendingDelete) return;
+
+  deleteModal.style.display = 'none';
+
+  const c = currentCharacter();
+  if(!c?.id) return;
 
   try{
     const res = await fetch('/api/album', {
@@ -791,8 +822,9 @@ async function deleteCurrent(){
   }catch(e){
     showToast('Delete failed');
   }
-}
 
+  pendingDelete = false;
+}
 viewerModal.addEventListener('click', (e) => {
   if(e.target === viewerModal) closeViewer();
 });
