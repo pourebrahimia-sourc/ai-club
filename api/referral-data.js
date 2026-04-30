@@ -64,12 +64,16 @@ export default async function handler(req, res) {
       }
     }
 
-    const { data: referrals, error: referralsError } = await supabaseAdmin
-      .from('referrals')
-      .select('referred_id, created_at')
-      .eq('referrer_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(5);
+const {
+  data: referrals,
+  error: referralsError,
+  count: referralCount
+} = await supabaseAdmin
+  .from('referrals')
+  .select('referred_id, created_at', { count:'exact' })
+  .eq('referrer_id', user.id)
+  .order('created_at', { ascending: false })
+  .limit(5);
 
     if (referralsError) {
       return res.status(400).json({ error: referralsError.message });
@@ -109,7 +113,7 @@ const { data: usedReferralRow } = await supabaseAdmin
   .maybeSingle();
 return res.status(200).json({
   referralCode,
-  referralCount: referrals?.length || 0,
+  referralCount: referralCount || 0,
   avatars,
   usedReferral: !!usedReferralRow
 });
