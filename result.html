@@ -692,7 +692,7 @@ function closeInfoModal() {
 async function refreshBalance() {
   const token = getAccessToken();
   if (!token) {
-    tokenEl.innerText = '💰 0';
+    tokenEl.innerText = '💰 ...';
     return;
   }
 
@@ -708,10 +708,10 @@ async function refreshBalance() {
         localStorage.setItem('userId', data.userId);
       }
     } else {
-      tokenEl.innerText = '💰 0';
+      tokenEl.innerText = '💰 ...';
     }
   } catch (e) {
-    tokenEl.innerText = '💰 0';
+    tokenEl.innerText = '💰 ...';
   }
 }
 
