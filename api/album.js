@@ -76,13 +76,6 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Character not found' });
     }
 
-    const storagePath = getStoragePathFromUrl(character.image_url);
-
-    if (storagePath) {
-      await supabaseAdmin.storage
-        .from('ai-images')
-        .remove([storagePath]);
-    }
 
     const { error: deleteError } = await supabaseAdmin
 .from('characters')
