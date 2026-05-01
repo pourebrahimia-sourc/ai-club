@@ -243,6 +243,18 @@
   </button>
 </div>
 <script>
+function openAppDownloadModal(){
+  document.getElementById('appDownloadModal').style.display = 'flex';
+
+  QRCode.toCanvas(
+    document.getElementById('downloadQr'),
+    'https://your-app-link.com',
+    { width: 140, margin: 1 }
+  );
+}
+  function closeAppDownloadModal(){
+  document.getElementById('appDownloadModal').style.display = 'none';
+}
 function closePage(){
   const returnTo = localStorage.getItem('chatReturnTo');
 
@@ -307,41 +319,16 @@ async function checkDailyClaimStatus() {
   } catch (e) {}
 }
 async function claimGift(type, btn) {
-  if (type === 'rate') {
-  const alreadyRated = localStorage.getItem('rated');
-
-  if (alreadyRated) {
-    showNotification('Already rated');
-    btn.disabled = true;
-    btn.style.background = '#333';
-    btn.style.color = '#777';
-    return;
-  }
-
-  localStorage.setItem('rated', '1');
-
-  showNotification('Thanks for rating! +5 tokens');
-  btn.innerText = 'Rated';
-  btn.disabled = true;
-  btn.style.background = '#333';
-  btn.style.color = '#777';
-
+if (type === 'rate') {
+  openAppDownloadModal();
   return;
 }
-  if (type === 'ad') {
-  showNotification('Available in app only');
-  btn.disabled = true;
-  btn.style.background = '#333';
-  btn.style.color = '#777';
+if (type === 'ad') {
+  openAppDownloadModal();
   return;
 }
-  if (type === 'share') {
-  if (referralLink) {
-    navigator.clipboard.writeText(referralLink);
-    showNotification('Link copied! Share it with friends');
-  } else {
-    showNotification('Referral link not ready');
-  }
+if (type === 'share') {
+  openAppDownloadModal();
   return;
 }
   const originalText = btn.innerText;
@@ -604,6 +591,80 @@ QRCode.toCanvas(canvas, referralLink, {
       Close
     </button>
   </div>
+</div>
+  <div id="appDownloadModal" style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.7);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+padding:20px;
+">
+
+  <div style="
+    width:100%;
+    max-width:320px;
+    background:#1a1a1a;
+    border:1px solid #2b2b2b;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+  ">
+
+    <div style="
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:10px;
+    ">
+      Download App
+    </div>
+
+    <div style="
+      font-size:13px;
+      opacity:0.75;
+      line-height:1.5;
+      margin-bottom:18px;
+    ">
+      This feature is available in the mobile app.
+    </div>
+
+    <canvas id="downloadQr" style="
+      background:#fff;
+      padding:10px;
+      border-radius:14px;
+      margin-bottom:18px;
+    "></canvas>
+
+    <button onclick="window.open('https://google.com')" class="gift-btn" style="
+      width:100%;
+      height:44px;
+      margin-bottom:10px;
+    ">
+      Google Play
+    </button>
+
+    <button onclick="window.open('https://google.com')" class="gift-btn" style="
+      width:100%;
+      height:44px;
+      margin-bottom:10px;
+      background:#2a2a2a;
+    ">
+      App Store
+    </button>
+
+    <div onclick="closeAppDownloadModal()" style="
+      margin-top:8px;
+      font-size:12px;
+      opacity:0.7;
+      cursor:pointer;
+    ">
+      Close
+    </div>
+
+  </div>
+
 </div>
 </body>
 </html>
